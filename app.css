@@ -1,0 +1,9 @@
+:root{
+    --cor-fundo: #333;
+    --cor-letra-clara: #fff;
+}
+
+*{
+    color: var(--cor-letra-clara);
+    background-color: var(--cor-fundo);
+}
