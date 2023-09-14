@@ -1,9 +1,27 @@
-:root{
+:root {
     --cor-fundo: #333;
     --cor-letra-clara: #fff;
 }
 
-*{
+* {
     color: var(--cor-letra-clara);
     background-color: var(--cor-fundo);
+}
+
+div,
+fieldset,
+img {
+    width: 400px;
+    margin: 10px auto;
+    justify-content: space-between;
+    text-align: center;
+}
+
+button {
+    display: inline-table;
+    box-sizing: border-box;
+    flex-direction: row;
+    width: 32%;
+    height: 45px;
+    margin: 10px;
 }
