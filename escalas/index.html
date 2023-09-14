@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E S C A L A S - GSV</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="escalas.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="escalas.js" defer></script>
+</head>
+
+<body>
+  <div id="divParametros" class="parametros">
+    <div class="labelPainel1">ESC: Ocultar / Exibir</div>
+    
+    <fieldset id="fieldset0">
+      <legend>Selecione um arquivo compatível</legend>
+      <input type="file" id="txtNomeDoArquivo" accept=".htm, .html">
+      <label id="labStatus"></label>
+    </fieldset>
+    
+    <div class="divFieldset">
+      <fieldset id="fieldset1" disabled>
+        <legend>Selecione uma quinzena</legend>
+        <input type="radio" id="radQuinzena1" name="quinzena" value="1ª quinzena" checked />
+        <label for="radQuinzena1">1ª quinzena</label><br>
+        <input type="radio" id="radQuinzena2" name="quinzena" value="2ª quinzena" />
+        <label for="radQuinzena2">2ª quinzena</label><br>
+        <input type="radio" id="radQuinzena3" name="quinzena" value="MinhaData" />
+        <label for="radQuinzena3">Uma data específica</label><br>
+        <input type="date" id="dtDia" value="1993-12-08" disabled><br>
+      </fieldset>
+
+      <fieldset id="fieldset2" disabled>
+        <legend>Selecione o tipo de escala</legend>
+        <input type="radio" id="radVoluntarioCom" name="distribuicao" value="ComVoluntario" checked />
+        <label for="radComVoluntario">Apenas militares escalados</label><br>
+        <input type="radio" id="radVoluntarioSem" name="distribuicao" value="SemVoluntario" />
+        <label for="radSemVoluntario">Apenas 'sem voluntario'</label><br>
+        <input type="radio" id="radVoluntarioTodos" name="distribuicao" value="Todos" />
+        <label for="radComVoluntario">Todas as cotas gerenciadas</label><br>
+      </fieldset>
+
+      <fieldset id="fieldset4" disabled>
+        <legend>Filtrar por SIAPE</legend>
+        <input type="text" id="txtSiape" maxlength="7">
+        <button id="cmdPesquisarPorSiape">Filtrar SIAPE</button>
+        <button id="cmdCotaDobrada">Verificar cota dobrada por dia</button>
+      </fieldset>
+    </div>
+
+    <div>
+      <fieldset id="fieldset3" disabled>
+        <legend>Selecione uma Operação</legend>
+        <div id="divOperacoes"><select></select></div>
+      </fieldset>
+    </div>
+
+    <fieldset id="fieldset5">
+      <button id="cmdExibirEscala" disabled>Exibir Escala p/BG</button>
+      <button id="cmdExportarPdf" disabled>Exportar Resultado em PDF</button>
+      <button id="cmdTotais" disabled>Totais (Cotas / Militares Envolvidos)</button>
+    </fieldset>
+  </div>
+  <div id="divResultado"></div>
+</body>
+
+</html>
