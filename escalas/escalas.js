@@ -27,7 +27,14 @@ let dadoJson = []
 let config = {}
                    
 function avaliacao(info) {
-    if(info === null){$info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})}
+    if(info === null){
+        $info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})
+        return
+    }
+
+    controlesAtivos(false)
+    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
+
     const parser = new DOMParser()
     let dadoBruto = []
     
@@ -218,8 +225,6 @@ const $ajax = (arquivo, funcaoDeRetorno) => {
             //console.log('[XmlReq.status]', XmlReq.status)
             if (XmlReq.status === 200) {
                 funcaoDeRetorno(XmlReq.response)
-                controlesAtivos(false)
-                preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
             }
             if (XmlReq.status === 404) {
                 funcaoDeRetorno(null)
@@ -227,6 +232,23 @@ const $ajax = (arquivo, funcaoDeRetorno) => {
         }
     }
     XmlReq.send()
+}
+
+function $readFile(input, funcaoDeRetorno) {
+    let file = input.files[0]
+    let reader = new FileReader()
+
+    reader.readAsText(file)
+
+    reader.onload = function () {
+        funcaoDeRetorno(reader.result)
+    }
+
+    reader.onerror = function () {
+        console.log(reader.error)
+        funcaoDeRetorno(null)
+    }
+
 }
 
 txtNomeDoArquivo.addEventListener('change',(e)=>{
@@ -239,7 +261,7 @@ txtNomeDoArquivo.addEventListener('change',(e)=>{
         $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
         config.arquivo = (arquivo[0].name).split(".")[0]
         arquivo = `./${arquivo[0].name}`
-        $ajax(arquivo, avaliacao)
+        $readFile(txtNomeDoArquivo, avaliacao)
     } else {
         $info({msg:``, opt:0})
     }
@@ -736,3 +758,4 @@ function setClipboard(tag) {
       },
     );
 }
+
