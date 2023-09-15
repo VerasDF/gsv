@@ -24,14 +24,18 @@ const txtSiape = document.getElementById('txtSiape')
 const cabecalho = `<td class="label_data_th">POSTO/GRAD</td><td class="label_data_th">NOME</td><td class="label_data_th">SIAPE</td><td class="label_data_th">LOTAÇÃO</td><td class="label_data_th">QUADRO</td><td class="label_data_th">ALA</td><td class="label_data_th">ASSINATURA</td>`
                    
 let dadoJson = []
-let config = {}
-                   
+let conf = {}
+
+
 function avaliacao(info) {
     if(info === null){
         $info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})
         return
     }
-
+    
+    conf.versao = '0.3.2122'
+    labStatus.title = conf.versao
+    
     controlesAtivos(false)
     preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
 
@@ -259,7 +263,7 @@ txtNomeDoArquivo.addEventListener('change',(e)=>{
     let arquivo = txtNomeDoArquivo.files
     if(arquivo.length > 0){
         $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
-        config.arquivo = (arquivo[0].name).split(".")[0]
+        conf.arquivo = (arquivo[0].name).split(".")[0]
         arquivo = `./${arquivo[0].name}`
         $readFile(txtNomeDoArquivo, avaliacao)
     } else {
@@ -613,7 +617,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj)=>{
     function _incluirCabecalhoParaPdf(){
         const tbResultado = document.getElementById('tbResultado')
         const thisH1 = document.createElement('h1')
-        thisH1.innerHTML = `MILITARES ENVOLVIDOS<br>${config.arquivo.split("-")[2]}/${config.arquivo.split("-")[0]}`
+        thisH1.innerHTML = `MILITARES ENVOLVIDOS<br>${conf.arquivo.split("-")[2]}/${conf.arquivo.split("-")[0]}`
         thisH1.style.display = 'flexbox'
         thisH1.style.textAlign = 'center'
         thisH1.style.width = '100%'
@@ -733,7 +737,7 @@ function cmdGerarPdf(){
     const content = divResultado
     const options = {
         margin: [10,10,10,10],
-        filename: `${config.arquivo}.pdf`,
+        filename: `${conf.arquivo}.pdf`,
         html2canvas:{scale: 2},
         jsPDF: {unit: "mm", format: "a4", orientation: "portrait"}
     }
