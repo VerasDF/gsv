@@ -32,9 +32,6 @@ function avaliacao(info) {
         return
     }
     
-    controlesAtivos(false)
-    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
-
     const parser = new DOMParser()
     let dadoBruto = []
     
@@ -45,6 +42,9 @@ function avaliacao(info) {
     prepararJSon(dadoBruto)
     $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} cotas`, opt:0})
     dtDia.value = `${dadoJson[0].DATA.split('/')[2]}-${dadoJson[0].DATA.split('/')[1]}-${dadoJson[0].DATA.split('/')[0]}`
+    
+    controlesAtivos(false)
+    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
 }
 
 function prepararJSon(info) {
@@ -706,7 +706,6 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj)=>{
         tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`
         tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`
     }
-
 }
 
 function preencherSelect(tag, obj){

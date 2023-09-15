@@ -83,7 +83,7 @@ txtFile.addEventListener('change',(e)=>{
     if(arquivo.length > 0){
         $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
         arquivo = `./${arquivo[0].name}`
-        $readFile(txtNomeDoArquivo, avaliacao)
+        $readFile(txtFile, avaliacao)
     } else {
         $info({msg:``, opt:0})
     }
