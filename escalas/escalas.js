@@ -26,15 +26,11 @@ const cabecalho = `<td class="label_data_th">POSTO/GRAD</td><td class="label_dat
 let dadoJson = []
 let conf = {}
 
-
 function avaliacao(info) {
     if(info === null){
         $info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})
         return
     }
-    
-    conf.versao = '0.3.2122'
-    labStatus.title = conf.versao
     
     controlesAtivos(false)
     preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
