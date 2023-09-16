@@ -1,6 +1,22 @@
 
 let dadoJson = []
 const txtFile = document.getElementById('txtFile')
+const divResultado = document.getElementById("divResultado")
+
+txtFile.addEventListener('change',(e)=>{
+    e.preventDefault()
+    dadoJson=[]
+    divResultado.innerHTML = ''
+    let arquivo = txtFile.files
+    if(arquivo.length > 0){
+        $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
+        arquivo = `./${arquivo[0].name}`
+        $readFile(txtFile, avaliacao)
+    } else {
+        $info({msg:``, opt:0})
+    }
+    
+})
 
 const $ajax = (arquivo, funcaoDeRetorno) => {
     const url = arquivo
@@ -37,19 +53,31 @@ function $readFile(input, funcaoDeRetorno) {
 }
 
 function avaliacao(info) {
-    if(info === null){$info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})}
-    const parser = new DOMParser()
-    let dadoBruto = []
-    
-    dadoBruto = parser.parseFromString(info, 'text/html')
-    dadoBruto = dadoBruto.querySelector(".tbResumo")
-    dadoBruto = dadoBruto.children[0]
-    
-    prepararJSon(dadoBruto)
-    $info({msg:`Retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} registros`, opt:0})
-    const obj = dadoJson
-    //divResultado.innerHTML = JSON.stringify(obj)
-    htmlConstruirTabela(obj)
+    try {
+        if (info === null) { $info({ msg: `Não há dados a serem processados, ocorreu algum problema.`, opt: 0 }) }
+        const parser = new DOMParser()
+        let dadoBruto = []
+
+        dadoBruto = parser.parseFromString(info, 'text/html')
+        dadoBruto = dadoBruto.querySelector(".tbResumo")
+        dadoBruto = dadoBruto.children[0]
+
+        prepararJSon(dadoBruto)
+        $info({ msg: `Retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} registros`, opt: 0 })
+        const obj = dadoJson
+        //divResultado.innerHTML = JSON.stringify(obj)
+        htmlConstruirTabela(obj)
+        
+        setTimeout(()=>{
+            if(confirm("Deseja selecionar e copiar o resultado?")){
+                Selecionar.copiar(divResultado)
+            }
+        },1000)
+
+    } catch (error) {
+        $info({ msg: error, opt: 0 });
+        console.log(error);
+    }
 }
 
 function prepararJSon(info) {
@@ -74,20 +102,6 @@ function prepararJSon(info) {
         return retorno
     }
 }
-
-txtFile.addEventListener('change',(e)=>{
-    e.preventDefault()
-    dadoJson=[]
-    divResultado.innerHTML = ''
-    let arquivo = txtFile.files
-    if(arquivo.length > 0){
-        $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
-        arquivo = `./${arquivo[0].name}`
-        $readFile(txtFile, avaliacao)
-    } else {
-        $info({msg:``, opt:0})
-    }
-})
 
 function $info({msg, opt}){
     if(opt === 1){
@@ -161,7 +175,7 @@ function totais(atributoDePesquisa, obj) {
 
 function filtrarDados({ lotacao, nome, quadro, posto_grad, siape }) {
     
-    console.log(filtrarDados.arguments[0])
+    //console.log(filtrarDados.arguments[0])
 
     if (!lotacao) { lotacao = "" }
     if (!nome) { nome = "" }
@@ -180,4 +194,32 @@ function filtrarDados({ lotacao, nome, quadro, posto_grad, siape }) {
             return item
         }
     })
+}
+
+const Selecionar = {
+    copiar: function (elem) {
+        var body = document.body, range, sel;
+        if (document.createRange && window.getSelection) {
+            range = document.createRange();
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            try {
+                range.selectNodeContents(elem);
+                sel.addRange(range);
+            } catch (e) {
+                range.selectNode(elem);
+                sel.addRange(range);
+            }
+        } else if (body.createTextRange) {
+            range = body.createTextRange();
+            range.moveToElementText(elem);
+            range.select();
+        }
+        try {
+            document.execCommand('copy');
+            range.blur();
+        } catch (error) {
+            // Exceção aqui
+        }
+    }
 }

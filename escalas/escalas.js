@@ -26,25 +26,186 @@ const cabecalho = `<td class="label_data_th">POSTO/GRAD</td><td class="label_dat
 let dadoJson = []
 let conf = {}
 
-function avaliacao(info) {
-    if(info === null){
-        $info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})
-        return
+const $ajax = (arquivo, funcaoDeRetorno) => {
+    const url = arquivo
+    const XmlReq = new XMLHttpRequest()
+    //request.responseText = 'json'
+    XmlReq.open('GET', url, true)
+    XmlReq.onreadystatechange = () => {
+        //console.log('[XmlReq.readyState]', XmlReq.readyState)
+        if (XmlReq.readyState === 4) {
+            //console.log('[XmlReq.status]', XmlReq.status)
+            if (XmlReq.status === 200) {
+                funcaoDeRetorno(XmlReq.response)
+            }
+            if (XmlReq.status === 404) {
+                funcaoDeRetorno(null)
+            }
+        }
     }
-    
-    const parser = new DOMParser()
-    let dadoBruto = []
-    
-    dadoBruto = parser.parseFromString(info, 'text/html')
-    dadoBruto = dadoBruto.querySelector(".table_relatorio")
-    dadoBruto = dadoBruto.children[0]
-    
-    prepararJSon(dadoBruto)
+    XmlReq.send()
+}
+
+const $readFile = (input, funcaoDeRetorno) => {
+    let file = input.files[0]
+    let reader = new FileReader()
+
+    reader.readAsText(file)
+
+    reader.onload = function () {
+        funcaoDeRetorno(reader.result)
+    }
+
+    reader.onerror = function () {
+        console.log(reader.error)
+        funcaoDeRetorno(null)
+    }
+}
+
+window.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+        divParametros.classList.toggle('ocultarDiv')
+    }
+})
+
+cmdCotaDobrada.addEventListener('click', (e)=>{
+    e.preventDefault()
+    cotaDobrada()
+})
+
+cmdExibirEscala.addEventListener('click', (e)=>{
+    e.preventDefault()
+    const opr = document.getElementsByTagName('select')[0].value
+    let quinzena = ''
+    let data = ''
+    let siape = ''
+    let operacao = ''
+    if(radQuinzena1.checked) {quinzena = `1ª Quinzena`}
+    if(radQuinzena2.checked) {quinzena = `2ª Quinzena`}
+    if(radQuinzena3.checked) {data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`}
+    if(radVoluntarioCom.checked) {siape = `-SV`}
+    if(radVoluntarioSem.checked) {siape = `SV`}
+    if(radVoluntarioTodos.cheked) {siape = ``}
+    operacao = opr
+
+    const par = {siape:siape, quinzena:quinzena, data:data, operacao:operacao}
+    const objAlvo = filtrarDados(par)
     $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} cotas`, opt:0})
-    dtDia.value = `${dadoJson[0].DATA.split('/')[2]}-${dadoJson[0].DATA.split('/')[1]}-${dadoJson[0].DATA.split('/')[0]}`
-    
-    controlesAtivos(false)
+    $info({msg:`, Filtrados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:1})
+    if(!radVoluntarioCom.checked){
+        const objSv = filtrarDados({siape:'SV', quinzena:quinzena, operacao:operacao, data:data})
+        if(objSv.length > 0){
+            $info({msg:`<br> Encontrados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objSv.length)} 'Sem Voluntários'`, opt:1})
+        }
+    }
+    if(objAlvo.length === 0){
+        $info({msg:`A consulta não retornou dados`, opt:0})
+        divResultado.innerHTML = ""
+    }else{
+        htmlConstruirEscala(objAlvo)
+        //setClipboard(divResultado) // Não está levando as bordas...
+    }
+})
+
+cmdExportarPdf.addEventListener('click', (e)=>{
+    if (divResultado.innerHTML){
+        setTimeout(()=>{
+            if(confirm(`Imprimir PDF?`)) cmdGerarPdf()
+        },200)
+    }else{
+        $info({msg:`Não há dados a serem convertidos para PDF.`, opt:0})
+    }
+})
+
+cmdPesquisarPorSiape.addEventListener('click', (e)=>{
+    e.preventDefault()
+
+    const siape = txtSiape.value
+    const par = {siape:siape}
+    const objAlvo = filtrarDados(par)
+
+    $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} cotas`, opt:0})
+    $info({msg:`, Filtrados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:1})
+
+    if(objAlvo.length === 0){
+        $info({msg:`A consulta não retornou dados`, opt:0})
+    }else{
+        htmlConstruirEscala(objAlvo)
+    }
+})
+
+cmdTotais.addEventListener('click', (e)=>{
+    e.preventDefault()
+    htmlConstruirTotalDeMilitaresEnvolvidos(dadoJson)
+    $info({msg:`Cálculo com base em ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} registros do arquivo carregado`, opt:0})
+})
+
+dtDia.addEventListener('change',(e)=>{
+    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
+})
+
+radQuinzena1.addEventListener('click', (e)=>{
+    dtDia.disabled = true
     preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
+})
+
+radQuinzena2.addEventListener('click', (e)=>{
+    dtDia.disabled = true
+    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'2ª Quinzena'})))
+})
+
+radQuinzena3.addEventListener('click', (e)=>{
+    const dtRef = new Date(`${dtDia.value}T00:00:00`)
+    const dtAux = new Date(dtRef.setMonth(dtRef.getMonth()+1))
+    const dtUltimoDia = new Date(dtAux.setDate(dtAux.getDate()-1))
+    dtDia.min = dtDia.value
+    dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`
+    dtDia.disabled = false
+    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
+})
+
+txtNomeDoArquivo.addEventListener('change',(e)=>{
+    e.preventDefault()
+    controlesAtivos(true)
+    divResultado.innerHTML = ''
+    dadoJson=[]
+    let arquivo = txtNomeDoArquivo.files
+    if(arquivo.length > 0){
+        $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
+        conf.arquivo = (arquivo[0].name).split(".")[0]
+        arquivo = `./${arquivo[0].name}`
+        $readFile(txtNomeDoArquivo, avaliarDadoBruto)
+    } else {
+        $info({msg:``, opt:0})
+    }
+})
+
+function avaliarDadoBruto(info) {
+    try {
+
+        if(info === null){
+            $info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})
+            return
+        }
+        
+        const parser = new DOMParser()
+        let dadoBruto = []
+        
+        dadoBruto = parser.parseFromString(info, 'text/html')
+        dadoBruto = dadoBruto.querySelector(".table_relatorio")
+        dadoBruto = dadoBruto.children[0]
+        
+        prepararJSon(dadoBruto)
+        $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} cotas`, opt:0})
+        dtDia.value = `${dadoJson[0].DATA.split('/')[2]}-${dadoJson[0].DATA.split('/')[1]}-${dadoJson[0].DATA.split('/')[0]}`
+        
+        controlesAtivos(false)
+        preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
+        
+    } catch (error) {
+        $info({msg: error, opt:0})
+        console.log(error)
+    }
 }
 
 function prepararJSon(info) {
@@ -178,18 +339,21 @@ function prepararJSon(info) {
     function _extrairMesExtenso(parametro){
         const dataDMY = parametro.split('/')
         const mes = dataDMY[1]
-        if(mes === '01'){return `Janeiro`}
-        if(mes === '02'){return `Fevereiro`}
-        if(mes === '03'){return `Março`}
-        if(mes === '04'){return `Abril`}
-        if(mes === '05'){return `Maio`}
-        if(mes === '06'){return `Junho`}
-        if(mes === '07'){return `Julho`}
-        if(mes === '08'){return `Agosto`}
-        if(mes === '09'){return `Setembro`}
-        if(mes === '10'){return `Outubro`}
-        if(mes === '11'){return `Novembro`}
-        if(mes === '12'){return `Dezembro`}
+        let res = ''
+        if(mes === '01'){res = `Janeiro`}
+        if(mes === '02'){res = `Fevereiro`}
+        if(mes === '03'){res = `Março`}
+        if(mes === '04'){res = `Abril`}
+        if(mes === '05'){res = `Maio`}
+        if(mes === '06'){res = `Junho`}
+        if(mes === '07'){res = `Julho`}
+        if(mes === '08'){res = `Agosto`}
+        if(mes === '09'){res = `Setembro`}
+        if(mes === '10'){res = `Outubro`}
+        if(mes === '11'){res = `Novembro`}
+        if(mes === '12'){res = `Dezembro`}
+        conf.mes = res
+        return res
     }
 
     function _extrairTempo(parametro){
@@ -213,161 +377,6 @@ function prepararJSon(info) {
         return parametro * 50
     }
 }
-
-const $ajax = (arquivo, funcaoDeRetorno) => {
-    const url = arquivo
-    const XmlReq = new XMLHttpRequest()
-    //request.responseText = 'json'
-    XmlReq.open('GET', url, true)
-    XmlReq.onreadystatechange = () => {
-        //console.log('[XmlReq.readyState]', XmlReq.readyState)
-        if (XmlReq.readyState === 4) {
-            //console.log('[XmlReq.status]', XmlReq.status)
-            if (XmlReq.status === 200) {
-                funcaoDeRetorno(XmlReq.response)
-            }
-            if (XmlReq.status === 404) {
-                funcaoDeRetorno(null)
-            }
-        }
-    }
-    XmlReq.send()
-}
-
-function $readFile(input, funcaoDeRetorno) {
-    let file = input.files[0]
-    let reader = new FileReader()
-
-    reader.readAsText(file)
-
-    reader.onload = function () {
-        funcaoDeRetorno(reader.result)
-    }
-
-    reader.onerror = function () {
-        console.log(reader.error)
-        funcaoDeRetorno(null)
-    }
-
-}
-
-txtNomeDoArquivo.addEventListener('change',(e)=>{
-    e.preventDefault()
-    controlesAtivos(true)
-    divResultado.innerHTML = ''
-    dadoJson=[]
-    let arquivo = txtNomeDoArquivo.files
-    if(arquivo.length > 0){
-        $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
-        conf.arquivo = (arquivo[0].name).split(".")[0]
-        arquivo = `./${arquivo[0].name}`
-        $readFile(txtNomeDoArquivo, avaliacao)
-    } else {
-        $info({msg:``, opt:0})
-    }
-})
-
-window.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape'){
-        divParametros.classList.toggle('ocultarDiv')
-    }
-})
-
-radQuinzena1.addEventListener('click', (e)=>{
-    dtDia.disabled = true
-    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
-})
-
-radQuinzena2.addEventListener('click', (e)=>{
-    dtDia.disabled = true
-    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'2ª Quinzena'})))
-})
-
-radQuinzena3.addEventListener('click', (e)=>{
-    const dtRef = new Date(`${dtDia.value}T00:00:00`)
-    const dtAux = new Date(dtRef.setMonth(dtRef.getMonth()+1))
-    const dtUltimoDia = new Date(dtAux.setDate(dtAux.getDate()-1))
-    dtDia.min = dtDia.value
-    dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`
-    dtDia.disabled = false
-    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
-})
-
-dtDia.addEventListener('change',(e)=>{
-    preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
-})
-
-cmdExibirEscala.addEventListener('click', (e)=>{
-    e.preventDefault()
-    const opr = document.getElementsByTagName('select')[0].value
-    let quinzena = ''
-    let data = ''
-    let siape = ''
-    let operacao = ''
-    if(radQuinzena1.checked) {quinzena = `1ª Quinzena`}
-    if(radQuinzena2.checked) {quinzena = `2ª Quinzena`}
-    if(radQuinzena3.checked) {data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`}
-    if(radVoluntarioCom.checked) {siape = `-SV`}
-    if(radVoluntarioSem.checked) {siape = `SV`}
-    if(radVoluntarioTodos.cheked) {siape = ``}
-    operacao = opr
-
-    const par = {siape:siape, quinzena:quinzena, data:data, operacao:operacao}
-    const objAlvo = filtrarDados(par)
-    $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} cotas`, opt:0})
-    $info({msg:`, Filtrados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:1})
-    if(!radVoluntarioCom.checked){
-        const objSv = filtrarDados({siape:'SV', quinzena:quinzena, operacao:operacao, data:data})
-        if(objSv.length > 0){
-            $info({msg:`<br> Encontrados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objSv.length)} 'Sem Voluntários'`, opt:1})
-        }
-    }
-    if(objAlvo.length === 0){
-        $info({msg:`A consulta não retornou dados`, opt:0})
-        divResultado.innerHTML = ""
-    }else{
-        htmlConstruirEscala(objAlvo)
-        //setClipboard(divResultado) // Não está levando as bordas...
-    }
-})
-
-cmdCotaDobrada.addEventListener('click', (e)=>{
-    e.preventDefault()
-    cotaDobrada()
-})
-
-cmdExportarPdf.addEventListener('click', (e)=>{
-    if (divResultado.innerHTML){
-        setTimeout(()=>{
-            if(confirm(`Imprimir PDF?`)) cmdGerarPdf()
-        },200)
-    }else{
-        $info({msg:`Não há dados a serem convertidos para PDF.`, opt:0})
-    }
-})
-
-cmdTotais.addEventListener('click', (e)=>{
-    e.preventDefault()
-    htmlConstruirTotalDeMilitaresEnvolvidos(dadoJson)
-    $info({msg:`Cálculo com base em ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} registros do arquivo carregado`, opt:0})
-})
-
-cmdPesquisarPorSiape.addEventListener('click', (e)=>{
-    e.preventDefault()
-
-    const siape = txtSiape.value
-    const par = {siape:siape}
-    const objAlvo = filtrarDados(par)
-
-    $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoJson.length)} cotas`, opt:0})
-    $info({msg:`, Filtrados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:1})
-
-    if(objAlvo.length === 0){
-        $info({msg:`A consulta não retornou dados`, opt:0})
-    }else{
-        htmlConstruirEscala(objAlvo)
-    }
-})
 
 function controlesAtivos(estado) {
     fieldset1.disabled = estado
@@ -539,7 +548,57 @@ function cotaDobrada(){
     divResultado.append(table)
 }
 
-function htmlConstruirEscala(info) {
+function preencherSelect(tag, obj){
+    const aux = Object.keys(obj).sort()
+    const sel = document.createElement("select")
+    sel.append(new Option("(Há opções para seleção)", ""))
+    aux.forEach((item)=>{
+        // sel.append(new Option((item.length>78 ? `${item.substring(0, 78)}...` : item)), item )
+        sel.append(new Option(item, item ))
+    })
+    tag.removeChild(tag.children[0])
+    tag.append(sel)
+}
+
+function $info({msg, opt}){
+    if(opt === 1){
+        labStatus.innerHTML += msg
+    } else {
+        labStatus.innerHTML = msg
+    }
+}
+
+function cmdGerarPdf(){
+    const content = divResultado
+    const options = {
+        margin: [10,10,10,10],
+        filename: `${conf.arquivo}.pdf`,
+        html2canvas:{scale: 2},
+        jsPDF: {unit: "mm", format: "a4", orientation: "portrait"}
+    }
+    html2pdf().set(options).from(content).save()
+}
+
+function setClipboard(tag) {
+    const text = tag.innerHTML
+    // const type = "text/plain";
+    const type = "text/html";
+    const blob = new Blob([text], { type });
+    const data = [new ClipboardItem({ [type]: blob })];
+  
+    navigator.clipboard.write(data).then(
+      () => {
+        /* success */
+        console.log('Copiou!');
+      },
+      () => {
+        /* failure */
+        console.log('Falhou ao copiar!')
+      },
+    );
+}
+
+const htmlConstruirEscala = (info) => {
     divResultado.innerHTML = ""
     const table = document.createElement('table')
     let nivel1 = ''
@@ -613,7 +672,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj)=>{
     function _incluirCabecalhoParaPdf(){
         const tbResultado = document.getElementById('tbResultado')
         const thisH1 = document.createElement('h1')
-        thisH1.innerHTML = `MILITARES ENVOLVIDOS<br>${conf.arquivo.split("-")[2]}/${conf.arquivo.split("-")[0]}`
+        thisH1.innerHTML = `MILITARES ENVOLVIDOS<br>${conf.mes}/${arrObj[0].DATA.split("/")[2]}`
         thisH1.style.display = 'flexbox'
         thisH1.style.textAlign = 'center'
         thisH1.style.width = '100%'
@@ -707,54 +766,3 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj)=>{
         tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`
     }
 }
-
-function preencherSelect(tag, obj){
-    const aux = Object.keys(obj).sort()
-    const sel = document.createElement("select")
-    sel.append(new Option("(Há opções para seleção)", ""))
-    aux.forEach((item)=>{
-        // sel.append(new Option((item.length>78 ? `${item.substring(0, 78)}...` : item)), item )
-        sel.append(new Option(item, item ))
-    })
-    tag.removeChild(tag.children[0])
-    tag.append(sel)
-}
-
-function $info({msg, opt}){
-    if(opt === 1){
-        labStatus.innerHTML += msg
-    } else {
-        labStatus.innerHTML = msg
-    }
-}
-
-function cmdGerarPdf(){
-    const content = divResultado
-    const options = {
-        margin: [10,10,10,10],
-        filename: `${conf.arquivo}.pdf`,
-        html2canvas:{scale: 2},
-        jsPDF: {unit: "mm", format: "a4", orientation: "portrait"}
-    }
-    html2pdf().set(options).from(content).save()
-}
-
-function setClipboard(tag) {
-    const text = tag.innerHTML
-    // const type = "text/plain";
-    const type = "text/html";
-    const blob = new Blob([text], { type });
-    const data = [new ClipboardItem({ [type]: blob })];
-  
-    navigator.clipboard.write(data).then(
-      () => {
-        /* success */
-        console.log('Copiou!');
-      },
-      () => {
-        /* failure */
-        console.log('Falhou ao copiar!')
-      },
-    );
-}
-
