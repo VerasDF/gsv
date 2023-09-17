@@ -192,6 +192,12 @@ function avaliarDadoBruto(info) {
         let dadoBruto = []
         
         dadoBruto = parser.parseFromString(info, 'text/html')
+        
+        if(_testarArquivoDeOrigem('Escalas')===false){
+            $info({ msg: `O arquivo não parece conter informações sobre escalas`, opt: 0 })
+            return
+        }
+
         dadoBruto = dadoBruto.querySelector(".table_relatorio")
         dadoBruto = dadoBruto.children[0]
         
@@ -202,6 +208,25 @@ function avaliarDadoBruto(info) {
         controlesAtivos(false)
         preencherSelect(divOperacoes, totais('OPERAÇÃO', filtrarDados({quinzena:'1ª Quinzena'})))
         
+        function _testarArquivoDeOrigem(itemDaBusca){
+            let ret = false
+            if (dadoBruto.getElementsByTagName('fieldset')) {
+                const or0 = Array.from(dadoBruto.getElementsByTagName('fieldset'))
+                if (or0.length > 0) {
+                    or0.forEach((el) => {
+                        const or1 = el.children[0]
+                        if (or1.innerHTML) {
+                            const or2 = or1.innerHTML
+                            if (or2.indexOf(itemDaBusca) > -1) {
+                                ret = true
+                            }
+                        }
+                    })
+                }
+            }  
+            return ret
+        }
+
     } catch (error) {
         $info({msg: error, opt:0})
         console.log(error)
@@ -278,7 +303,7 @@ function prepararJSon(info) {
         } else if (parametro.indexOf("SABURO") >-1) {
             retorno = "SABURO ONOYAMA"
         } else if (parametro.indexOf("PARQUE NACIONAL") >-1) {
-            retorno = "PARQUE NACIONAL"
+            retorno = "AGUA MINERAL DO PARQUE NACIONAL "
         } else {
             retorno = "EXTRAORDINÁRIO"
         }
@@ -693,7 +718,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj)=>{
         }
         const tbResultado = document.getElementById("tbResultado")
         tbResultado.innerHTML += `
-            <tbody id=${codGrupo} title="Cabecalho">
+            <tbody id=${codGrupo}>
             <tr>
             <th rowspan="2"></th>
             <th class="thTotais" colspan=3></th>

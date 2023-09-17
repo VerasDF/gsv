@@ -59,6 +59,12 @@ function avaliacao(info) {
         let dadoBruto = []
 
         dadoBruto = parser.parseFromString(info, 'text/html')
+        
+        if(_testarArquivoDeOrigem('Resumo da Escala')===false){
+            $info({ msg: `O arquivo não parece conter informações sobre inscritos`, opt: 0 })
+            return
+        }
+
         dadoBruto = dadoBruto.querySelector(".tbResumo")
         dadoBruto = dadoBruto.children[0]
 
@@ -73,6 +79,25 @@ function avaliacao(info) {
                 Selecionar.copiar(divResultado)
             }
         },1000)
+
+        function _testarArquivoDeOrigem(itemDaBusca){
+            let ret = false
+            if (dadoBruto.getElementsByTagName('fieldset')) {
+                const or0 = Array.from(dadoBruto.getElementsByTagName('fieldset'))
+                if (or0.length > 0) {
+                    or0.forEach((el) => {
+                        const or1 = el.children[0]
+                        if (or1.innerHTML) {
+                            const or2 = or1.innerHTML
+                            if (or2.indexOf(itemDaBusca) > -1) {
+                                ret = true
+                            }
+                        }
+                    })
+                }
+            }  
+            return ret
+        }
 
     } catch (error) {
         $info({ msg: error, opt: 0 });

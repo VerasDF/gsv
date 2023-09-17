@@ -42,6 +42,12 @@ function avaliacao(info) {
     let dadoBruto = []
     
     dadoBruto = parser.parseFromString(info, 'text/html')
+    
+    if(_testarArquivoDeOrigem('Faltas')===false){
+        $info({ msg: `O arquivo não parece conter informações sobre faltas`, opt: 0 })
+        return
+    }
+
     dadoBruto = dadoBruto.querySelector(".div_form_faltas")
     dadoBruto = dadoBruto.children[0].children[0]
     
@@ -50,6 +56,25 @@ function avaliacao(info) {
     const obj = dadoJson
     //divResultado.innerHTML = JSON.stringify(obj)
     htmlConstruirTabela(obj)
+
+    function _testarArquivoDeOrigem(itemDaBusca){
+        let ret = false
+        if (dadoBruto.getElementsByTagName('fieldset')) {
+            const or0 = Array.from(dadoBruto.getElementsByTagName('fieldset'))
+            if (or0.length > 0) {
+                or0.forEach((el) => {
+                    const or1 = el.children[0]
+                    if (or1.innerHTML) {
+                        const or2 = or1.innerHTML
+                        if (or2.indexOf(itemDaBusca) > -1) {
+                            ret = true
+                        }
+                    }
+                })
+            }
+        }  
+        return ret
+    }
 }
 
 function prepararJSon(info) {
