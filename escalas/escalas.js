@@ -50,6 +50,7 @@ const $readFile = (input, funcaoDeRetorno) => {
     let file = input.files[0]
     let reader = new FileReader()
 
+    $info({msg:`Lendo dados HTML...`, opt:0})
     reader.readAsText(file)
 
     reader.onload = function () {
@@ -171,7 +172,7 @@ txtNomeDoArquivo.addEventListener('change',(e)=>{
     dadoJson=[]
     let arquivo = txtNomeDoArquivo.files
     if(arquivo.length > 0){
-        $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:0})
+        $info({msg:`Tentando ler arquivo, parece conter muitos dados...`, opt:1})
         conf.arquivo = (arquivo[0].name).split(".")[0]
         arquivo = `./${arquivo[0].name}`
         $readFile(txtNomeDoArquivo, avaliarDadoBruto)
@@ -187,8 +188,10 @@ function avaliarDadoBruto(info) {
             $info({msg:`Não há dados a serem processados, ocorreu algum problema.`, opt:0})
             return
         }
-        
+
+        $info({msg:`Tentando converte para JSON...`, opt:1})
         const parser = new DOMParser()
+        $info({msg:`ok`, opt:0})
         let dadoBruto = []
         
         dadoBruto = parser.parseFromString(info, 'text/html')
