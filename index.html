@@ -1,21 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-store" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-gsv.png">
-    <title>PROJETO - GSV</title>
-    <link rel="stylesheet" href="app.css">
-    <script src="app.js"defer></script>
+    <title>GSV - Ferramenta para análise</title>
+    <link rel="stylesheet" href="gsv.css">
+    <link rel="stylesheet" href="gsv_resultado.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="gsv.js" defer></script>
+    <script src="./app/common.js" defer></script>
 </head>
+
 <body>
-    <div><img src="LogoSegsv.bmp"></div>
-    <fieldset>
-        <legend>Ferramentas para consulta de dados estruturados da GSV</legend>
-        <button id="cmdInscritos">Inscritos</button>
-        <button id="cmdFaltas">Faltas</button>
-        <button id="cmdEscalas">Escalas</button>
-    </fieldset>
+    <div id="divParametros">
+        <div>
+            <fieldset id="fldArquivos">
+                <legend>Selecione o arquivos com os dados da ESCALA de GSV</legend>
+                <label for="fileEscalas" id="lblEscalas">Dados da Escala</label>
+                <input type="file" name="fileEscalas" id="fileEscalas" style="display:none">
+                <label for="fileFaltas" id="lblFaltas">Dados sobre Faltas</label>
+                <input type="file" name="fileFaltas" id="fileFaltas" style="display:none">
+                <label for="fileInscritos" id="lblInscritos">Dados sobre Inscritos</label>
+                <input type="file" name="fileInscritos" id="fileInscritos" style="display:none">
+            </fieldset>
+        </div>
+        <div style="position: relative;">
+            <fieldset id="fldStatus">
+                <legend>Status</legend>
+                <textarea name="txtStatus" id="txtStatus" rows="2" readonly></textarea>
+            </fieldset>
+        </div>
+        <div id="divGuias">
+            <button id="btnGuiaEscalas" class="guia" disabled>Escalas</button>
+            <button id="btnGuiaFaltas" class="guia" disabled>Faltas</button>
+            <button id="btnGuiaInscritos" class="guia" disabled>Inscritos</button>
+            <button id="btnGuiaPlanilha" class="guia" disabled>Planilha de Pagamento</button>
+            <button id="btnGuiaAvancado" class="guia" disabled>Avançado</button>
+        </div>
+        <div id="divOpcoes">
+            <div id="divEscalas" class="guiaContainer">
+                <fieldset id="fldPeriodo" disabled>
+                    <legend>Período</legend>
+                    <label for="radQuinzena0"><input type="radio" id="radQuinzena0" name="quinzena" value="MesTodo" checked />Mês Completo</label><br>
+                    <label for="radQuinzena1"><input type="radio" id="radQuinzena1" name="quinzena" value="1ª quinzena" checked />1ª quinzena</label><br>
+                    <label for="radQuinzena2"><input type="radio" id="radQuinzena2" name="quinzena" value="2ª quinzena" />2ª quinzena</label><br>
+                    <label for="radQuinzena3"><input type="radio" id="radQuinzena3" name="quinzena" value="MinhaData" />Uma data específica</label><br>
+                    <input type="date" id="dtDia" value="1993-12-08" disabled><br>
+                </fieldset>
+                <fieldset id="fldConjunto" disabled>
+                    <legend>Conjunto</legend>
+                    <label for="radVoluntarioTodos"><input type="radio" id="radVoluntarioTodos" name="conjunto" value="Todos" /> Todas as cotas gerenciadas</label><br>
+                    <label for="radVoluntarioCom"><input type="radio" id="radVoluntarioCom" name="conjunto" value="ComVoluntario" checked /> Apenas militares escalados</label><br>
+                    <label for="radVoluntarioSem"><input type="radio" id="radVoluntarioSem" name="conjunto" value="SemVoluntario" /> Apenas 'Sem Voluntario'</label><br>
+                    <label for="radFaltas"><input type="radio" id="radFaltas" name="conjunto" value="Faltas" /> Apenas as Faltas</label><br>
+                    <label for="radCompulsorio"><input type="radio" id="radCompulsorio" name="conjunto" value="Compulsorio" /> Apenas escala Compulsória</label><br>
+                </fieldset>
+                <fieldset id="fldSiape" disabled>
+                    <legend>Filtrar por SIAPE</legend>
+                    <input type="text" id="txtSiape" maxlength="7">
+                    <button id="cmdPesquisarPorSiape">Filtrar SIAPE</button>
+                    <button id="cmdCotaDobrada">2+ cotas por dia</button>
+                </fieldset>
+                <fieldset id="fldGrupo" disabled>
+                    <legend>Selecione um Grupo</legend>
+                    <div id="divEscalaGrupo"><select id="selEscalaGrupo"></select></div>
+                </fieldset>
+                <fieldset id="fldOperacao" disabled>
+                    <legend>Selecione uma Operação</legend>
+                    <div id="divEscalaOperacao"><select id="selEscalaOperacao"></select></div>
+                </fieldset>
+                <fieldset id="fldAcaoEscalas">
+                    <button id="cmdExibirEscala">Exibir Escala</button>
+                    <button id="cmdTotaisEscalados">Totais por Cotas</button>
+                    <button id="cmdTotaisEnvolvidos">Totais-Militares Envolvidos</button>
+                </fieldset>
+            </div>
+            <div id="divFaltas" class="guiaContainer" style="display: nona;">
+                <fieldset id="fldAcoesFaltas">
+                    <legend>Opções informações sobre faltas</legend>
+                    <button id="cmdFaltasTodas">Exibir todas as faltas</button>
+                    <select id="selOpcaoExibirFalta">
+                        <option value="DATA">Totalizar por DATA</option>
+                        <option value="LOCAL">Totalizar por LOCAL</option>
+                        <option value="LOTAÇÃO">Totalizar por LOTAÇÃO</option>
+                        <option value="OPERAÇÃO">Totalizar por OPERAÇÃO</option>
+                        <option value="TURNO">Totalizar por TURNO</option>
+                    </select>
+                    <button id="cmdFaltasPor">Aplicar</button>
+                </fieldset>
+            </div>
+            <div id="divInscritos" class="guiaContainer" style="display: nona;">
+                <fieldset id="fldAcoesInscritos">
+                    <legend>Opções para dados de inscritos</legend>
+                    <button id="cmdExibirInscritos">Exibir Inscritos</button>
+                </fieldset>
+            </div>
+            <div id="divPlanilha" class="guiaContainer" style="display: 'nona';">
+                <fieldset id="fldPlanilhaGrupo">
+                    <legend>Selecione uma grupo</legend>
+                    <div id="divPlanilhaGrupo"><select id="selPlanilhaGrupo"></select></div>
+                </fieldset>
+                <fieldset id="fldPlanilhaOperacao">
+                    <legend>Selecione uma operação</legend>
+                    <div id="divPlanilhaOperacao"><select id="selPlanilhaOperacao"></select></div>
+                </fieldset>
+                <fieldset id="fldPlanilhaTempo">
+                    <legend>Selecione o tempo de duração</legend>
+                    <div id="divPlanilhaTempo"><select id="selPlanilhaTempo"></select></div>
+                </fieldset>
+                <fieldset id="fldAcoesPlanilha">
+                    <legend>Opções para planilha de pagamentos</legend>
+                    <label for="radComFaltas"><input type="radio" name="planilha" id="radComFaltas" > Incluir faltas</label>
+                    <label for="radSemFaltas"><input type="radio" name="planilha" id="radSemFaltas" checked> Sem faltas</label>
+                    <label for="radApenasFaltas"><input type="radio" name="planilha" id="radApenasFaltas"> Apenas faltas</label>
+                    <button id="cmdExibirPlanilha">Exibir Planilha de Pagamento</button>
+                    <button id="cmdExibirPlanilhaGrade">Exibir Grade</button>
+                </fieldset>
+            </div>
+            <div id="divAvancado" class="guiaContainer" style="display: 'none';">
+                <fieldset id="fldAvancadoGrupo" style="display: grid;">
+                    <legend>Comandos Técnicos Avançados</legend>
+                    <textarea name="txtAvancado" id="txtAvancado" rows="3"></textarea>
+                    <button id="cmdAvancadoExibirGrade">(Recurso Avancado)<br>Exibir dados  na Grade com base nos  critérios ao lado</button>
+                    <label for="selAvancadoAlterarDuracao">Duração em horas: <select id="selAvancadoAlterarDuracao">
+                            <option value="4">4 horas</option>
+                            <option value="5">5 horas</option>
+                            <option value="6">6 horas</option>
+                            <option value="7">7 horas</option>
+                            <option value="8" selected>8 horas</option>
+                            <option value="9">9 horas</option>
+                            <option value="10">10 horas</option>
+                            <option value="11">11 horas</option>
+                            <option value="12">12 horas</option>
+                        </select></label>
+                    <label for="txtAvancadoAlterarValor">Valor da Cota: <input type="text" id="txtAvancadoAlterarValor" value="400" readonly></input></label>
+                    <button id="cmdAvancadoAlterar">(Recurso Avancado)<br>Alteração da duração da cota</button>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <button id="cmdExportarPdf" style="display: none; margin: 5px auto;">Exportar para PDF</button>
+    <div id="divResultado"></div>
 </body>
+
 </html>
