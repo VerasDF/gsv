@@ -19,7 +19,7 @@
     /* padding: 0; */
 }
 
-#divGuias button {
+#divGuiaButtons button {
     border: 1px solid var(--contornoDoBotao);
     padding: 5px;
     margin-top: 5px;
@@ -36,6 +36,14 @@
     width: 100%;
     min-width: 584px;
     max-width: 584px;
+}
+
+.btnDeGuia {
+    background-color: var(--fundo);
+}
+
+.btnDeGuiaSelecionada {
+    background-color: var(--fundoSelecionado);
 }
 
 .guiaContainer {
@@ -142,7 +150,7 @@ fieldset {
 
 #fldAcoesFaltas {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 5px;
 }
 
@@ -161,14 +169,6 @@ fieldset {
 #fldAcaoEscalas button,
 #fldAcaoPlanilha button {
     border: 1px solid var(--contornoDoBotao);
-}
-
-.guia {
-    background-color: var(--fundo);
-}
-
-.guiaSelecionada {
-    background-color: var(--fundoSelecionado);
 }
 
 button:hover,

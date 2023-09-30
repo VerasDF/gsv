@@ -35,7 +35,7 @@
                 <textarea name="txtStatus" id="txtStatus" rows="2" readonly></textarea>
             </fieldset>
         </div>
-        <div id="divGuias">
+        <div id="divGuiaButtons">
             <button id="btnGuiaEscalas" class="guia" disabled>Escalas</button>
             <button id="btnGuiaFaltas" class="guia" disabled>Faltas</button>
             <button id="btnGuiaInscritos" class="guia" disabled>Inscritos</button>
@@ -85,13 +85,13 @@
                     <legend>Opções informações sobre faltas</legend>
                     <button id="cmdFaltasTodas">Exibir todas as faltas</button>
                     <select id="selOpcaoExibirFalta">
+                        <option value="">(Totalizar por...)</option>
                         <option value="DATA">Totalizar por DATA</option>
                         <option value="LOCAL">Totalizar por LOCAL</option>
                         <option value="LOTAÇÃO">Totalizar por LOTAÇÃO</option>
                         <option value="OPERAÇÃO">Totalizar por OPERAÇÃO</option>
                         <option value="TURNO">Totalizar por TURNO</option>
                     </select>
-                    <button id="cmdFaltasPor">Aplicar</button>
                 </fieldset>
             </div>
             <div id="divInscritos" class="guiaContainer" style="display: nona;">
@@ -126,8 +126,9 @@
                 <fieldset id="fldAvancadoGrupo" style="display: grid;">
                     <legend>Comandos Técnicos Avançados</legend>
                     <textarea name="txtAvancado" id="txtAvancado" rows="3"></textarea>
-                    <button id="cmdAvancadoExibirGrade">(Recurso Avancado)<br>Exibir dados  na Grade com base nos  critérios ao lado</button>
-                    <label for="selAvancadoAlterarDuracao">Duração em horas: <select id="selAvancadoAlterarDuracao">
+                    <button id="cmdAvancadoExibirGrade">Exibir dados em grade, com base nos  critérios ao lado</button>
+                    <label for="selAvancadoAlterarDuracao">Alterar duração da cota para: 
+                        <select id="selAvancadoAlterarDuracao">
                             <option value="4">4 horas</option>
                             <option value="5">5 horas</option>
                             <option value="6">6 horas</option>
@@ -138,8 +139,8 @@
                             <option value="11">11 horas</option>
                             <option value="12">12 horas</option>
                         </select></label>
-                    <label for="txtAvancadoAlterarValor">Valor da Cota: <input type="text" id="txtAvancadoAlterarValor" value="400" readonly></input></label>
-                    <button id="cmdAvancadoAlterar">(Recurso Avancado)<br>Alteração da duração da cota</button>
+                    <label for="txtAvancadoAlterarValor">Novo valor da Cota: <input type="text" id="txtAvancadoAlterarValor" value="400" readonly></input></label>
+                    <button id="cmdAvancadoAlterar">Alterar o tempo de<br>duração da cota</button>
                 </fieldset>
             </div>
         </div>

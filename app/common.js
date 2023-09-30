@@ -477,7 +477,7 @@ function tratarFaltas() {
             contador = contador + 1
         }
     })
-    $info({msg:`Faltas atribuídas: ${contador}`, opt:`+`})
+    $info({msg:`, atribuídas: ${contador}`, opt:`+`})
 }
 
 function totais(campoDePesquisa, obj) {

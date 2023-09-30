@@ -25,6 +25,7 @@ const radCompulsorio = document.getElementById('radCompulsorio')
 const selAvancadoAlterarDuracao = document.getElementById('selAvancadoAlterarDuracao')
 const selEscalaGrupo = document.getElementById('selEscalaGrupo')
 const selPlanilhaGrupo = document.getElementById('selPlanilhaGrupo')
+const selOpcaoExibirFalta = document.getElementById('selOpcaoExibirFalta')
 const selPlanilhaOperacao = document.getElementById('selPlanilhaOperacao')
 const selPlanilhaTempo = document.getElementById('selPlanilhaTempo')
 
@@ -36,7 +37,6 @@ const cmdExibirInscritos = document.getElementById('cmdExibirInscritos')
 const cmdExibirPlanilha = document.getElementById('cmdExibirPlanilha')
 const cmdExibirPlanilhaGrade = document.getElementById('cmdExibirPlanilhaGrade')
 const cmdExportarPdf = document.getElementById('cmdExportarPdf')
-const cmdFaltasPor = document.getElementById('cmdFaltasPor')
 const cmdFaltasTodas = document.getElementById('cmdFaltasTodas')
 const cmdPesquisarPorSiape = document.getElementById('cmdPesquisarPorSiape')
 const cmdTotaisEnvolvidos = document.getElementById('cmdTotaisEnvolvidos')
@@ -50,7 +50,7 @@ let dadoFaltasJson = []
 let dadoEscalasJson = []
 let conf = {}
 
-setTimeout(()=>{ navegarPelasGuias({}) },1)
+setTimeout(()=>{ navegarPelasGuias({ nomeDaGuia: 'Escalas' }) },1)
 
 btnGuiaAvancado.addEventListener('click', () => {
     navegarPelasGuias({ nomeDaGuia: 'Avancado' })
@@ -83,7 +83,7 @@ cmdAvancadoAlterar.addEventListener('click', ()=>{
     }
     if(confirm('Cuidado!\n\nEsta alteração é de caráter AVANÇADO.\n\nCaso continue serão alteradas a DURAÇÃO da e o VALOR das cotas conforme filtro.\n\n Essa mudança se aplica apenas a essa seção de consulta.\n\nDeseja continuar?')){
         
-        alterarDuracao(txtAvancado.value, {tempo:selAvancadoAlterarDuracao.value,valor:txtAvancadoAlterarValor.value})
+        alterarDuracao(txtAvancado.value, {tempo:selAvancadoAlterarDuracao.value, valor:txtAvancadoAlterarValor.value})
 
     }
 })
@@ -239,11 +239,6 @@ cmdTotaisEscalados.addEventListener('click', (e)=>{
     htmlConstruirTotalDeMilitaresEscalados(dadoEscalasJson)
 })
 
-cmdFaltasPor.addEventListener('click', (e)=>{
-    e.preventDefault()
-    htmlConstuirFaltasPorDia($('selOpcaoExibirFalta').value)
-})
-
 cmdFaltasTodas.addEventListener('click', (e)=>{
     e.preventDefault()
     divResultado.innerHTML = ''
@@ -254,7 +249,7 @@ fileEscalas.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileEscalas.files.length > 0) {
         lblEscalas.innerHTML = fileEscalas.files[0].name
-        $info({msg:`Escala de`,opt:`+`})
+        $info({msg:`Escala de`,opt:`+n`})
         $readFile(fileEscalas)
     }
 })
@@ -262,7 +257,7 @@ fileEscalas.addEventListener('change', (e) => {
 fileFaltas.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileFaltas.files.length > 0) {
-        $info({msg:`Faltas de`,opt:`+`})
+        $info({msg:`Faltas de`,opt:`+n`})
         lblFaltas.innerHTML = fileFaltas.files[0].name
         $readFile(fileFaltas)
     }
@@ -271,7 +266,7 @@ fileFaltas.addEventListener('change', (e) => {
 fileInscritos.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileInscritos.files.length > 0) {
-        $info({msg:`Inscritos de`,opt:`+`})
+        $info({msg:`Inscritos de`,opt:`+n`})
         lblInscritos.innerHTML = fileInscritos.files[0].name
         $readFile(fileInscritos)
     }
@@ -307,6 +302,11 @@ selAvancadoAlterarDuracao.addEventListener('change',()=>{
 selEscalaGrupo.addEventListener('change', (e)=>{
     e.preventDefault()
     atualizarSelectEscala(selEscalaGrupo.value)
+})
+
+selOpcaoExibirFalta.addEventListener('change', (e)=>{
+    e.preventDefault()
+    htmlConstuirFaltasPorDia($('selOpcaoExibirFalta').value)
 })
 
 selPlanilhaGrupo.addEventListener('change', (e) => {
@@ -409,9 +409,9 @@ function navegarPelasGuias({ nomeDaGuia }) {
         if(!nomeDaGuia){
             txtStatus.value = ''
             txtSiape.value = ''
-            $('divGuias').style.display = 'none'
+            $('divGuiaButtons').style.display = 'none'
         } else {
-            $('divGuias').style.display = ''
+            $('divGuiaButtons').style.display = ''
             if( dadoFaltasJson.length === 0 ) { radFaltas.disabled = true } else { radFaltas.disabled=false }
         }
         btnGuiaEscalas.disabled = (dadoEscalasJson.length > 0 ? false : true)
@@ -420,11 +420,11 @@ function navegarPelasGuias({ nomeDaGuia }) {
         btnGuiaPlanilha.disabled = ((dadoEscalasJson.length>0 && dadoFaltasJson.length>0) ? false : true)
         btnGuiaAvancado.disabled = (dadoEscalasJson.length>0  ? false : true)
         
-        btnGuiaEscalas.className = 'guia'
-        btnGuiaFaltas.className = 'guia'
-        btnGuiaInscritos.className = 'guia'
-        btnGuiaPlanilha.className = 'guia'
-        btnGuiaAvancado.className = 'guia'
+        btnGuiaEscalas.className = 'btnDeGuia'
+        btnGuiaFaltas.className = 'btnDeGuia'
+        btnGuiaInscritos.className = 'btnDeGuia'
+        btnGuiaPlanilha.className = 'btnDeGuia'
+        btnGuiaAvancado.className = 'btnDeGuia'
         
         $('divEscalas').style.display = (nomeDaGuia === 'Escalas' ? '' : 'none')
         $('divFaltas').style.display = (nomeDaGuia === 'Faltas' ? '' : 'none')
