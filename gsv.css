@@ -1,7 +1,7 @@
 :root {
-    --fundo: #fff;
+    --fundo: rgb(250, 255, 250);
     --fundoSelecionado: #ccc;
-    --corDaFonte: #000;
+    --corDaFonte: #333;
     --contornoDoBotao: #777;
     --contornoDoBotaoSelecionado: #555;
     --padraoVermelho: #f00;
@@ -10,13 +10,10 @@
 
 * {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    /* color: var(--corDaFonte); */
-    /* background-color: var(--fundo); */
     box-sizing: border-box;
     font-size: 12px;
     outline: none;
     margin: 0;
-    /* padding: 0; */
 }
 
 #divGuiaButtons button {
@@ -36,13 +33,15 @@
     width: 100%;
     min-width: 584px;
     max-width: 584px;
+    cursor: context-menu;
+    color: var(--contornoDoBotaoSelecionado);
 }
 
 .btnDeGuia {
     background-color: var(--fundo);
 }
 
-.btnDeGuiaSelecionada {
+.btnDeGuiaSelecionado {
     background-color: var(--fundoSelecionado);
 }
 
@@ -166,16 +165,17 @@ fieldset {
     gap: 5px;
 }
 
-#fldAcaoEscalas button,
-#fldAcaoPlanilha button {
+button,
+#fldArquivos label {
     border: 1px solid var(--contornoDoBotao);
+    transition: 250ms;
 }
 
 button:hover,
 #fldArquivos label:hover {
     background-color: var(--fundoSelecionado);
     border-color: var(--contornoDoBotaoSelecionado);
-    /* transition: 500ms; */
+    transition: 500ms;
 }
 
 button:active,

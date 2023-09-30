@@ -117,7 +117,6 @@ cmdExibirEscala.addEventListener('click', (e)=>{
     const par = parametroEscala()
     const objAlvo = filtrarEscalasJson(par)
 
-    // $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)} cotas`, opt:'+n'})
     $info({msg:`Filtro: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:'+n'})
 
     if(objAlvo.length === 0){
@@ -211,7 +210,7 @@ cmdPesquisarPorSiape.addEventListener('click', (e)=>{
     const siape = txtSiape.value
 
     if(siape === ''){
-        $info({msg:`É necessário informar uma matrícula para obter resultado!`})
+        $info({msg:`É necessário informar uma matrícula para obter resultado!`, opt:`+a+`})
         txtSiape.focus()
         return
     }
@@ -219,7 +218,6 @@ cmdPesquisarPorSiape.addEventListener('click', (e)=>{
     const par = {siape:siape}
     const objAlvo = filtrarEscalasJson(par)
 
-    // $info({msg:`Gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)} cotas`})
     $info({msg:`Filtrado por SIAPE: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:`+n`})
 
     if(objAlvo.length === 0){
@@ -366,7 +364,7 @@ function inicializarInscritos() {
 function navegarPelasGuias({ nomeDaGuia }) {
     _limparGuias({ nomeDaGuia })
     if (nomeDaGuia === 'Escalas') {
-        btnGuiaEscalas.classList.toggle('guiaSelecionada')
+        btnGuiaEscalas.classList.toggle('btnDeGuiaSelecionado')
         _controlesDaEscala(true)
         _controlesDaFalta(false)
         _controlesDeInscritos(false)
@@ -374,7 +372,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
         _controlesAvancado(false)
     }
     if (nomeDaGuia === 'Faltas') {
-        btnGuiaFaltas.classList.toggle('guiaSelecionada')
+        btnGuiaFaltas.classList.toggle('btnDeGuiaSelecionado')
         _controlesDaEscala(false)
         _controlesDaFalta(true)
         _controlesDeInscritos(false)
@@ -382,7 +380,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
         _controlesAvancado(false)
     }
     if (nomeDaGuia === 'Inscritos') {
-        btnGuiaInscritos.classList.toggle('guiaSelecionada')
+        btnGuiaInscritos.classList.toggle('btnDeGuiaSelecionado')
         _controlesDaEscala(false)
         _controlesDaFalta(false)
         _controlesDeInscritos(true)
@@ -390,7 +388,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
         _controlesAvancado(false)
     }
     if (nomeDaGuia === 'Planilha') {
-        btnGuiaPlanilha.classList.toggle('guiaSelecionada')
+        btnGuiaPlanilha.classList.toggle('btnDeGuiaSelecionado')
         _controlesDaEscala(false)
         _controlesDaFalta(false)
         _controlesDeInscritos(false)
@@ -398,7 +396,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
         _controlesAvancado(false)
     }
     if (nomeDaGuia === 'Avancado') {
-        btnGuiaAvancado.classList.toggle('guiaSelecionada')
+        btnGuiaAvancado.classList.toggle('btnDeGuiaSelecionado')
         _controlesDaEscala(false)
         _controlesDaFalta(false)
         _controlesDeInscritos(false)

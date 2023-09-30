@@ -681,7 +681,6 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
             let x = -1, y = -1
             arrOrdemGbm.forEach((e, i) => { if (a.indexOf(e) >- 1 ) { x = i} })
             arrOrdemGbm.forEach((e, i) => { if (b.indexOf(e) > -1) { y = i } })
-            // console.log(a, x, b, y)
             if(x === -1 && y ===-1){ return 0 }
             if(x === -1 && y > -1){ return 1 }
             if(x > -1 && y === -1){ return -1 }
@@ -1165,12 +1164,10 @@ const htmlConstruirPlanilha = (arrObj) => {
 
     function _qtdMaxColunasParaDias(objAux){
         const objQtdCotas = objAux.reduce((acc, item) => {
-        if (!acc[item.SIAPE]) {
-            // acc[item.SIAPE] = (item.FALTA === false ? (item.TEMPO === '24' ? 2 : 1) : 0)
-            acc[item.SIAPE] = (item.TEMPO === '24' ? 2 : 1)
+            if (!acc[item.SIAPE]) {
+                acc[item.SIAPE] = (item.TEMPO === '24' ? 2 : 1)
             } else {
-            // acc[item.SIAPE] = acc[item.SIAPE] + (item.FALTA === false ? (item.TEMPO === '24' ? 2 : 1) : 0)
-            acc[item.SIAPE] = acc[item.SIAPE] + (item.TEMPO === '24' ? 2 : 1)
+                acc[item.SIAPE] = acc[item.SIAPE] + (item.TEMPO === '24' ? 2 : 1)
             }
             return acc
         }, {})
