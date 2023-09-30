@@ -46,7 +46,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".table_relatorio")
             dadoBruto = dadoBruto.children[0]
             dadoEscalasJson = prepararEscalasJSon(dadoBruto)
-            $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, Cotas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)}`, opt:'+'})
+            $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)} cotas`, opt:'+'})
             conf.arquivo = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
             funcaoAuxiliar = inicializarEscalas
         }
@@ -54,14 +54,14 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".div_form_faltas")
             dadoBruto = dadoBruto.children[0].children[0]
             dadoFaltasJson = prepararFaltasJSon(dadoBruto)
-            $info({msg:`${_extrairMesExtenso(dadoFaltasJson[0].DATA)}/${dadoFaltasJson[0].DATA.split('/')[2]}, Faltas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoFaltasJson.length)}`, opt:'+'})
+            $info({msg:`${_extrairMesExtenso(dadoFaltasJson[0].DATA)}/${dadoFaltasJson[0].DATA.split('/')[2]}, retornadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoFaltasJson.length)} faltas`, opt:'+'})
             funcaoAuxiliar = inicializarFaltas
         }
         if( tipoRetorno === 'Inscritos'){
             dadoBruto = dadoBruto.querySelector(".tbResumo")
             dadoBruto = dadoBruto.children[0]
             dadoInscritosJson = prepararInscritosJSon(dadoBruto)
-            $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, Inscritos: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)}`, opt:'+'})
+            $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)} inscritos`, opt:'+'})
             funcaoAuxiliar = inicializarInscritos
         }
         console.log('avaliarDadoBruto', tipoRetorno, (Date.now() - demora) + `ms`)
