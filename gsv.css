@@ -87,8 +87,17 @@ fieldset {
     text-align: center;
 }
 
-#fldGrupo,
-#fldOperacao,
+#fldGrupo{
+    grid-column-start: 1;    
+    grid-column-end: 2;
+}
+
+#fldOperacao{
+    grid-column-start: 2;    
+    grid-column-end: 3;
+
+}
+
 #fldAcaoEscalas,
 #fldPlanilhaGrupo,
 #fldPlanilhaOperacao,
@@ -133,6 +142,7 @@ fieldset {
 
 #fldGrupo select,
 #fldOperacao select,
+#fldGbmDestino select,
 #fldPlanilhaGrupo select,
 #fldPlanilhaOperacao select,
 #fldPlanilhaTempo select,
