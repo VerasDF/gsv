@@ -2,8 +2,8 @@ const arrOrdemPostoGrad = ['CEL', 'TC', 'MAJ', 'CAP', '1 TEN', '2 TEN', 'ASP', '
 
 const $ = tag => document.getElementById(tag)
 
-const $ajax = ({input, funcaoDeRetorno}) => {
-    const url = input
+const $ajax = ({urlDoArquivo, funcaoDeRetorno}) => {
+    const url = urlDoArquivo
     const XmlReq = new XMLHttpRequest()
     XmlReq.open('GET', url, true)
     XmlReq.onreadystatechange = () => {
@@ -609,6 +609,47 @@ function _extrairMesExtenso(dataPtBr) {
     return res;
 }
 
+function fncEditarCota(id){
+    $ajax({urlDoArquivo:'editar.html', funcaoDeRetorno:(conteudoHtml)=>{
+        const div = document.createElement('div')
+        div.id = id.toString()
+        div.className= "divDialogoEdicao"
+        div.innerHTML = conteudoHtml
+        $('divParametros').append(div)
+        $('btnEditarUpdate').addEventListener('click', (e)=>{
+            fncCarregarDadosParaAlteracao(id)
+        })
+        $('btnEditarCancel').addEventListener('click', (e)=>{
+            $(id.toString()).parentNode.removeChild($(id.toString()))
+        })
+    }})
+
+    const timerDeAlteracao = setInterval(() => {
+        if($('txtEditarId')){
+            clearInterval(timerDeAlteracao)
+            const id = parseInt(document.querySelector('.divDialogoEdicao').id)
+            fncCarregarDadosParaAlteracao(id)
+        }
+    }, 10)
+}
+
+function fncCarregarDadosParaAlteracao(id){
+    for(let i = 0; i < dadoEscalasJson.length; i++){
+        if(dadoEscalasJson[i]._ID === id){
+            $('txtEditarId').value = dadoEscalasJson[i]._ID
+            $('txtEditarOperacao').value = dadoEscalasJson[i].OPERAÇÃO
+            $('txtEditarDataHora').value = `${dadoEscalasJson[i].name_tres} - ${dadoEscalasJson[i].name_quatro}`
+            $('txtEditarPostoGrad').value = dadoEscalasJson[i].POSTO_GRAD
+            $('txtEditarQuadroQbmg').value = dadoEscalasJson[i].QUADRO
+            $('txtEditarNome').value = dadoEscalasJson[i].NOME
+            $('txtEditarSiape').value = dadoEscalasJson[i].SIAPE
+            $('txtEditarLotacao').value = dadoEscalasJson[i].LOTAÇÃO
+            $('selEditarFalta').value = dadoEscalasJson[i].FALTA
+            break
+        }
+    }
+}
+
 const htmlConstruirEscala = (info) => {
     divResultado.innerHTML = ""
 
@@ -659,11 +700,11 @@ const htmlConstruirEscala = (info) => {
         _incluirLinha(`<td colspan="7" class="nivel_cinco"><span class="name_cinco">${info.name_cinco}</span></td>`)
     }
     function _voluntario(info){
-        _incluirLinha(`<td class="label_data">${info.POSTO_GRAD}</td><td class="label_data${((info.ESCALADO.indexOf('próprio') === -1 && info.ESCALADO !== '') ? ' escalaCompulsoria' : '')}" title="${info.ESCALADO}">${info.NOME}</td><td class="label_data">${info.SIAPE}</td><td class="label_data">${info.LOTAÇÃO}</td><td class="label_data">${info.QUADRO}</td><td class="label_data">${info.ALA}</td><td class="label_data${(info.ASSINATURA.indexOf('FALTOU')>-1 ? ' faltou' : '')}">${info.ASSINATURA}</td>`)
+        _incluirLinha(`<td class="label_data">${info.POSTO_GRAD}</td><td class="label_data${((info.ESCALADO.indexOf('próprio') === -1 && info.ESCALADO !== '') ? ' escalaCompulsoria' : '')}" title="${info.ESCALADO}">${info.NOME}</td><td class="label_data" ondblclick = fncEditarCota(${info._ID})>${info.SIAPE}</td><td class="label_data">${info.LOTAÇÃO}</td><td class="label_data">${info.QUADRO}</td><td class="label_data">${info.ALA}</td><td class="label_data${(info.ASSINATURA.indexOf('FALTOU')>-1 ? ' faltou' : '')}">${info.ASSINATURA}</td>`)
     }
-    function _incluirLinha(txt){
+    function _incluirLinha(stringHtml){
         const tr = document.createElement('tr')
-        tr.innerHTML = txt
+        tr.innerHTML = stringHtml
         table.append(tr)
     }
 }

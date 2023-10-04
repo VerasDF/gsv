@@ -222,6 +222,10 @@ cmdPesquisarPorSiape.addEventListener('click', (e)=>{
 
     $info({msg:`Filtrado por SIAPE: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:`+n`})
 
+    if(txtAvancado){
+        txtAvancado.value = JSON.stringify(par)
+    }
+
     if(objAlvo.length === 0){
         $info({msg:`A consulta não retornou dados`})
     }else{
