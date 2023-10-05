@@ -306,7 +306,7 @@ radQui3.addEventListener('change', (e)=>{
     dtDia.disabled = false
     preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
-    preencherSelect(divEscalaOperacao, totais('GBM_DESTINO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
+    preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
 })
 
 selAvancadoAlterarDuracao.addEventListener('change',()=>{

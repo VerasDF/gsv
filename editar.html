@@ -1,21 +1,35 @@
 <div class="divEditar">
-<fieldset class="fldEditar">
+<fieldset id="fldEditarInfo" class="fldEditar">
     <legend>Informações sobre a Cota</legend>
-    <label for="txtEditarId">ID: <input type="text"id="txtEditarId" readonly></label>
+    <input type="hidden" id="txtEditarId">
+    <input type="hidden" id="txtEditarIndex">
     <label for="txtEditarOperacao">Operação: <input type="text"id="txtEditarOperacao" readonly></label>
     <label for="txtEditarDataHora">Data/Hora: <input type="text"id="txtEditarDataHora" readonly></label>
-    <label for="txtEditarPostoGrad">Posto/Grad: <input type="text"id="txtEditarPostoGrad" readonly></label>
-    <label for="txtEditarQuadroQbmg">Quadro/QBMG: <input type="text"id="txtEditarQuadroQbmg" readonly></label>
     <label for="txtEditarNome">Nome: <input type="text"id="txtEditarNome" readonly></label>
-    <label for="txtEditarSiape">SIAPE: <input type="text"id="txtEditarSiape" readonly></label>
     <label for="txtEditarLotacao">Lotacao: <input type="text"id="txtEditarLotacao" readonly></label>
 </fieldset>
-<fieldset class="fldEditar">
-    <legend>Ajustar dado da cota: FALTA</legend>
+<fieldset id="fldEditarFalta" class="fldEditar">
+    <legend>Opções para alteração da presença</legend>
     <label for="selEditarFalta"><select id="selEditarFalta"><option value="true">Faltou</option>
         <option value="false">Não faltou</option></select></label>
 </fieldset>
-<fieldset class="fldEditarAcao">
+<fieldset id="fldEditarDuracao" class="fldEditar">
+    <legend>Opções para duração do serviço</legend>
+    <label for="selEditarFalta">
+        <select id="selEditarDuracao">
+            <option value="4">4 horas</option>
+            <option value="5">5 horas</option>
+            <option value="6">6 horas</option>
+            <option value="7">7 horas</option>
+            <option value="8">8 horas</option>
+            <option value="9">9 horas</option>
+            <option value="10">10 horas</option>
+            <option value="11">11 horas</option>
+            <option value="12">12 horas</option>
+        </select>
+    </label>
+</fieldset>
+<fieldset id="fldEditarAcao" class="fldEditarAcao">
     <legend>Ação</legend>
     <button id="btnEditarUpdate">Atualizar</button>
     <button id="btnEditarCancel">Cancelar</button>

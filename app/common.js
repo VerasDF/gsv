@@ -615,9 +615,10 @@ function fncEditarCota(id){
         div.id = id.toString()
         div.className= "divDialogoEdicao"
         div.innerHTML = conteudoHtml
-        $('divParametros').append(div)
+        $('divParametros').insertBefore(div, $('divParametros').children[0])
         $('btnEditarUpdate').addEventListener('click', (e)=>{
-            fncCarregarDadosParaAlteracao(id)
+            fncEdicaoAlterarDados($('txtEditarIndex').value)
+            $('btnEditarCancel').click()
         })
         $('btnEditarCancel').addEventListener('click', (e)=>{
             $(id.toString()).parentNode.removeChild($(id.toString()))
@@ -628,25 +629,33 @@ function fncEditarCota(id){
         if($('txtEditarId')){
             clearInterval(timerDeAlteracao)
             const id = parseInt(document.querySelector('.divDialogoEdicao').id)
-            fncCarregarDadosParaAlteracao(id)
+            fncEdicaoCarregarDadosParaAlteracao(id)
         }
     }, 10)
 }
 
-function fncCarregarDadosParaAlteracao(id){
+function fncEdicaoCarregarDadosParaAlteracao(id){
     for(let i = 0; i < dadoEscalasJson.length; i++){
         if(dadoEscalasJson[i]._ID === id){
             $('txtEditarId').value = dadoEscalasJson[i]._ID
+            $('txtEditarIndex').value = i
             $('txtEditarOperacao').value = dadoEscalasJson[i].OPERAÇÃO
             $('txtEditarDataHora').value = `${dadoEscalasJson[i].name_tres} - ${dadoEscalasJson[i].name_quatro}`
-            $('txtEditarPostoGrad').value = dadoEscalasJson[i].POSTO_GRAD
-            $('txtEditarQuadroQbmg').value = dadoEscalasJson[i].QUADRO
-            $('txtEditarNome').value = dadoEscalasJson[i].NOME
-            $('txtEditarSiape').value = dadoEscalasJson[i].SIAPE
+            $('txtEditarNome').value = `${dadoEscalasJson[i].POSTO_GRAD} ${dadoEscalasJson[i].QUADRO} ${dadoEscalasJson[i].NOME} - ${dadoEscalasJson[i].SIAPE}`
             $('txtEditarLotacao').value = dadoEscalasJson[i].LOTAÇÃO
             $('selEditarFalta').value = dadoEscalasJson[i].FALTA
+            $('selEditarDuracao').value = dadoEscalasJson[i].TEMPO
             break
         }
+    }
+}
+
+function fncEdicaoAlterarDados(index){
+    if(dadoEscalasJson[parseInt(index)]._ID === parseInt($('txtEditarId').value)){
+        dadoEscalasJson[parseInt(index)].FALTA = ($('selEditarFalta').value === 'true' ? true : false)
+        dadoEscalasJson[parseInt(index)].TEMPO = $('selEditarDuracao').value
+        dadoEscalasJson[parseInt(index)].VALOR = parseInt($('selEditarDuracao').value) * 50
+        $info({msg:`Alterado apenas em memória`, opt:`+n`})
     }
 }
 
@@ -1030,6 +1039,7 @@ const htmlConstruirGrade = (arrObj) => {
                 const elm = item[key];
                 const td = document.createElement('td')
                 td.innerHTML = elm
+                if(elm === "FALTOU"){ td.className = "faltou" }
                 tr.append(td)
             }
         }

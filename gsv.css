@@ -206,14 +206,24 @@ button:active,
 
 /*div para alterações de dados*/
 .divEditar{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     pad: 10px;
     background-color: var(--fundo);border: 15px solid var(--contornoDoBotao);
     box-shadow: 5px 5px 15px var(--contornoDoBotaoSelecionado);
+    z-index: 10;
 }
 
 .fldEditar *
 {
     display: grid;
+}
+
+#fldEditarInfo,
+#fldEditarAcao{
+    grid-column-start: 1;
+    grid-column-end: 3;
+
 }
 
 .divEditar input,
@@ -223,10 +233,9 @@ button:active,
 
 .divDialogoEdicao{
     display: block;
-    position: absolute;
-    margin-left: auto;
-    margin-right: auto;
+    position: fixed;
     width: 600px;
+    bottom: 10%;
 }
 
 .fldEditarAcao{
