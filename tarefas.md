@@ -5,3 +5,6 @@ ok
     - os controles dos fieldset só devem ser atualizados no momento do carregamento do arquivo, na mudança de guia devem permanecer como estão.
     - incluir consulta por unidade e quais militares foram envolvidos e para cada militar, o seu dia de serviço.
     - incluir na guia avançado em qual grade deseja incluir os parametros.
+
+2023-10-04
+    - pensar na implementação para escolher mais de uma operação para a planilha de pagamento
