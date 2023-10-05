@@ -541,7 +541,7 @@ function alterarDuracao(criteriosDeConsulta, dadosParaAlteracao) {
         const arrAux = objAux.map((item) => { return item._ID })
         for (let i = 0; i < dadoEscalasJson.length; i++) {
             if (arrAux.includes(dadoEscalasJson[i]._ID)) {
-                dadoEscalasJson[i].VALOR = dadosParaAlteracao.valor
+                dadoEscalasJson[i].VALOR = dadosParaAlteracao.valor.toString()
                 dadoEscalasJson[i].TEMPO = dadosParaAlteracao.tempo
             }
         }
@@ -744,8 +744,9 @@ function fncEdicaoCarregarDadosParaAlteracao(id){
 function fncEdicaoAlterarDados(index){
     if(dadoEscalasJson[parseInt(index)]._ID === parseInt($('txtEditarId').value)){
         dadoEscalasJson[parseInt(index)].FALTA = ($('selEditarFalta').value === 'true' ? true : false)
-        dadoEscalasJson[parseInt(index)].TEMPO = $('selEditarDuracao').value
+        dadoEscalasJson[parseInt(index)].TEMPO = $('selEditarDuracao').value.toString()
         dadoEscalasJson[parseInt(index)].VALOR = parseInt($('selEditarDuracao').value) * 50
+        dadoEscalasJson[parseInt(index)].ASSINATURA = ($('selEditarFalta').value === 'true' ? `AUDITORIA` : ``)
         $info({msg:`Alterado apenas em memória`, opt:`+n`})
     }
 }
@@ -800,7 +801,7 @@ const htmlConstruirEscala = (info) => {
         _incluirLinha(`<td colspan="7" class="nivel_cinco"><span class="name_cinco">${info.name_cinco}</span></td>`)
     }
     function _voluntario(info){
-        _incluirLinha(`<td class="label_data">${info.POSTO_GRAD}</td><td class="label_data${((info.ESCALADO.indexOf('próprio') === -1 && info.ESCALADO !== '') ? ' escalaCompulsoria' : '')}" title="${info.ESCALADO}">${info.NOME}</td><td class="label_data" ondblclick = fncEditarCota(${info._ID})>${info.SIAPE}</td><td class="label_data">${info.LOTAÇÃO}</td><td class="label_data">${info.QUADRO}</td><td class="label_data">${info.ALA}</td><td class="label_data${(info.ASSINATURA.indexOf('FALTOU')>-1 ? ' faltou' : '')}">${info.ASSINATURA}</td>`)
+        _incluirLinha(`<td class="label_data">${info.POSTO_GRAD}</td><td class="label_data${((info.ESCALADO.indexOf('próprio') === -1 && info.ESCALADO !== '') ? ' escalaCompulsoria' : '')}" title="${info.ESCALADO}">${info.NOME}</td><td class="label_data" ondblclick = fncEditarCota(${info._ID})>${info.SIAPE}</td><td class="label_data">${info.LOTAÇÃO}</td><td class="label_data">${info.QUADRO}</td><td class="label_data">${info.ALA}</td><td class="label_data${(info.FALTA===true ? ' faltou' : '')}">${info.ASSINATURA}</td>`)
     }
     function _incluirLinha(stringHtml){
         const tr = document.createElement('tr')
@@ -1150,7 +1151,7 @@ const htmlConstruirPlanilha = (arrObj) => {
     
     let totalDeColunasDias = _qtdMaxColunasParaDias(arrObj)
 
-    const cotasTotal = arrObj.length
+    let cotasTotal = arrObj.length
     let militaresTotal = 0
     let contador = 0
     let valorTotal = 0
@@ -1259,7 +1260,10 @@ const htmlConstruirPlanilha = (arrObj) => {
                 if(obj[l].FALTA === true){tdDia.style.backgroundColor = '#faa'}
                 tdDia.title = obj[l].OPERAÇÃO
                 const tdOutroDia = tdDia.cloneNode(true)
-                if (obj[l].TEMPO === '24'){tr.append(tdOutroDia)}
+                if (obj[l].TEMPO === '24'){
+                    tr.append(tdOutroDia)
+                    cotasTotal = cotasTotal + 1
+                }
             }
             if(tr.childElementCount<totalDeColunasDias+4){tr.append(tdDia)}
         }

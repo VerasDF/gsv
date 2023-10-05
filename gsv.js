@@ -101,7 +101,22 @@ cmdAvancadoExibirGrade.addEventListener('click', (e)=>{
         const par = JSON.parse(aux)
         const objAlvo = filtrarEscalasJson(par)
         $info({msg:`Filtro Avançado: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:'+n'})
-        htmlConstruirGrade(objAlvo)
+                
+        switch ($('selTipoDeGrade').value) {
+            case '1':
+                htmlConstruirEscala(objAlvo)
+                break;
+            case '2':
+                htmlConstruirPlanilha(objAlvo)
+                break;
+            case '3':
+                htmlConstruirTotalDeMilitaresEscalados(objAlvo)
+                break;
+            default:
+                htmlConstruirGrade(objAlvo)
+                break;
+        }
+        txtAvancado.value = aux
         
     } catch (error) {
         console.log( error )
@@ -336,24 +351,23 @@ function parametroPlanilha() {
 
 function parametroEscala() {
     let par = {}
+    
     const grp = document.getElementById('selEscalaGrupo').value
     const opr = document.getElementById('selEscalaOperacao').value
     const gbmDestino = document.getElementById('selEscalaGbmDestino').value
 
-    if (radQui1.checked) { par.quinzena = `1ª Quinzena`} 
-    if (radQui2.checked) { par.quinzena = `2ª Quinzena`} 
-    if (radQui3.checked) { par.data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`} 
-    if (radVoluntarioCom.checked) { par.siape = `-SV`} 
-    if (radVoluntarioSem.checked) { par.siape = `SV`} 
-    if (radFaltas.checked) { par.falta = true} 
-    if (radCompulsorio.checked) { par.escaladoPor = 'compulsória'} 
-    if (grp !== '') { par.grupo = grp} 
-    if (opr !== '') { par.operacao = opr} 
-    if (gbmDestino !== '') { par.gbm_destino = gbmDestino} 
-    
-    if(txtAvancado){
-        txtAvancado.value = JSON.stringify(par)
-    }
+    if ( radQui1.checked ) { par.quinzena = `1ª Quinzena`} 
+    if ( radQui2.checked ) { par.quinzena = `2ª Quinzena`} 
+    if ( radQui3.checked ) { par.data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`} 
+    if ( radVoluntarioCom.checked ) { par.siape = `-SV`} 
+    if ( radVoluntarioSem.checked ) { par.siape = `SV`} 
+    if ( radFaltas.checked ) { par.falta = true} 
+    if ( radCompulsorio.checked ) { par.escaladoPor = 'compulsória'} 
+    if ( grp !== '' ) { par.grupo = grp} 
+    if ( opr !== '' ) { par.operacao = opr} 
+    if ( gbmDestino !== '' ) { par.gbm_destino = gbmDestino} 
+    if ( txtAvancado ) { txtAvancado.value = JSON.stringify(par) }
+
     return par
 }
 
