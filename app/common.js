@@ -357,7 +357,98 @@ function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_d
         if(operacao === ''){
             objAux = objAux.filter((e)=>{if(e.OPERAÇÃO.indexOf(operacao) > -1){return e}})
         }else{
-            objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === operacao){return e}})
+            if(operacao.indexOf("|")>-1){
+                const arrOperacao = operacao.split('|')
+                switch (arrOperacao.length) {
+                    case 2:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1]
+                            ){return e}})
+                        break
+                    case 3:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2]
+                            ){return e}})
+                        break
+                    case 4:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3]
+                            ){return e}})
+                        break
+                    case 5:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            ){return e}})
+                        break
+                    case 6:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            ){return e}})
+                        break
+                    case 7:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            ){return e}})
+                        break
+                    case 8:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            || e.OPERAÇÃO === arrOperacao[7]
+                            ){return e}})
+                        break
+                    case 9:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            || e.OPERAÇÃO === arrOperacao[7]
+                            || e.OPERAÇÃO === arrOperacao[8]
+                            ){return e}})
+                        break
+                    case 10:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            || e.OPERAÇÃO === arrOperacao[7]
+                            || e.OPERAÇÃO === arrOperacao[8]
+                            || e.OPERAÇÃO === arrOperacao[9]
+                            ){return e}})
+                        break
+                    default:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === operacao){return e}})
+                        break
+                }
+
+            }else{
+                objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === operacao){return e}})
+            }
         }
     }
     if (operacao_tipo!==undefined) {
@@ -512,19 +603,19 @@ function cotaDobrada(tag) {
 }
 
 function preencherSelect(tag, obj) {
-    const aux = Object.keys(obj).sort()
+    const arrAux = Object.keys(obj).sort()
     if(tag.children[0].id !== ''){
         const sel = document.getElementById(tag.children[0].id)
         _limparSelect(sel)
-        sel.append(new Option("(Há opções para seleção)", ""))
-        aux.forEach((item)=>{
+        if(!sel.multiple){sel.append(new Option("(Há opções para seleção)", ""))}
+        arrAux.forEach((item)=>{
             sel.append(new Option(item, item ))
         })
     }
     else{
         const sel = document.createElement("select")
         sel.append(new Option("(Há opções para seleção)", ""))
-        aux.forEach((item)=>{
+        arrAux.forEach((item)=>{
             sel.append(new Option(item, item )) // sel.append(new Option((item.length>78 ? `${item.substring(0, 78)}...` : item)), item )
         })
         tag.removeChild(tag.children[0])

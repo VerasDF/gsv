@@ -137,52 +137,14 @@ cmdExibirInscritos.addEventListener('click', (e)=>{
 
 cmdExibirPlanilha.addEventListener('click', (e)=>{
     e.preventDefault()
-    const grupo = selPlanilhaGrupo.value
-    const operacao = selPlanilhaOperacao.value
-    const duracao = (selPlanilhaTempo.value === '12' ? '12/24' : selPlanilhaTempo.value)
-    
-    let par = {}
-    
-    par.siape = '-SV'
-    if(grupo !== ''){par.grupo = grupo}
-    if(operacao !== ''){par.operacao = operacao}
-    if(duracao !== ''){par.tempo = duracao}
-
-    if($('radSemFaltas').checked){
-        par.falta = false
-    }
-    if($('radApenasFaltas').checked){
-        par.falta = true
-    }
-
-    if(txtAvancado){
-        txtAvancado.value = JSON.stringify(par)
-    }
-
+    let par = parametroPlanilha()
     const objAux = filtrarEscalasJson(par)
-    
     htmlConstruirPlanilha(objAux)
 })
 
 cmdExibirPlanilhaGrade.addEventListener('click', (e)=>{
     e.preventDefault()
-    const grupo = selPlanilhaGrupo.value
-    const operacao = selPlanilhaOperacao.value
-    const duracao = (selPlanilhaTempo.value === '12' ? '12/24' : selPlanilhaTempo.value)
-    
-    let par = {}
-    
-    par.siape = '-SV'
-    if(grupo !== ''){par.grupo = grupo}
-    if(operacao !== ''){par.operacao = operacao}
-    if(duracao !== ''){par.tempo = duracao}
-
-    if($('radSemFaltas').checked){
-        par.falta = false
-    }
-    if($('radApenasFaltas').checked){
-        par.falta = true
-    }
+    let par = parametroPlanilha()
     let objAux = filtrarEscalasJson(par)
     objAux = objAux.map((item)=>{return{
         "POSTO/GRAD":item.POSTO_GRAD, 
@@ -330,7 +292,14 @@ selPlanilhaGrupo.addEventListener('change', (e) => {
 
 selPlanilhaOperacao.addEventListener('change', (e) => {
     e.preventDefault()
-    atualizarSelectPlanilha({tag:selPlanilhaOperacao.id, grupo:selPlanilhaGrupo.value, operacao:selPlanilhaOperacao.value})
+    let contarOperacao = 0
+    for(let i = 0; i < selPlanilhaOperacao.options.length; i++){
+        if(selPlanilhaOperacao.options[i].selected){ contarOperacao = contarOperacao + 1 }
+    }
+    $('fldPlanilhaOperacao').children[0].innerHTML = `Opções para Operação (${contarOperacao} selecionados)`
+    if(contarOperacao>9){
+        alert("A lógica implementada tem capacidade de processar até 10 itens selecionados!")
+    }
 })
 
 txtSiape.addEventListener('keydown',(e)=>{
@@ -339,6 +308,31 @@ txtSiape.addEventListener('keydown',(e)=>{
         txtSiape.select()
     }
 })
+
+function parametroPlanilha() {
+    const grupo = selPlanilhaGrupo.value
+    const duracao = (selPlanilhaTempo.value === '12' ? '12/24' : selPlanilhaTempo.value)
+
+    let par = {}
+    let operacao = ''
+    for(let i = 0; i < selPlanilhaOperacao.options.length; i++){
+        if(selPlanilhaOperacao.options[i].selected){
+            operacao = operacao + `${selPlanilhaOperacao.options[i].value}|`
+        }
+    }
+    if(operacao.substring(operacao.length-1,operacao.length)==="|"){operacao = operacao.substring(0,operacao.length-1)}
+    par.siape = '-SV'
+    if (grupo !== '') { par.grupo = grupo} 
+    if (operacao !== '') { par.operacao = operacao} 
+    if (duracao !== '') { par.tempo = duracao} 
+
+    if ($('radSemFaltas').checked) { par.falta = false }
+    if ($('radApenasFaltas').checked) { par.falta = true }
+    if(txtAvancado){
+        txtAvancado.value = JSON.stringify(par)
+    }
+    return par
+}
 
 function parametroEscala() {
     let par = {}
