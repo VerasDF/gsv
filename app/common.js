@@ -48,6 +48,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoEscalasJson = prepararEscalasJSon(dadoBruto)
             $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)} cotas`, opt:'+'})
             conf.arquivo = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
+            conf.mesAno = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
             funcaoAuxiliar = inicializarEscalas
         }
         if( tipoRetorno === 'Faltas' ){
@@ -980,7 +981,7 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
 
     function _cabecalho1() {
         const tr = document.createElement('tr')
-        tr.innerHTML = `<th colspan="3">RESUMO DA ESCALA</th>`
+        tr.innerHTML = `<th colspan="3">RESUMO DA ESCALA - ${conf.mesAno.toUpperCase()}</th>`
         return tr
     }
     function _cabecalho2() {
@@ -991,13 +992,22 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
         return tr
     }
     function _carregarTotais(obj) {
+        let objCargaHoraria = {}
+        for(let i = 0; i < obj.length; i++){
+            objCargaHoraria[obj[i].TEMPO] = (isNaN(objCargaHoraria[obj[i].TEMPO]) ? 1 : parseInt(objCargaHoraria[obj[i].TEMPO] + 1))
+        }
+        let cargaHoraria = ''
+        for(const key in objCargaHoraria){
+            const elm = objCargaHoraria[key]
+            cargaHoraria = cargaHoraria + `${elm}(${key}h) `
+        }
         const tr = document.createElement('tr')
         const totalDeCotas = ((obj[0].OPERAÇÃO.indexOf(`24H`) > -1) ? 
             `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length) * 2} (${obj.length}x2)` : 
             `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length)}`
         ) 
         tr.innerHTML = `<td style="text-align:left">${obj[0].OPERAÇÃO}</td>` + 
-            `<td style="text-align:center">${obj[0].TEMPO}h</td>` + 
+            `<td style="text-align:center">${cargaHoraria}</td>` + 
             `<td style="text-align:center">${totalDeCotas}</td>`
         return tr
     }

@@ -32,7 +32,7 @@
         <div style="position: relative;">
             <fieldset id="fldStatus">
                 <legend>Status</legend>
-                <textarea name="txtStatus" id="txtStatus" rows="2" readonly></textarea>
+                <textarea id="txtStatus" rows="2" readonly></textarea>
             </fieldset>
         </div>
         <div id="divGuiaButtons">
@@ -53,11 +53,11 @@
                     <input type="date" id="dtDia" value="1993-12-08" disabled><br>
                 </fieldset>
                 <fieldset id="fldConjunto" disabled>
-                    <legend>Conjunto</legend>
-                    <label for="radVoluntarioTodos"><input type="radio" id="radVoluntarioTodos" name="conjunto" value="Todos" /> Todas as cotas gerenciadas</label><br>
-                    <label for="radVoluntarioCom"><input type="radio" id="radVoluntarioCom" name="conjunto" value="ComVoluntario" checked /> Apenas militares escalados</label><br>
-                    <label for="radVoluntarioSem"><input type="radio" id="radVoluntarioSem" name="conjunto" value="SemVoluntario" /> Apenas 'Sem Voluntario'</label><br>
-                    <label for="radCompulsorio"><input type="radio" id="radCompulsorio" name="conjunto" value="Compulsorio" /> Apenas escala Compulsória</label><br>
+                    <legend>Tipo de Filtro</legend>
+                    <label for="radVoluntarioTodos"><input type="radio" id="radVoluntarioTodos" name="filtro" value="Todos" /> Todas as cotas gerenciadas</label><br>
+                    <label for="radVoluntarioCom"><input type="radio" id="radVoluntarioCom" name="filtro" value="ComVoluntario" checked /> Apenas militares escalados</label><br>
+                    <label for="radVoluntarioSem"><input type="radio" id="radVoluntarioSem" name="filtro" value="SemVoluntario" /> Apenas 'Sem Voluntario'</label><br>
+                    <label for="radCompulsorio"><input type="radio" id="radCompulsorio" name="filtro" value="Compulsorio" /> Apenas escala Compulsória</label><br>
                     <label for="chkFaltas"><input type="checkbox" id="chkFaltas" name="falta" value="Faltas" /> Sobre Faltas</label><br>
                     <select id="selEscalaFalta">
                         <option value="true">Apenas Faltas</option>
@@ -82,7 +82,7 @@
                     <legend>Opções para GBM</legend>
                     <div id="divEscalaGbmDestino"><select id="selEscalaGbmDestino"></select></div>
                 </fieldset>
-                <fieldset id="fldAcaoEscalas">
+                <fieldset id="fldAcaoEscalas" disabled>
                     <button id="cmdExibirEscala">Exibir Escala</button>
                     <button id="cmdTotaisEscalados">Totais por Cotas</button>
                     <button id="cmdTotaisEnvolvidos">Totais-Militares Envolvidos</button>
@@ -141,7 +141,7 @@
                         <option value="4">Grade</option>
                     </select>
                     <button id="cmdAvancadoExibirGrade">Exibir dados em grade, com base nos  critérios ao lado</button>
-                    <button id="cmdAvancadoAlterar">Alterar o tempo de<br>duração da cota</button>
+                    <button id="cmdAvancadoAlterar" style="border: 1px solid red;">Alterar o tempo de<br>duração da cota</button>
                     <label for="selAvancadoAlterarDuracao">Alterar duração da cota para: 
                         <select id="selAvancadoAlterarDuracao">
                             <option value="4">4 horas</option>

@@ -48,13 +48,14 @@ const cmdTotaisEscalados = document.getElementById('cmdTotaisEscalados')
 const txtAvancado = document.getElementById('txtAvancado')
 const txtAvancadoAlterarValor = document.getElementById('txtAvancadoAlterarValor')
 const txtSiape = document.getElementById('txtSiape')
+const txtStatus = document.getElementById('txtStatus')
 
 let dadoInscritosJson = []
 let dadoFaltasJson = []
 let dadoEscalasJson = []
 let conf = {}
 
-setTimeout(()=>{ navegarPelasGuias({ nomeDaGuia: 'Escalas' }) },1)
+setTimeout(()=>{ navegarPelasGuias({}) },5)
 
 btnGuiaAvancado.addEventListener('click', () => {
     navegarPelasGuias({ nomeDaGuia: 'Avancado' })
@@ -442,28 +443,46 @@ function navegarPelasGuias({ nomeDaGuia }) {
         _controlesAvancado(true)
     }
     function _limparGuias({ nomeDaGuia }) {
+        const te = dadoEscalasJson.length
+        const tf = dadoFaltasJson.length
+        const ti = dadoInscritosJson.length
+
         btnGuiaEscalas.className = 'btnDeGuia'
         btnGuiaFaltas.className = 'btnDeGuia'
         btnGuiaInscritos.className = 'btnDeGuia'
         btnGuiaPlanilha.className = 'btnDeGuia'
         btnGuiaAvancado.className = 'btnDeGuia'
         
-        btnGuiaEscalas.disabled = (dadoEscalasJson.length > 0 ? false : true)
-        btnGuiaFaltas.disabled = (dadoFaltasJson.length > 0 ? false : true)
-        btnGuiaInscritos.disabled = (dadoInscritosJson.length > 0 ? false : true)
-        btnGuiaPlanilha.disabled = ((dadoEscalasJson.length>0 && dadoFaltasJson.length>0) ? false : true)
-        btnGuiaAvancado.disabled = (dadoEscalasJson.length>0  ? false : true)
+        if ( te > 0 ){
+            btnGuiaEscalas.disabled = false
+            btnGuiaAvancado.disabled = false
+        } else {
+            btnGuiaEscalas.disabled = true
+            btnGuiaAvancado.disabled = true
+        }
+        if ( tf > 0 ){
+            btnGuiaFaltas.disabled = false
+            chkFaltas.disabled = false
+        } else {
+            btnGuiaFaltas.disabled = true
+            chkFaltas.disabled = true 
+            chkFaltas.checked = false
+        }
+        if ( ti > 0 ){
+            btnGuiaInscritos.disabled = false
+        } else {
+            btnGuiaInscritos.disabled = true
+        }
+        if ( (te > 0 && tf > 0) ){
+            btnGuiaPlanilha.disabled = false
+        } else {
+            btnGuiaPlanilha.disabled = true
+        }
         
         if(!nomeDaGuia){
+            $('divGuiaButtons').style.display = 'none'
             txtStatus.value = ''
             txtSiape.value = ''
-            $('divGuiaButtons').style.display = 'none'
-            if( dadoFaltasJson.length === 0 ) { 
-                chkFaltas.disabled = true 
-                chkFaltas.checked = false
-            } else {
-                chkFaltas.disabled=false 
-            }
             radQui1.checked = true
             radVoluntarioCom.checked = true
             dtDia.disabled = true
