@@ -17,14 +17,16 @@ const radQui1 = document.getElementById('radQuinzena1')
 const radQui2 = document.getElementById('radQuinzena2')
 const radQui3 = document.getElementById('radQuinzena3')
 
+const radCompulsorio = document.getElementById('radCompulsorio')
+const chkFaltas = document.getElementById('chkFaltas')
+const radPresencas = document.getElementById('radPresencas')
 const radVoluntarioCom = document.getElementById('radVoluntarioCom')
 const radVoluntarioSem = document.getElementById('radVoluntarioSem')
 const radVoluntarioTodos = document.getElementById('radVoluntarioTodos')
-const radFaltas = document.getElementById('radFaltas')
-const radCompulsorio = document.getElementById('radCompulsorio')
 
 const selAvancadoAlterarDuracao = document.getElementById('selAvancadoAlterarDuracao')
 const selEscalaGrupo = document.getElementById('selEscalaGrupo')
+const selEscalaFalta = document.getElementById('selEscalaFalta')
 const selPlanilhaGrupo = document.getElementById('selPlanilhaGrupo')
 const selOpcaoExibirFalta = document.getElementById('selOpcaoExibirFalta')
 const selPlanilhaOperacao = document.getElementById('selPlanilhaOperacao')
@@ -217,7 +219,9 @@ cmdTotaisEnvolvidos.addEventListener('click', (e)=>{
 
 cmdTotaisEscalados.addEventListener('click', (e)=>{
     e.preventDefault()
-    htmlConstruirTotalDeMilitaresEscalados(dadoEscalasJson)
+    let par = parametroEscala()
+    const objAlvo = filtrarEscalasJson(par)
+    htmlConstruirTotalDeMilitaresEscalados(objAlvo)
 })
 
 cmdFaltasTodas.addEventListener('click', (e)=>{
@@ -356,16 +360,16 @@ function parametroEscala() {
     const opr = document.getElementById('selEscalaOperacao').value
     const gbmDestino = document.getElementById('selEscalaGbmDestino').value
 
-    if ( radQui1.checked ) { par.quinzena = `1ª Quinzena`} 
-    if ( radQui2.checked ) { par.quinzena = `2ª Quinzena`} 
-    if ( radQui3.checked ) { par.data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`} 
-    if ( radVoluntarioCom.checked ) { par.siape = `-SV`} 
-    if ( radVoluntarioSem.checked ) { par.siape = `SV`} 
-    if ( radFaltas.checked ) { par.falta = true} 
-    if ( radCompulsorio.checked ) { par.escaladoPor = 'compulsória'} 
-    if ( grp !== '' ) { par.grupo = grp} 
-    if ( opr !== '' ) { par.operacao = opr} 
-    if ( gbmDestino !== '' ) { par.gbm_destino = gbmDestino} 
+    if ( radQui1.checked ) { par.quinzena = `1ª Quinzena` } 
+    if ( radQui2.checked ) { par.quinzena = `2ª Quinzena` } 
+    if ( radQui3.checked ) { par.data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}` } 
+    if ( radVoluntarioCom.checked ) { par.siape = `-SV` } 
+    if ( radVoluntarioSem.checked ) { par.siape = `SV` } 
+    if ( chkFaltas.checked ) { par.falta = (selEscalaFalta.value === "true" ? true: (selEscalaFalta.value === "false" ? false : ""))} 
+    if ( radCompulsorio.checked ) { par.escaladoPor = 'compulsória' } 
+    if ( grp !== '' ) { par.grupo = grp } 
+    if ( opr !== '' ) { par.operacao = opr } 
+    if ( gbmDestino !== '' ) { par.gbm_destino = gbmDestino } 
     if ( txtAvancado ) { txtAvancado.value = JSON.stringify(par) }
 
     return par
@@ -438,26 +442,35 @@ function navegarPelasGuias({ nomeDaGuia }) {
         _controlesAvancado(true)
     }
     function _limparGuias({ nomeDaGuia }) {
-        if(!nomeDaGuia){
-            txtStatus.value = ''
-            txtSiape.value = ''
-            $('divGuiaButtons').style.display = 'none'
-        } else {
-            $('divGuiaButtons').style.display = ''
-            if( dadoFaltasJson.length === 0 ) { radFaltas.disabled = true } else { radFaltas.disabled=false }
-        }
-        btnGuiaEscalas.disabled = (dadoEscalasJson.length > 0 ? false : true)
-        btnGuiaFaltas.disabled = (dadoFaltasJson.length > 0 ? false : true)
-        btnGuiaInscritos.disabled = (dadoInscritosJson.length > 0 ? false : true)
-        btnGuiaPlanilha.disabled = ((dadoEscalasJson.length>0 && dadoFaltasJson.length>0) ? false : true)
-        btnGuiaAvancado.disabled = (dadoEscalasJson.length>0  ? false : true)
-        
         btnGuiaEscalas.className = 'btnDeGuia'
         btnGuiaFaltas.className = 'btnDeGuia'
         btnGuiaInscritos.className = 'btnDeGuia'
         btnGuiaPlanilha.className = 'btnDeGuia'
         btnGuiaAvancado.className = 'btnDeGuia'
         
+        btnGuiaEscalas.disabled = (dadoEscalasJson.length > 0 ? false : true)
+        btnGuiaFaltas.disabled = (dadoFaltasJson.length > 0 ? false : true)
+        btnGuiaInscritos.disabled = (dadoInscritosJson.length > 0 ? false : true)
+        btnGuiaPlanilha.disabled = ((dadoEscalasJson.length>0 && dadoFaltasJson.length>0) ? false : true)
+        btnGuiaAvancado.disabled = (dadoEscalasJson.length>0  ? false : true)
+        
+        if(!nomeDaGuia){
+            txtStatus.value = ''
+            txtSiape.value = ''
+            $('divGuiaButtons').style.display = 'none'
+            if( dadoFaltasJson.length === 0 ) { 
+                chkFaltas.disabled = true 
+                chkFaltas.checked = false
+            } else {
+                chkFaltas.disabled=false 
+            }
+            radQui1.checked = true
+            radVoluntarioCom.checked = true
+            dtDia.disabled = true
+        } else {
+            $('divGuiaButtons').style.display = ''
+        }
+       
         $('divEscalas').style.display = (nomeDaGuia === 'Escalas' ? '' : 'none')
         $('divFaltas').style.display = (nomeDaGuia === 'Faltas' ? '' : 'none')
         $('divInscritos').style.display = (nomeDaGuia === 'Inscritos' ? '' : 'none')
@@ -465,9 +478,6 @@ function navegarPelasGuias({ nomeDaGuia }) {
         $('divAvancado').style.display = (nomeDaGuia === 'Avancado' ? '' : 'none')
     }
     function _controlesDaEscala(comando) {
-        radQui1.checked = true
-        radVoluntarioCom.checked = true
-        dtDia.disabled = true
         $('fldPeriodo').disabled = !comando
         $('fldConjunto').disabled = !comando
         $('fldSiape').disabled = !comando

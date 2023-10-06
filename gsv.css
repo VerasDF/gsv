@@ -50,7 +50,8 @@
     vertical-align: top;
 }
 
-#dtDia {
+#dtDia,
+#selEscalaFalta {
     margin-left: 23px;
 }
 

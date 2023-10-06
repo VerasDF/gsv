@@ -46,10 +46,10 @@
             <div id="divEscalas" class="guiaContainer">
                 <fieldset id="fldPeriodo" disabled>
                     <legend>Período</legend>
-                    <label for="radQuinzena0"><input type="radio" id="radQuinzena0" name="quinzena" value="MesTodo" checked />Mês Completo</label><br>
-                    <label for="radQuinzena1"><input type="radio" id="radQuinzena1" name="quinzena" value="1ª quinzena" checked />1ª quinzena</label><br>
-                    <label for="radQuinzena2"><input type="radio" id="radQuinzena2" name="quinzena" value="2ª quinzena" />2ª quinzena</label><br>
-                    <label for="radQuinzena3"><input type="radio" id="radQuinzena3" name="quinzena" value="MinhaData" />Uma data específica</label><br>
+                    <label for="radQuinzena0"><input type="radio" id="radQuinzena0" name="quinzena" value="MesTodo" checked /> Mês Completo</label><br>
+                    <label for="radQuinzena1"><input type="radio" id="radQuinzena1" name="quinzena" value="1ª quinzena" checked /> 1ª quinzena</label><br>
+                    <label for="radQuinzena2"><input type="radio" id="radQuinzena2" name="quinzena" value="2ª quinzena" /> 2ª quinzena</label><br>
+                    <label for="radQuinzena3"><input type="radio" id="radQuinzena3" name="quinzena" value="MinhaData" /> Uma data específica</label><br>
                     <input type="date" id="dtDia" value="1993-12-08" disabled><br>
                 </fieldset>
                 <fieldset id="fldConjunto" disabled>
@@ -57,8 +57,12 @@
                     <label for="radVoluntarioTodos"><input type="radio" id="radVoluntarioTodos" name="conjunto" value="Todos" /> Todas as cotas gerenciadas</label><br>
                     <label for="radVoluntarioCom"><input type="radio" id="radVoluntarioCom" name="conjunto" value="ComVoluntario" checked /> Apenas militares escalados</label><br>
                     <label for="radVoluntarioSem"><input type="radio" id="radVoluntarioSem" name="conjunto" value="SemVoluntario" /> Apenas 'Sem Voluntario'</label><br>
-                    <label for="radFaltas"><input type="radio" id="radFaltas" name="conjunto" value="Faltas" /> Apenas as Faltas</label><br>
                     <label for="radCompulsorio"><input type="radio" id="radCompulsorio" name="conjunto" value="Compulsorio" /> Apenas escala Compulsória</label><br>
+                    <label for="chkFaltas"><input type="checkbox" id="chkFaltas" name="falta" value="Faltas" /> Sobre Faltas</label><br>
+                    <select id="selEscalaFalta">
+                        <option value="true">Apenas Faltas</option>
+                        <option value="false">Apenas Presença</option>
+                    </select>
                 </fieldset>
                 <fieldset id="fldSiape" disabled>
                     <legend>Filtrar por SIAPE</legend>
@@ -137,6 +141,7 @@
                         <option value="4">Grade</option>
                     </select>
                     <button id="cmdAvancadoExibirGrade">Exibir dados em grade, com base nos  critérios ao lado</button>
+                    <button id="cmdAvancadoAlterar">Alterar o tempo de<br>duração da cota</button>
                     <label for="selAvancadoAlterarDuracao">Alterar duração da cota para: 
                         <select id="selAvancadoAlterarDuracao">
                             <option value="4">4 horas</option>
@@ -150,7 +155,6 @@
                             <option value="12">12 horas</option>
                         </select></label>
                     <label for="txtAvancadoAlterarValor">Novo valor da Cota: <input type="text" id="txtAvancadoAlterarValor" value="400" readonly></input></label>
-                    <button id="cmdAvancadoAlterar">Alterar o tempo de<br>duração da cota</button>
                 </fieldset>
             </div>
         </div>
