@@ -22,11 +22,9 @@ const $ajax = ({urlDoArquivo, funcaoDeRetorno}) => {
 const $readFile = (input) => {
     let file = input.files[0]
     let reader = new FileReader()
-
+    $info({msg:`carregando...`,opt:`+n`})
     reader.readAsText(file)
-
     reader.onload = function () {avaliarDadoBruto({htmlRetornado:reader.result})}
-    
     reader.onerror = function () {console.log(reader.error)}
 }
 
@@ -46,6 +44,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".table_relatorio")
             dadoBruto = dadoBruto.children[0]
             dadoEscalasJson = prepararEscalasJSon(dadoBruto)
+            $info({msg:`Escala de`,opt:`+n`})
             $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)} cotas`, opt:'+'})
             conf.arquivo = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
             conf.mesAno = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
@@ -55,6 +54,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".div_form_faltas")
             dadoBruto = dadoBruto.children[0].children[0]
             dadoFaltasJson = prepararFaltasJSon(dadoBruto)
+            $info({msg:`Faltas de`,opt:`+n`})
             $info({msg:`${_extrairMesExtenso(dadoFaltasJson[0].DATA)}/${dadoFaltasJson[0].DATA.split('/')[2]}, retornadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoFaltasJson.length)} faltas`, opt:'+'})
             funcaoAuxiliar = inicializarFaltas
         }
@@ -62,6 +62,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".tbResumo")
             dadoBruto = dadoBruto.children[0]
             dadoInscritosJson = prepararInscritosJSon(dadoBruto)
+            $info({msg:`Inscritos de`,opt:`+n`})
             $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)} inscritos`, opt:'+'})
             funcaoAuxiliar = inicializarInscritos
         }
@@ -1266,7 +1267,7 @@ const htmlConstruirPlanilha = (arrObj) => {
                 tdDia.innerHTML = obj[l].DATA.split('/')[0]
                 auxTempo = auxTempo + parseInt(obj[l].TEMPO)
                 auxValor = auxValor + parseInt(obj[l].VALOR)
-                // if(obj[l].TEMPO === '24'){tdDia.style.backgroundColor = '#99f'}
+                if(obj[l].TEMPO === '24'){tdDia.style.backgroundColor = '#99f'} //cor da cota dupla
                 if(obj[l].FALTA === true){tdDia.style.backgroundColor = '#faa'}
                 tdDia.title = obj[l].OPERAÇÃO
                 const tdOutroDia = tdDia.cloneNode(true)

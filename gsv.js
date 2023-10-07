@@ -86,10 +86,8 @@ cmdAvancadoAlterar.addEventListener('click', ()=>{
         $info({msg:`(Avançado) Não há critérios para serem processados`, opt:'+n'})
         return
     }
-    if(confirm('Cuidado!\n\nEsta alteração é de caráter AVANÇADO.\n\nCaso continue serão alteradas a DURAÇÃO da e o VALOR das cotas conforme filtro.\n\n Essa mudança se aplica apenas a essa seção de consulta.\n\nDeseja continuar?')){
-        
+    if(confirm('Cuidado!\n\nEsta alteração é de caráter AVANÇADO.\n\nSerão alteradas a DURAÇÃO e o VALOR das cotas conforme filtro informado.\n\n Essa mudança se aplica apenas a essa seção de consulta de dados em memória RAM.\n\nDeseja continuar?')){
         alterarDuracao(txtAvancado.value, {tempo:selAvancadoAlterarDuracao.value, valor:txtAvancadoAlterarValor.value})
-
     }
 })
 
@@ -235,7 +233,6 @@ fileEscalas.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileEscalas.files.length > 0) {
         lblEscalas.innerHTML = fileEscalas.files[0].name
-        $info({msg:`Escala de`,opt:`+n`})
         $readFile(fileEscalas)
     }
 })
@@ -243,7 +240,6 @@ fileEscalas.addEventListener('change', (e) => {
 fileFaltas.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileFaltas.files.length > 0) {
-        $info({msg:`Faltas de`,opt:`+n`})
         lblFaltas.innerHTML = fileFaltas.files[0].name
         $readFile(fileFaltas)
     }
@@ -252,7 +248,6 @@ fileFaltas.addEventListener('change', (e) => {
 fileInscritos.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileInscritos.files.length > 0) {
-        $info({msg:`Inscritos de`,opt:`+n`})
         lblInscritos.innerHTML = fileInscritos.files[0].name
         $readFile(fileInscritos)
     }
@@ -483,7 +478,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
             $('divGuiaButtons').style.display = 'none'
             txtStatus.value = ''
             txtSiape.value = ''
-            radQui1.checked = true
+            radQui0.checked = true
             radVoluntarioCom.checked = true
             dtDia.disabled = true
         } else {
