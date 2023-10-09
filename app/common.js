@@ -488,31 +488,229 @@ function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_d
     return objAux
 }
 
-function filtrarFaltasJson({ data, lotacao, nome, operacao, quadro, posto, siape, turno }) {
+function filtrarFaltasJson({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
+    let objAux = dadoFaltasJson.filter((e)=>{return e})
 
-    if (!data) { data = "" }
-    if (!lotacao) { lotacao = "" }
-    if (!nome) { nome = "" }
-    if (!operacao) { operacao = "" }
-    if (!quadro) { quadro = "" }
-    if (!posto) { posto = "" }
-    if (!siape) { siape = "" }
-    if (!turno) { turno = "" }
+    if (data !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.DATA.indexOf(data) > -1 ) { return e }})
+    }
+    if (local!==undefined) {
+        if(local === ''){
+            objAux = objAux.filter((e)=>{if(e.LOCAL.indexOf(local) > -1){return e}})
+        }else{
+            if(local.indexOf("|")>-1){
+                const arrlocal = local.split('|')
+                switch (arrlocal.length) {
+                    case 2:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1]
+                            ){return e}})
+                        break
+                    case 3:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2]
+                            ){return e}})
+                        break
+                    case 4:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3]
+                            ){return e}})
+                        break
+                    case 5:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3] 
+                            || e.LOCAL === arrlocal[4]
+                            ){return e}})
+                        break
+                    case 6:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3] 
+                            || e.LOCAL === arrlocal[4]
+                            || e.LOCAL === arrlocal[5]
+                            ){return e}})
+                        break
+                    case 7:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3] 
+                            || e.LOCAL === arrlocal[4]
+                            || e.LOCAL === arrlocal[5]
+                            || e.LOCAL === arrlocal[6]
+                            ){return e}})
+                        break
+                    case 8:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3] 
+                            || e.LOCAL === arrlocal[4]
+                            || e.LOCAL === arrlocal[5]
+                            || e.LOCAL === arrlocal[6]
+                            || e.LOCAL === arrlocal[7]
+                            ){return e}})
+                        break
+                    case 9:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3] 
+                            || e.LOCAL === arrlocal[4]
+                            || e.LOCAL === arrlocal[5]
+                            || e.LOCAL === arrlocal[6]
+                            || e.LOCAL === arrlocal[7]
+                            || e.LOCAL === arrlocal[8]
+                            ){return e}})
+                        break
+                    case 10:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === arrlocal[0] 
+                            || e.LOCAL === arrlocal[1] 
+                            || e.LOCAL === arrlocal[2] 
+                            || e.LOCAL === arrlocal[3] 
+                            || e.LOCAL === arrlocal[4]
+                            || e.LOCAL === arrlocal[5]
+                            || e.LOCAL === arrlocal[6]
+                            || e.LOCAL === arrlocal[7]
+                            || e.LOCAL === arrlocal[8]
+                            || e.LOCAL === arrlocal[9]
+                            ){return e}})
+                        break
+                    default:
+                        objAux = objAux.filter((e)=>{if(e.LOCAL === local){return e}})
+                        break
+                }
 
-    return dadoFaltasJson.filter((item) => {
-        if (
-            item.DATA.indexOf(data) > -1 &&
-            item.LOTAÇÃO.indexOf(lotacao) > -1 &&
-            item.NOME.indexOf(nome) > -1 &&
-            item.OPERAÇÃO.indexOf(operacao) > -1 &&
-            item.QUADRO.indexOf(quadro) > -1 &&
-            item.POSTO.indexOf(posto) > -1 &&
-            item.SIAPE.indexOf(siape) > -1 &&
-            item.TURNO.indexOf(turno) > -1
-        ) {
-            return item
+            }else{
+                objAux = objAux.filter((e)=>{if(e.LOCAL === local){return e}})
+            }
         }
-    })
+    }
+    if (lotacao !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.LOTAÇÃO.indexOf(lotacao) > -1 ) { return e }})
+    }
+    if (nome !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.NOME.indexOf(nome) > -1 ) { return e }})
+    }
+    if (operacao!==undefined) {
+        if(operacao === ''){
+            objAux = objAux.filter((e)=>{if(e.OPERAÇÃO.indexOf(operacao) > -1){return e}})
+        }else{
+            if(operacao.indexOf("|")>-1){
+                const arrOperacao = operacao.split('|')
+                switch (arrOperacao.length) {
+                    case 2:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1]
+                            ){return e}})
+                        break
+                    case 3:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2]
+                            ){return e}})
+                        break
+                    case 4:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3]
+                            ){return e}})
+                        break
+                    case 5:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            ){return e}})
+                        break
+                    case 6:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            ){return e}})
+                        break
+                    case 7:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            ){return e}})
+                        break
+                    case 8:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            || e.OPERAÇÃO === arrOperacao[7]
+                            ){return e}})
+                        break
+                    case 9:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            || e.OPERAÇÃO === arrOperacao[7]
+                            || e.OPERAÇÃO === arrOperacao[8]
+                            ){return e}})
+                        break
+                    case 10:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === arrOperacao[0] 
+                            || e.OPERAÇÃO === arrOperacao[1] 
+                            || e.OPERAÇÃO === arrOperacao[2] 
+                            || e.OPERAÇÃO === arrOperacao[3] 
+                            || e.OPERAÇÃO === arrOperacao[4]
+                            || e.OPERAÇÃO === arrOperacao[5]
+                            || e.OPERAÇÃO === arrOperacao[6]
+                            || e.OPERAÇÃO === arrOperacao[7]
+                            || e.OPERAÇÃO === arrOperacao[8]
+                            || e.OPERAÇÃO === arrOperacao[9]
+                            ){return e}})
+                        break
+                    default:
+                        objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === operacao){return e}})
+                        break
+                }
+
+            }else{
+                objAux = objAux.filter((e)=>{if(e.OPERAÇÃO === operacao){return e}})
+            }
+        }
+    }
+    if (quadro !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.QUADRO.indexOf(quadro) > -1 ) { return e }})
+    }
+    if (posto !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.POSTO.indexOf(posto) > -1 ) { return e }})
+    }
+    if (siape !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.SIAPE.indexOf(siape) > -1 ) { return e }})
+    }
+    if (turno !== undefined) {
+        objAux = objAux.filter((e) => { if ( e.TURNO.indexOf(turno) > -1 ) { return e }})
+    }
+
+    return objAux
+    
 }
 
 function filtrarInscritosJson({ lotacao, nome, quadro, posto_grad, siape }) {

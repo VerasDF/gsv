@@ -12,13 +12,14 @@ const btnGuiaInscritos = document.getElementById('btnGuiaInscritos')
 const btnGuiaPlanilha = document.getElementById('btnGuiaPlanilha')
 const btnGuiaAvancado = document.getElementById('btnGuiaAvancado')
 
+const chkFaltas = document.getElementById('chkFaltas')
+
 const radQui0 = document.getElementById('radQuinzena0')
 const radQui1 = document.getElementById('radQuinzena1')
 const radQui2 = document.getElementById('radQuinzena2')
 const radQui3 = document.getElementById('radQuinzena3')
 
 const radCompulsorio = document.getElementById('radCompulsorio')
-const chkFaltas = document.getElementById('chkFaltas')
 const radPresencas = document.getElementById('radPresencas')
 const radVoluntarioCom = document.getElementById('radVoluntarioCom')
 const radVoluntarioSem = document.getElementById('radVoluntarioSem')
@@ -27,6 +28,7 @@ const radVoluntarioTodos = document.getElementById('radVoluntarioTodos')
 const selAvancadoAlterarDuracao = document.getElementById('selAvancadoAlterarDuracao')
 const selEscalaGrupo = document.getElementById('selEscalaGrupo')
 const selEscalaFalta = document.getElementById('selEscalaFalta')
+const selFaltaOperacao = document.getElementById('selFaltaOperacao')
 const selPlanilhaGrupo = document.getElementById('selPlanilhaGrupo')
 const selOpcaoExibirFalta = document.getElementById('selOpcaoExibirFalta')
 const selPlanilhaOperacao = document.getElementById('selPlanilhaOperacao')
@@ -40,7 +42,7 @@ const cmdExibirInscritos = document.getElementById('cmdExibirInscritos')
 const cmdExibirPlanilha = document.getElementById('cmdExibirPlanilha')
 const cmdExibirPlanilhaGrade = document.getElementById('cmdExibirPlanilhaGrade')
 const cmdExportarPdf = document.getElementById('cmdExportarPdf')
-const cmdFaltasTodas = document.getElementById('cmdFaltasTodas')
+const cmdExibirFaltas = document.getElementById('cmdExibirFaltas')
 const cmdPesquisarPorSiape = document.getElementById('cmdPesquisarPorSiape')
 const cmdTotaisEnvolvidos = document.getElementById('cmdTotaisEnvolvidos')
 const cmdTotaisEscalados = document.getElementById('cmdTotaisEscalados')
@@ -146,6 +148,13 @@ cmdExibirEscala.addEventListener('click', (e)=>{
     }
 })
 
+cmdExibirFaltas.addEventListener('click', (e)=>{
+    e.preventDefault()
+    divResultado.innerHTML = ''
+    let objAux = filtrarFaltasJson(parametroFalta())
+    htmlConstruirGrade(objAux)
+})
+
 cmdExibirInscritos.addEventListener('click', (e)=>{
     e.preventDefault()
     htmlConstruirTabelaInscritos()
@@ -223,12 +232,6 @@ cmdTotaisEscalados.addEventListener('click', (e)=>{
     htmlConstruirTotalDeMilitaresEscalados(objAlvo)
 })
 
-cmdFaltasTodas.addEventListener('click', (e)=>{
-    e.preventDefault()
-    divResultado.innerHTML = ''
-    htmlConstruirGrade(dadoFaltasJson)
-})
-
 fileEscalas.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileEscalas.files.length > 0) {
@@ -295,6 +298,18 @@ selEscalaGrupo.addEventListener('change', (e)=>{
     atualizarSelectEscala(selEscalaGrupo.value)
 })
 
+selFaltaOperacao.addEventListener('change', (e) => {
+    e.preventDefault()
+    let contarOperacao = 0
+    for(let i = 0; i < selFaltaOperacao.options.length; i++){
+        if(selFaltaOperacao.options[i].selected){ contarOperacao = contarOperacao + 1 }
+    }
+    $('fldFaltaOperacao').children[0].innerHTML = `Opções para Operação (${contarOperacao} selecionados)`
+    if(contarOperacao>9){
+        alert("A lógica implementada tem capacidade de processar até 10 itens selecionados!")
+    }
+})
+
 selOpcaoExibirFalta.addEventListener('change', (e)=>{
     e.preventDefault()
     htmlConstuirFaltasPorDia($('selOpcaoExibirFalta').value)
@@ -324,6 +339,41 @@ txtSiape.addEventListener('keydown',(e)=>{
     }
 })
 
+function parametroEscala() {
+    let par = {}
+    
+    const grp = document.getElementById('selEscalaGrupo').value
+    const opr = document.getElementById('selEscalaOperacao').value
+    const gbmDestino = document.getElementById('selEscalaGbmDestino').value
+
+    if ( radQui1.checked ) { par.quinzena = `1ª Quinzena` } 
+    if ( radQui2.checked ) { par.quinzena = `2ª Quinzena` } 
+    if ( radQui3.checked ) { par.data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}` } 
+    if ( radVoluntarioCom.checked ) { par.siape = `-SV` } 
+    if ( radVoluntarioSem.checked ) { par.siape = `SV` } 
+    if ( chkFaltas.checked ) { par.falta = (selEscalaFalta.value === "true" ? true: (selEscalaFalta.value === "false" ? false : ""))} 
+    if ( radCompulsorio.checked ) { par.escaladoPor = 'compulsória' } 
+    if ( grp !== '' ) { par.grupo = grp } 
+    if ( opr !== '' ) { par.operacao = opr } 
+    if ( gbmDestino !== '' ) { par.gbm_destino = gbmDestino } 
+    if ( txtAvancado ) { txtAvancado.value = JSON.stringify(par) }
+
+    return par
+}
+
+function parametroFalta(){
+    let par = {}
+    let operacao = ''
+    for(let i = 0; i < selFaltaOperacao.options.length; i++){
+        if(selFaltaOperacao.options[i].selected){
+            operacao = operacao + `${selFaltaOperacao.options[i].value}|`
+        }
+    }
+    if(operacao.substring(operacao.length-1,operacao.length)==="|"){operacao = operacao.substring(0,operacao.length-1)}
+    if (operacao !== '') { par.operacao = operacao} 
+    return par
+}
+
 function parametroPlanilha() {
     const grupo = selPlanilhaGrupo.value
     const duracao = (selPlanilhaTempo.value === '12' ? '12/24' : selPlanilhaTempo.value)
@@ -349,28 +399,6 @@ function parametroPlanilha() {
     return par
 }
 
-function parametroEscala() {
-    let par = {}
-    
-    const grp = document.getElementById('selEscalaGrupo').value
-    const opr = document.getElementById('selEscalaOperacao').value
-    const gbmDestino = document.getElementById('selEscalaGbmDestino').value
-
-    if ( radQui1.checked ) { par.quinzena = `1ª Quinzena` } 
-    if ( radQui2.checked ) { par.quinzena = `2ª Quinzena` } 
-    if ( radQui3.checked ) { par.data = `${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}` } 
-    if ( radVoluntarioCom.checked ) { par.siape = `-SV` } 
-    if ( radVoluntarioSem.checked ) { par.siape = `SV` } 
-    if ( chkFaltas.checked ) { par.falta = (selEscalaFalta.value === "true" ? true: (selEscalaFalta.value === "false" ? false : ""))} 
-    if ( radCompulsorio.checked ) { par.escaladoPor = 'compulsória' } 
-    if ( grp !== '' ) { par.grupo = grp } 
-    if ( opr !== '' ) { par.operacao = opr } 
-    if ( gbmDestino !== '' ) { par.gbm_destino = gbmDestino } 
-    if ( txtAvancado ) { txtAvancado.value = JSON.stringify(par) }
-
-    return par
-}
-
 function inicializarEscalas() {
     $('lblEscalas').style.backgroundColor = ('var(--fundoVerde)')
     navegarPelasGuias({ nomeDaGuia: 'Escalas' })
@@ -385,6 +413,7 @@ function inicializarEscalas() {
 function inicializarFaltas() {
     $('lblFaltas').style.backgroundColor = ('var(--fundoVerde)')
     navegarPelasGuias({ nomeDaGuia: 'Faltas' })
+    preencherSelect(divFaltaOperacao, totais('OPERAÇÃO', dadoFaltasJson))
     divResultado.innerHTML = ''
     tratarFaltas()
 }
