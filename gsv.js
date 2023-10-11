@@ -14,6 +14,8 @@ const btnGuiaAvancado = document.getElementById('btnGuiaAvancado')
 
 const chkFaltas = document.getElementById('chkFaltas')
 
+const dtDia = document.getElementById('dtDia')
+
 const radQui0 = document.getElementById('radQuinzena0')
 const radQui1 = document.getElementById('radQuinzena1')
 const radQui2 = document.getElementById('radQuinzena2')
@@ -26,6 +28,7 @@ const radVoluntarioSem = document.getElementById('radVoluntarioSem')
 const radVoluntarioTodos = document.getElementById('radVoluntarioTodos')
 
 const selAvancadoAlterarDuracao = document.getElementById('selAvancadoAlterarDuracao')
+const selEscalaHorario = document.getElementById('selEscalaHorario')
 const selEscalaGrupo = document.getElementById('selEscalaGrupo')
 const selEscalaFalta = document.getElementById('selEscalaFalta')
 const selFaltaOperacao = document.getElementById('selFaltaOperacao')
@@ -260,6 +263,7 @@ radQui0.addEventListener('click', (e)=>{
     dtDia.disabled = true
     preencherSelect(divEscalaGrupo, totais('GRUPO', dadoEscalasJson))
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', dadoEscalasJson))
+    preencherSelect(divEscalaHorario, totais('HORA', dadoEscalasJson))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', dadoEscalasJson))
 })
 
@@ -267,14 +271,16 @@ radQui1.addEventListener('click', (e)=>{
     dtDia.disabled = true
     preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
+    preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
 })
 
 radQui2.addEventListener('click', (e)=>{
     dtDia.disabled = true
     preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
-    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
+    preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
+    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
 })
 
 radQui3.addEventListener('change', (e)=>{
@@ -284,9 +290,13 @@ radQui3.addEventListener('change', (e)=>{
     dtDia.min = dtDia.value
     dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`
     dtDia.disabled = false
-    preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
-    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
-    preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`})))
+
+    const par = {data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`}
+    
+    preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson(par)))
+    preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson(par)))
+    preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson(par)))
+    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson(par)))
 })
 
 selAvancadoAlterarDuracao.addEventListener('change',()=>{
@@ -340,10 +350,12 @@ txtSiape.addEventListener('keydown',(e)=>{
 })
 
 function parametroEscala() {
+    
     let par = {}
     
     const grp = document.getElementById('selEscalaGrupo').value
     const opr = document.getElementById('selEscalaOperacao').value
+    const hor = document.getElementById('selEscalaHorario').value
     const gbmDestino = document.getElementById('selEscalaGbmDestino').value
 
     if ( radQui1.checked ) { par.quinzena = `1ª Quinzena` } 
@@ -355,22 +367,23 @@ function parametroEscala() {
     if ( radCompulsorio.checked ) { par.escaladoPor = 'compulsória' } 
     if ( grp !== '' ) { par.grupo = grp } 
     if ( opr !== '' ) { par.operacao = opr } 
+    if ( hor !== '' ) { par.horario = hor } 
     if ( gbmDestino !== '' ) { par.gbm_destino = gbmDestino } 
     if ( txtAvancado ) { txtAvancado.value = JSON.stringify(par) }
 
     return par
+
 }
 
 function parametroFalta(){
     let par = {}
-    let operacao = ''
+    let arrOper = []
     for(let i = 0; i < selFaltaOperacao.options.length; i++){
         if(selFaltaOperacao.options[i].selected){
-            operacao = operacao + `${selFaltaOperacao.options[i].value}|`
+            arrOper.push(`${selFaltaOperacao.options[i].value}`)
         }
     }
-    if(operacao.substring(operacao.length-1,operacao.length)==="|"){operacao = operacao.substring(0,operacao.length-1)}
-    if (operacao !== '') { par.operacao = operacao} 
+    if (arrOper.length > 0) { par.operacao = arrOper} 
     return par
 }
 
@@ -379,16 +392,15 @@ function parametroPlanilha() {
     const duracao = (selPlanilhaTempo.value === '12' ? '12/24' : selPlanilhaTempo.value)
 
     let par = {}
-    let operacao = ''
+    let arrOper = []
     for(let i = 0; i < selPlanilhaOperacao.options.length; i++){
         if(selPlanilhaOperacao.options[i].selected){
-            operacao = operacao + `${selPlanilhaOperacao.options[i].value}|`
+            arrOper.push(`${selPlanilhaOperacao.options[i].value}`)
         }
     }
-    if(operacao.substring(operacao.length-1,operacao.length)==="|"){operacao = operacao.substring(0,operacao.length-1)}
     par.siape = '-SV'
     if (grupo !== '') { par.grupo = grupo} 
-    if (operacao !== '') { par.operacao = operacao} 
+    if (arrOper !== '') { par.operacao = arrOper} 
     if (duracao !== '') { par.tempo = duracao} 
 
     if ($('radSemFaltas').checked) { par.falta = false }
@@ -404,8 +416,9 @@ function inicializarEscalas() {
     navegarPelasGuias({ nomeDaGuia: 'Escalas' })
     dtDia.value = `${dadoEscalasJson[0].DATA.split('/')[2]}-${dadoEscalasJson[0].DATA.split('/')[1]}-${dadoEscalasJson[0].DATA.split('/')[0]}`
     preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
-    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
+    preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
+    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     divResultado.innerHTML = ''
     tratarFaltas()
 }
@@ -525,6 +538,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
         $('fldConjunto').disabled = !comando
         $('fldSiape').disabled = !comando
         $('fldGrupo').disabled = !comando
+        $('fldEscalaHorario').disabled = !comando
         $('fldOperacao').disabled = !comando
         $('fldGbmDestino').disabled = !comando
         $('fldAcaoEscalas').disabled = !comando
