@@ -140,8 +140,8 @@ cmdExibirEscala.addEventListener('click', (e)=>{
     const par = parametroEscala()
     const objAlvo = filtrarEscalasJson(par)
 
-    $info({msg:`Filtro: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas`, opt:'+n'})
-
+    $info({msg:`Filtro aplicado: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas gerenciadas`, opt:'+n'})
+    
     if(objAlvo.length === 0){
         $info({msg:`A consulta não retornou dados`})
         divResultado.innerHTML = ""
@@ -154,8 +154,16 @@ cmdExibirEscala.addEventListener('click', (e)=>{
 cmdExibirFaltas.addEventListener('click', (e)=>{
     e.preventDefault()
     divResultado.innerHTML = ''
-    let objAux = filtrarFaltasJson(parametroFalta())
-    htmlConstruirGrade(objAux)
+    const objAlvo = filtrarFaltasJson(parametroFalta())
+    
+    $info({msg:`Filtro aplicado: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(objAlvo.length)} cotas gerenciadas`, opt:'+n'})
+    
+    if(objAlvo.length === 0){
+        $info({msg:`A consulta não retornou dados`})
+        divResultado.innerHTML = ""
+    }else{
+        htmlConstruirGrade(objAlvo)
+    }
 })
 
 cmdExibirInscritos.addEventListener('click', (e)=>{
