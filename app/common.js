@@ -62,8 +62,9 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".tbResumo")
             dadoBruto = dadoBruto.children[0]
             dadoInscritosJson = prepararInscritosJSon(dadoBruto)
-            $info({msg:`Inscritos de`,opt:`+n`})
-            $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)} inscritos`, opt:'+'})
+            // $info({msg:`Inscritos de`,opt:`+n`})
+            // $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)} inscritos`, opt:'+'})
+            $info({msg:`${dadoInscritosJson[0].MES_REFERENCIA}, retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)} inscritos`, opt:'+n'})
             funcaoAuxiliar = inicializarInscritos
         }
         console.log('avaliarDadoBruto', tipoRetorno, (Date.now() - demora) + `ms`)
@@ -440,21 +441,21 @@ function filtrarFaltasJson({ data, local, lotacao, nome, operacao, quadro, posto
 
 function filtrarInscritosJson({ lotacao, nome, quadro, posto_grad, siape }) {
     
-    let objAux = dadoFaltasJson.filter((e)=>{return e})
+    let objAux = dadoInscritosJson.filter((e)=>{return e})
 
-    if (!lotacao !== undefined) {
+    if (lotacao !== undefined) {
         objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
     }
-    if (!nome !== undefined) {
+    if (nome !== undefined) {
         objAux = objAux.filter((e) => {return e.NOME.indexOf(nome) > -1})
     }
-    if (!quadro !== undefined) {
+    if (quadro !== undefined) {
         objAux = objAux.filter((e) => {return e.QUADRO.indexOf(quadro) > -1})
     }
-    if (!posto_grad !== undefined) {
+    if (posto_grad !== undefined) {
         objAux = objAux.filter((e) => {return e.POSTO_GRAD.indexOf(posto_grad) > -1})
     }
-    if (!siape !== undefined) { 
+    if (siape !== undefined) { 
         objAux = objAux.filter((e) => {return e.SIAPE.indexOf(siape) > -1})
     }
 
@@ -985,8 +986,8 @@ const htmlConstruirTabelaInscritos = () => {
     for (let i = 0; i < arrOrdemPostoGrad.length; i++) {
         const objAux =  _ordenarDados(filtrarInscritosJson({ posto_grad: arrOrdemPostoGrad[i] }))
         if(objAux.length > 0){
-            if(mesDeReferencia === ''){ mesDeReferencia = objAux[i].MES_REFERENCIA }
             for(j = 0; j < objAux.length; j++){
+                if(mesDeReferencia === ''){ mesDeReferencia = objAux[j].MES_REFERENCIA }
                 table.append(_incluirDado(objAux[j], ++indice))
             }
         }
