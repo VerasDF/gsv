@@ -901,7 +901,7 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
         const objOperacao = filtrarEscalasJson(par)
         if (objOperacao.length > 0){
             table.append(_carregarTotais(objOperacao))
-            contabilizar_total = contabilizar_total + ((objOperacao[0].OPERAÇÃO.indexOf(`24H`) > -1) ? objOperacao.length * 2 : objOperacao.length)
+            contabilizar_total = contabilizar_total + ((objOperacao[0].TEMPO.indexOf(`24`) > -1) ? objOperacao.length * 2 : objOperacao.length)
         }
     }
     table.append(_rodape(contabilizar_total))
@@ -927,10 +927,10 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
         let cargaHoraria = ''
         for(const key in objCargaHoraria){
             const elm = objCargaHoraria[key]
-            cargaHoraria = cargaHoraria + `${elm}(${key}h) `
+            cargaHoraria = cargaHoraria + `${elm}` + (key===""?`(?h)`:`(${(key)}h)`)
         }
         const tr = document.createElement('tr')
-        const totalDeCotas = ((obj[0].OPERAÇÃO.indexOf(`24H`) > -1) ? 
+        const totalDeCotas = ((obj[0].TEMPO.indexOf(`24`) > -1) ? 
             `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length) * 2} (${obj.length}x2)` : 
             `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length)}`
         ) 
