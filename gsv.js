@@ -423,10 +423,10 @@ function inicializarEscalas() {
     $('lblEscalas').style.backgroundColor = ('var(--fundoVerde)')
     navegarPelasGuias({ nomeDaGuia: 'Escalas' })
     dtDia.value = `${dadoEscalasJson[0].DATA.split('/')[2]}-${dadoEscalasJson[0].DATA.split('/')[1]}-${dadoEscalasJson[0].DATA.split('/')[0]}`
-    preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
-    preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
-    preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
-    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
+    preencherSelect(divEscalaGrupo, totais('GRUPO', dadoEscalasJson))
+    preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', dadoEscalasJson))
+    preencherSelect(divEscalaHorario, totais('HORA', dadoEscalasJson))
+    preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', dadoEscalasJson))
     divResultado.innerHTML = ''
     tratarFaltas()
 }

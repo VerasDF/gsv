@@ -532,7 +532,7 @@ function cotaDobrada(tag) {
 }
 
 function preencherSelect(tag, obj) {
-    const arrAux = Object.keys(obj).sort()
+    const arrAux = (tag.id.indexOf("GBM") > -1 ? Object.keys(obj).sort() : Object.keys(obj).sort(organizarGBM))
     if(tag.children[0].id !== ''){
         const sel = document.getElementById(tag.children[0].id)
         _limparSelect(sel)
@@ -742,21 +742,11 @@ const htmlConstruirEscala = (info) => {
 const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
     divResultado.innerHTML = ""
 
-    const arrOrdemGbm = _criarOrdemGbm()
-
     const arrGrupo = arrObj.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)})
     for(let i = 0; i < arrGrupo.length; i++) {
         _criarTagGrupo(`GRUPO-${i}`, `${arrGrupo[i]}`)
         const objGbmDestino = arrObj.filter((item) => {if(item.GRUPO === arrGrupo[i]){return item}})
-        const arrGbmDestino = objGbmDestino.map((item) => `${item.GBM_DESTINO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a,b)=>{
-            let x = -1, y = -1
-            arrOrdemGbm.forEach((e, i) => { if (a.indexOf(e) >- 1 ) { x = i} })
-            arrOrdemGbm.forEach((e, i) => { if (b.indexOf(e) > -1) { y = i } })
-            if(x === -1 && y ===-1){ return 0 }
-            if(x === -1 && y > -1){ return 1 }
-            if(x > -1 && y === -1){ return -1 }
-            if(x > -1 && y > -1){ return x - y }
-        })
+        const arrGbmDestino = objGbmDestino.map((item) => `${item.GBM_DESTINO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort(organizarGBM)
 
         for(let k = 0; k < arrGbmDestino.length; k++) {
             _criarTagGbmDestino(`GRUPO-${i}`, `GBM-${k}`, arrGbmDestino[k])
@@ -786,18 +776,6 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
         thisH1.style.marginBottom = '10px'
         thisH1.style.fontSize = '150%'
         divResultado.insertBefore(thisH1, tbResultado)
-    }
-
-    function _criarOrdemGbm(){
-        const ordemGbm = []
-        for(let i = 1; i < 100; i++){
-            const gbm = `${i}º GBM`
-            const temp = filtrarEscalasJson({gbm_destino:gbm})
-            if(temp.length>0){
-                ordemGbm.push(gbm)
-            }
-        }
-        return ordemGbm
     }
 
     function _tipsOperacoes(arr){
@@ -1269,6 +1247,50 @@ const htmlConstruirPlanilha = (arrObj) => {
     }
 }
 
+function organizarGBM(a,b) {
+    let n1, n2
+    const x = a.split(" ")
+    const y = b.split(" ")
+
+    if(x.length > 1 && y.length > 1)
+    {
+        if(x[0].indexOf("º")>-1 && y[0].indexOf("º")>-1)
+        {
+            n1 = parseInt(x[0].substr(0, x.length))
+            n2 = parseInt(y[0].substr(0, x.length))
+        }
+        if(x[1].indexOf("º")>-1 && y[1].indexOf("º")>-1)
+        {
+            n1 = parseInt(x[1].substr(0, x.length))
+            n2 = parseInt(y[1].substr(0, x.length))
+        }
+    }
+    
+    if(n1 === undefined || n2 === undefined)
+    {
+        let i = 0
+        do
+        {
+            n1 = a.charCodeAt(i)
+            n2 = b.charCodeAt(i)
+            i++
+        }
+        while (n1 === n2)
+    }
+
+    if(n1 < n2)
+    {
+        return -1
+    }
+    else if(n1 > n2)
+    {
+        return 1
+    }
+    else
+    {
+        return 0
+    }
+}
 
 
 
