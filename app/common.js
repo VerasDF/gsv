@@ -894,7 +894,7 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
         const tr = document.createElement('tr')
         tr.innerHTML = `<th>OPERAÇÃO</th>` +
             `<th>CARGA<br>HOR.</th>` +
-            `<th>TOTAL</th>`
+            `<th>COTAS</th>`
         return tr
     }
     function _carregarTotais(obj) {
