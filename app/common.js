@@ -532,7 +532,7 @@ function cotaDobrada(tag) {
 }
 
 function preencherSelect(tag, obj) {
-    const arrAux = (tag.id.indexOf("GBM") > -1 ? Object.keys(obj).sort() : Object.keys(obj).sort(organizarGBM))
+    const arrAux = Object.keys(obj).sort(organizarGBM)
     if(tag.children[0].id !== ''){
         const sel = document.getElementById(tag.children[0].id)
         _limparSelect(sel)
