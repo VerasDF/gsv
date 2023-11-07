@@ -267,6 +267,11 @@ fileInscritos.addEventListener('change', (e) => {
     }
 })
 
+const fldConjunto = document.getElementById("fldConjunto") 
+fldConjunto.addEventListener('click', (e)=>{
+    atualizarSelectEscala(selEscalaGrupo.value)
+})
+
 radQui0.addEventListener('click', (e)=>{
     dtDia.disabled = true
     preencherSelect(divEscalaGrupo, totais('GRUPO', dadoEscalasJson))

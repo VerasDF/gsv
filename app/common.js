@@ -588,27 +588,25 @@ function setClipboard(tag) {
 }
 
 function atualizarSelectEscala(grupo){
-    //necessário verificar as opções selecionadas em tipo de filtro para aplicar corretamente a seleção de dados.
-    if($("radVoluntarioTodos").checked)
-    {
-        preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({grupo:grupo})))
-        return
-    }
-    if($("radVoluntarioCom").checked)
+    
+    if(radVoluntarioCom.checked)
     {
         preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({siape:'-SV', grupo:grupo})))
         return
     }
-    if($("radVoluntarioSem").checked)
+    
+    if(radVoluntarioSem.checked)
     {
         preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({siape:'SV', grupo:grupo})))
         return
     }
-    if($("radCompulsorio").checked)
+    
+    if(radCompulsorio.checked)
     {
-        preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({escaladoPor:'compusório', grupo:grupo})))
+        preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({escaladoPor:'compulsória', grupo:grupo})))
         return
     }
+    
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({grupo:grupo})))
 
 }
