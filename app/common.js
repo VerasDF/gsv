@@ -21,16 +21,20 @@ const $ajax = ({urlDoArquivo, funcaoDeRetorno}) => {
     } catch (error) {
         console.log(error)
     }
-    
 }
 
 const $readFile = (input) => {
-    let file = input.files[0]
-    let reader = new FileReader()
-    $info({msg:`carregando...`,opt:`+n`})
-    reader.readAsText(file)
-    reader.onload = function () {avaliarDadoBruto({htmlRetornado:reader.result})}
-    reader.onerror = function () {console.log(reader.error)}
+    try {
+        let file = input.files[0]
+        let reader = new FileReader()
+        $info({msg:`carregando...`,opt:`+n`})
+        reader.readAsText(file)
+        reader.onload = function () {avaliarDadoBruto({htmlRetornado:reader.result})}
+        reader.onerror = function () {console.log(reader.error)}
+    
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 function avaliarDadoBruto({htmlRetornado}) {
