@@ -502,9 +502,11 @@ function tratarFaltas() {
 
 function totais(campoDePesquisa, obj) {
     const res = obj.reduce((acc, item) => {
-        if (!acc[item[campoDePesquisa]]) {
+        if (!acc[item[campoDePesquisa]]) 
+        {
             acc[item[campoDePesquisa]] = 1
-        } else {
+        } else 
+        {
             acc[item[campoDePesquisa]] = acc[item[campoDePesquisa]] + 1
         }
         return acc
@@ -925,7 +927,8 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
         let cargaHoraria = ''
         for(const key in objCargaHoraria){
             const elm = objCargaHoraria[key]
-            cargaHoraria = cargaHoraria + `${elm}` + (key===""?`(?h)`:`(${(key)}h)`)
+            // cargaHoraria = cargaHoraria + `${elm}` + (key===""?`(?h)`:`(${(key)}h)`)
+            cargaHoraria = (key===""?`(?h)`:`${(key)}h`)
         }
         const tr = document.createElement('tr')
         const totalDeCotas = ((obj[0].TEMPO.indexOf(`24`) > -1) ? 
