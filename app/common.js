@@ -3,29 +3,38 @@ const arrOrdemPostoGrad = ['CEL', 'TC', 'MAJ', 'CAP', '1 TEN', '2 TEN', 'ASP', '
 const $ = tag => document.getElementById(tag)
 
 const $ajax = ({urlDoArquivo, funcaoDeRetorno}) => {
-    const url = urlDoArquivo
-    const XmlReq = new XMLHttpRequest()
-    XmlReq.open('GET', url, true)
-    XmlReq.onreadystatechange = () => {
-        if (XmlReq.readyState === 4) {
-            if (XmlReq.status === 200) {
-                funcaoDeRetorno(XmlReq.response)
-            }
-            if (XmlReq.status === 404) {
-                funcaoDeRetorno(null)
+    try {
+        const url = urlDoArquivo
+        const XmlReq = new XMLHttpRequest()
+        XmlReq.open('GET', url, true)
+        XmlReq.onreadystatechange = () => {
+            if (XmlReq.readyState === 4) {
+                if (XmlReq.status === 200) {
+                    funcaoDeRetorno(XmlReq.response)
+                }
+                if (XmlReq.status === 404) {
+                    funcaoDeRetorno(null)
+                }
             }
         }
+        XmlReq.send()    
+    } catch (error) {
+        console.log(error)
     }
-    XmlReq.send()
 }
 
 const $readFile = (input) => {
-    let file = input.files[0]
-    let reader = new FileReader()
-    $info({msg:`carregando...`,opt:`+n`})
-    reader.readAsText(file)
-    reader.onload = function () {avaliarDadoBruto({htmlRetornado:reader.result})}
-    reader.onerror = function () {console.log(reader.error)}
+    try {
+        let file = input.files[0]
+        let reader = new FileReader()
+        $info({msg:`carregando...`,opt:`+n`})
+        reader.readAsText(file)
+        reader.onload = function () {avaliarDadoBruto({htmlRetornado:reader.result})}
+        reader.onerror = function () {console.log(reader.error)}
+    
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 function avaliarDadoBruto({htmlRetornado}) {
