@@ -115,13 +115,55 @@ function prepararEscalasJSon(dadosHtml) {
     for (let i = 0; i < dadosHtml.childElementCount; i++) {
         const tr = dadosHtml.children[i];
         const filhos = tr.childElementCount;
+        
         if (filhos === 1) {
+            const trM1 = dadosHtml.children[i+1];
+            const trM2 = dadosHtml.children[i+2];
+            const trM3 = dadosHtml.children[i+3];
+
             const td = tr.children[0];
-            for (let j = 0; j < td.childElementCount; j++) {
-                const span = td.children[j];
-                opr[span.className] = span.innerHTML;
+            const tdM1 = trM1.children[0];
+            const tdM2 = trM2.children[0];
+            const tdM3 = trM3.children[0];
+
+            if(td.colSpan === 7)
+            {
+                if(td.childElementCount === 1)
+                {
+                    opr["desc_um"] = ''
+                }
+                for (let j = 0; j < td.childElementCount; j++) {
+                    const span = td.children[j];
+                    opr[span.className] = span.innerHTML
+                }
+                i = i + 1
+            }
+            if(tdM1.colSpan === 7)
+            {
+                for (let j = 0; j < tdM1.childElementCount; j++) {
+                    const span = tdM1.children[j];
+                    opr[span.className] = span.innerHTML
+                }
+                i = i + 1
+            }
+            if(tdM2.colSpan === 7)
+            {
+                for (let j = 0; j < tdM2.childElementCount; j++) {
+                    const span = tdM2.children[j];
+                    opr[span.className] = span.innerHTML
+                }
+                i = i + 1
+            }
+            if(tdM3.colSpan === 7)
+            {
+                for (let j = 0; j < tdM3.childElementCount; j++) {
+                    const span = tdM3.children[j];
+                    opr[span.className] = span.innerHTML
+                }
+                i = i + 1
             }
         }
+
         if (filhos === 7) {
             if (tr.children[0].nodeName === "TD") {
                 const obj = {};
@@ -144,14 +186,14 @@ function prepararEscalasJSon(dadosHtml) {
                 obj['ASSINATURA'] = '',
                 obj['TEMPO'] = _extrairTempo({ data: obj['DATA'], hora: obj['HORA'] }),
                 obj['VALOR'] = _extrairValor(obj['TEMPO']),
+                obj['OPERAÇÃO'] = opr.name_dois, //OPERAÇÃO - TIPO
+                obj['FALTA'] = false
+                obj['name_um'] = opr.name_um, //OPERAÇÃO - GBM
+                obj['desc_um'] = opr.desc_um, //SUB_LOTAÇÃO_LOCAL
+                obj['name_dois'] = opr.name_dois, //OPERAÇÃO - TIPO
                 obj['name_tres'] = opr.name_tres, //DATA
                 obj['name_quatro'] = opr.name_quatro, //HORA - OPERAÇÃO - GBM
-                obj['desc_um'] = opr.desc_um, //SUB_LOTAÇÃO_LOCAL
-                obj['name_um'] = opr.name_um, //OPERAÇÃO - GBM
-                obj['OPERAÇÃO'] = opr.name_dois, //OPERAÇÃO - TIPO
-                obj['name_dois'] = opr.name_dois, //OPERAÇÃO - TIPO
                 obj['name_cinco'] = opr.name_cinco, // CATEGORIA
-                obj['FALTA'] = false
                 dadoEscalasJson.push(obj);
             }
         }
@@ -749,7 +791,7 @@ const htmlConstruirEscala = (info) => {
     divResultado.append(table)
     
     function _nivel1(info){
-        _incluirLinha(`<td colspan="7" class="nivel_um"><span class="name_um">${info.name_um}</span><span class="desc_um">${(info.desc_um === undefined ? '' : ' - ' + info.desc_um)}</span></td>`)
+        _incluirLinha(`<td colspan="7" class="nivel_um"><span class="name_um">${info.name_um}</span><span class="desc_um">${((info.desc_um === undefined || info.desc_um === '') ? '' : ' - ' + info.desc_um)}</span></td>`)
     }
     function _nivel2(info){
         _incluirLinha(`<td colspan="7" class="nivel_um"><span class="name_um">${info.name_dois}</span></td>`)
