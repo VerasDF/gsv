@@ -532,13 +532,14 @@ function alterarDuracao(criteriosDeConsulta, dadosParaAlteracao) {
 }
 
 function tratarFaltas() {
-    if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){
-        return
-    }
-    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1]){
+    if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
+    
+    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
+    {
         $info({msg:`Períodos incompatívies para tratar faltas`, opt:`+a`})
         return
     }
+    
     let contador = 0
     dadoEscalasJson.forEach((elm)=>{
         const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno: elm.HORA})
@@ -548,7 +549,16 @@ function tratarFaltas() {
             contador = contador + 1
         }
     })
+    
     $info({msg:`, atribuídas: ${contador}`, opt:`+`})
+    
+    dadoFaltasJson.forEach((flt)=>{
+        const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO})
+        if (filtroFalta.length == 0){
+            // console.log("NotFound", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO)
+            $info({msg:`, Falta não atribuída: ${flt.SIAPE}, ${flt.DATA}, ${flt.TURNO}, ${flt.LOCAL}, ${flt.OPERAÇÃO}`, opt:`+a`})
+        }
+    })
 }
 
 function totais(campoDePesquisa, obj) {
