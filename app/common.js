@@ -136,37 +136,33 @@ function prepararEscalasJSon(dadosHtml) {
                     const span = td.children[j];
                     opr[span.className] = span.innerHTML
                 }
-                i = i + 1
-            }
-            if(tdM1.colSpan === 7)
-            {
-                for (let j = 0; j < tdM1.childElementCount; j++) {
-                    const span = tdM1.children[j];
-                    opr[span.className] = span.innerHTML
+                if(tdM1.colSpan === 7)
+                {
+                    for (let j = 0; j < tdM1.childElementCount; j++) {
+                        const span = tdM1.children[j];
+                        opr[span.className] = span.innerHTML
+                    }
+                    if(tdM2.colSpan === 7)
+                    {
+                        for (let j = 0; j < tdM2.childElementCount; j++) {
+                            const span = tdM2.children[j];
+                            opr[span.className] = span.innerHTML
+                        }
+                        if(tdM3.colSpan === 7)
+                        {
+                            for (let j = 0; j < tdM3.childElementCount; j++) {
+                                const span = tdM3.children[j];
+                                opr[span.className] = span.innerHTML
+                            }
+                        }
+                    }
                 }
-                i = i + 1
-            }
-            if(tdM2.colSpan === 7)
-            {
-                for (let j = 0; j < tdM2.childElementCount; j++) {
-                    const span = tdM2.children[j];
-                    opr[span.className] = span.innerHTML
-                }
-                i = i + 1
-            }
-            if(tdM3.colSpan === 7)
-            {
-                for (let j = 0; j < tdM3.childElementCount; j++) {
-                    const span = tdM3.children[j];
-                    opr[span.className] = span.innerHTML
-                }
-                i = i + 1
             }
         }
 
         if (filhos === 7) {
             if (tr.children[0].nodeName === "TD") {
-                const obj = {};
+                const obj = {};                
                 obj['_ID'] = i
                 obj['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`,
                 obj['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`,
