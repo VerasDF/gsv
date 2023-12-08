@@ -506,9 +506,11 @@ function navegarPelasGuias({ nomeDaGuia }) {
         if ( te > 0 ){
             btnGuiaEscalas.disabled = false
             btnGuiaAvancado.disabled = false
+            btnGuiaPlanilha.disabled = false
         } else {
             btnGuiaEscalas.disabled = true
             btnGuiaAvancado.disabled = true
+            btnGuiaPlanilha.disabled = true
         }
         if ( tf > 0 ){
             btnGuiaFaltas.disabled = false
@@ -523,11 +525,9 @@ function navegarPelasGuias({ nomeDaGuia }) {
         } else {
             btnGuiaInscritos.disabled = true
         }
-        if ( (te > 0 && tf > 0) ){
-            btnGuiaPlanilha.disabled = false
-        } else {
-            btnGuiaPlanilha.disabled = true
-        }
+        // if ( (te > 0 && tf > 0) ){
+        // } else {
+        // }
         
         if(!nomeDaGuia){
             $('divGuiaButtons').style.display = 'none'

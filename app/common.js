@@ -110,96 +110,77 @@ function avaliarDadoBruto({htmlRetornado}) {
 }
 
 function prepararEscalasJSon(dadosHtml) {
-    let opr = {};
-    let dadoEscalasJson = [];
-    for (let i = 0; i < dadosHtml.childElementCount; i++) {
-        const tr = dadosHtml.children[i];
-        const filhos = tr.childElementCount;
-        
-        if (filhos === 1) {
-            const trM1 = dadosHtml.children[i+1];
-            const trM2 = dadosHtml.children[i+2];
-            const trM3 = dadosHtml.children[i+3];
-
-            const td = tr.children[0];
-            const tdM1 = trM1.children[0];
-            const tdM2 = trM2.children[0];
-            const tdM3 = trM3.children[0];
-
-            if(td.colSpan === 7)
-            {
-                if(td.childElementCount === 1)
-                {
-                    opr["desc_um"] = ''
-                }
-                for (let j = 0; j < td.childElementCount; j++) {
-                    const span = td.children[j];
-                    opr[span.className] = span.innerHTML
-                }
-                if(tdM1.colSpan === 7)
-                {
-                    for (let j = 0; j < tdM1.childElementCount; j++) {
-                        const span = tdM1.children[j];
+    try {    
+        let opr = {};
+        let dadoEscalasJson = [];
+        for (let i = 0; i < dadosHtml.childElementCount; i++){
+            const tr = dadosHtml.children[i];
+            const filhos = tr.childElementCount;
+            if (filhos === 1) {
+                const td = tr.children[0];
+                if(td.colSpan === 7){
+                    if(td.childElementCount === 1){
+                        opr["desc_um"] = ''
+                    }
+                    for (let j = 0; j < td.childElementCount; j++){
+                        const span = td.children[j];
                         opr[span.className] = span.innerHTML
                     }
-                    if(tdM2.colSpan === 7)
-                    {
-                        for (let j = 0; j < tdM2.childElementCount; j++) {
-                            const span = tdM2.children[j];
+                    const trM1 = dadosHtml.children[i+1];
+                    const tdM1 = trM1.children[0];
+                    if(tdM1.colSpan === 7){
+                        for (let j = 0; j < tdM1.childElementCount; j++){
+                            const span = tdM1.children[j];
                             opr[span.className] = span.innerHTML
-                        }
-                        if(tdM3.colSpan === 7)
-                        {
-                            for (let j = 0; j < tdM3.childElementCount; j++) {
-                                const span = tdM3.children[j];
-                                opr[span.className] = span.innerHTML
-                            }
                         }
                     }
                 }
             }
-        }
 
-        if (filhos === 7) {
-            if (tr.children[0].nodeName === "TD") {
-                const obj = {};                
-                obj['_ID'] = i
-                obj['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`,
-                obj['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`,
-                obj['ESCALADO'] = `${_sanitizar(tr.children[1].title)}`,
-                obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`,
-                obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
-                obj['QUADRO'] = `${_sanitizar(tr.children[4].innerHTML)}`,
-                obj['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`,
-                obj['ALA'] = `${_sanitizar(tr.children[5].innerHTML)}`,
-                obj['GRUPO'] = _classificarGrupo(opr.name_dois),
-                obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um }),
-                obj['HORA'] = _extrairHorario(opr.name_quatro),
-                obj['LOCAL'] = '', //falta implementar
-                obj['MÊS'] = _extrairMesExtenso(opr.name_tres),
-                obj['QUINZENA'] = _extrairQuinzena(opr.name_tres),
-                obj['DATA'] = opr.name_tres, //DATA
-                obj['ASSINATURA'] = '',
-                obj['TEMPO'] = _extrairTempo({ data: obj['DATA'], hora: obj['HORA'] }),
-                obj['VALOR'] = _extrairValor(obj['TEMPO']),
-                obj['OPERAÇÃO'] = opr.name_dois, //OPERAÇÃO - TIPO
-                obj['FALTA'] = false
-                obj['name_um'] = opr.name_um, //OPERAÇÃO - GBM
-                obj['desc_um'] = opr.desc_um, //SUB_LOTAÇÃO_LOCAL
-                obj['name_dois'] = opr.name_dois, //OPERAÇÃO - TIPO
-                obj['name_tres'] = opr.name_tres, //DATA
-                obj['name_quatro'] = opr.name_quatro, //HORA - OPERAÇÃO - GBM
-                obj['name_cinco'] = opr.name_cinco, // CATEGORIA
-                dadoEscalasJson.push(obj);
+            if (filhos === 7) {
+                if (tr.children[0].nodeName === "TD") {
+                    const obj = {};                
+                    obj['_ID'] = i
+                    obj['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`,
+                    obj['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`,
+                    obj['ESCALADO'] = `${_sanitizar(tr.children[1].title)}`,
+                    obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`,
+                    obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
+                    obj['QUADRO'] = `${_sanitizar(tr.children[4].innerHTML)}`,
+                    obj['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`,
+                    obj['ALA'] = `${_sanitizar(tr.children[5].innerHTML)}`,
+                    obj['GRUPO'] = _classificarGrupo(opr.name_dois),
+                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um }),
+                    obj['HORA'] = _extrairHorario(opr.name_quatro),
+                    obj['LOCAL'] = '', //falta implementar
+                    obj['MÊS'] = _extrairMesExtenso(opr.name_tres),
+                    obj['QUINZENA'] = _extrairQuinzena(opr.name_tres),
+                    obj['DATA'] = opr.name_tres, //DATA
+                    obj['ASSINATURA'] = '',
+                    obj['TEMPO'] = _extrairTempo({ data: obj['DATA'], hora: obj['HORA'] }),
+                    obj['VALOR'] = _extrairValor(obj['TEMPO']),
+                    obj['OPERAÇÃO'] = opr.name_dois, //OPERAÇÃO - TIPO
+                    obj['FALTA'] = false
+                    obj['name_um'] = opr.name_um, //OPERAÇÃO - GBM
+                    obj['desc_um'] = opr.desc_um, //SUB_LOTAÇÃO_LOCAL
+                    obj['name_dois'] = opr.name_dois, //OPERAÇÃO - TIPO
+                    obj['name_tres'] = opr.name_tres, //DATA
+                    obj['name_quatro'] = opr.name_quatro, //HORA - OPERAÇÃO - GBM
+                    obj['name_cinco'] = opr.name_cinco, // CATEGORIA
+                    dadoEscalasJson.push(obj);
+                }
+            }
+            if (filhos !== 1 && filhos !== 7) {
+                alert('Alteração no padrão de gerenciamento.');
+                break;
             }
         }
-        if (filhos !== 1 && filhos !== 7) {
-            alert('Alteração no padrão de gerenciamento.');
-            break;
-        }
-    }
 
-    return dadoEscalasJson;
+        return dadoEscalasJson
+
+    } catch (error) {
+        $info({msg:`${error}`, opt:`+n`})
+    }
 
     function _sanitizar(parametro) {
         let retorno = parametro.replace("\n", "");
