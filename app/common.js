@@ -205,6 +205,8 @@ function prepararEscalasJSon(dadosHtml) {
             retorno = "ÁGUA MINERAL DO PARQUE NACIONAL";
         } else if (parametro.toUpperCase().indexOf("CHUVOSO") > -1) {
             retorno = "PERÍODO CHUVOSO";
+        } else if (parametro.toUpperCase().indexOf("AEDES") > -1) {
+            retorno = "DENGUE";
         } else {
             retorno = "EXTRAORDINÁRIO";
         }
