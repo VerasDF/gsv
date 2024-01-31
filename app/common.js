@@ -236,13 +236,11 @@ function prepararEscalasJSon(dadosHtml) {
             if (retorno == "ABMIL"){
                 retorno = "GPCIV"
             }
-
         }
         //---Acertar Operação Verde Vivo 2023---------
         if (retorno.indexOf("VERDE VIVO") > -1) {
             retorno = parametro.um;
         }
-
         return retorno;
     }
 
