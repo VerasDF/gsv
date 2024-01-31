@@ -150,7 +150,7 @@ function prepararEscalasJSon(dadosHtml) {
                     obj['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`,
                     obj['ALA'] = `${_sanitizar(tr.children[5].innerHTML)}`,
                     obj['GRUPO'] = _classificarGrupo(opr.name_dois),
-                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um }),
+                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: obj['GRUPO']}),
                     obj['HORA'] = _extrairHorario(opr.name_quatro),
                     obj['LOCAL'] = '', //falta implementar
                     obj['MÊS'] = _extrairMesExtenso(opr.name_tres),
@@ -231,6 +231,12 @@ function prepararEscalasJSon(dadosHtml) {
         }
         if (retorno === "Parque Ecológico Saburo Onoyama") {
             retorno = "2º GBM";
+        }
+        if (parametro.grupo == "DENGUE"){
+            if (retorno == "ABMIL"){
+                retorno = "GPCIV"
+            }
+
         }
         //---Acertar Operação Verde Vivo 2023---------
         if (retorno.indexOf("VERDE VIVO") > -1) {
