@@ -236,13 +236,11 @@ function prepararEscalasJSon(dadosHtml) {
             if (retorno == "ABMIL"){
                 retorno = "GPCIV"
             }
-
         }
         //---Acertar Operação Verde Vivo 2023---------
         if (retorno.indexOf("VERDE VIVO") > -1) {
             retorno = parametro.um;
         }
-
         return retorno;
     }
 
@@ -821,10 +819,9 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
             _carregarSiape(i, arrGrupo, k, arrGbmDestino)
         }
     }
-        
+    
     _incluirCabecalhoParaPdf()
 
-    
     if (divResultado.innerHTML){
         setTimeout(()=>{
             if(confirm(`Deseja baixar esses dados convertidos em um arquivo PDF?`)) gerarPdf(divResultado)
@@ -832,7 +829,6 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
     }else{
         $info({msg:`Não há dados a serem convertidos para PDF.`, opt:`+a`})
     }
-
 
     function _incluirCabecalhoParaPdf(){
         const tbResultado = document.getElementById('tbResultado')
@@ -926,7 +922,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
 
         const tdGbmDestino = document.getElementById(`GRUPO-${codGrupo}-GBM-${codGbmDestino}`)
         tdGbmDestino.children[0].title = `${_tipsOperacoes(arrTips)}`
-        tdGbmDestino.children[1].innerHTML = `${arrTotalGeral.length}`
+        tdGbmDestino.children[1].innerHTML = `` //`${arrTotalGeral.length}`
         tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`
         tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`
     }
