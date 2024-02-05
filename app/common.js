@@ -353,7 +353,7 @@ function prepararInscritosJSon(info) {
     }
 }
 
-function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo }) {
+function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
     
     let objAux = dadoEscalasJson.filter((e)=>{return e})
 
@@ -428,6 +428,9 @@ function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_d
         }else{
             objAux = objAux.filter((e)=>{return e.TEMPO.indexOf(tempo) > -1})
         }
+    }
+    if (cinco!==undefined) {
+        objAux = objAux.filter((e)=>{return e.name_cinco.indexOf(cinco) > -1})
     }
         
     return objAux
