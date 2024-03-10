@@ -331,6 +331,16 @@ function prepararInscritosJSon(info) {
     for (i = 0; i < info.childElementCount; i++) {
         const obj = {}
         const tr = info.children[i]
+        
+        // remover tag script para poder resgatar os cursos
+        for (j = 0; j < tr.childElementCount; j++) {
+            let tag = tr.children[j]
+            if(tag.nodeName == "SCRIPT") {
+                tag.parentNode.removeChild(tag)
+                j = j - 1
+            }
+        }
+
         if (tr.children[0].nodeName === "TD") {
             obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`,
             obj['MES_REFERENCIA'] = `${_sanitizar(tr.children[1].innerHTML)}`,
@@ -476,10 +486,13 @@ function filtrarFaltasJson({ data, local, lotacao, nome, operacao, quadro, posto
     
 }
 
-function filtrarInscritosJson({ lotacao, nome, quadro, posto_grad, siape }) {
+function filtrarInscritosJson({ cursos, lotacao, nome, quadro, posto_grad, siape }) {
     
     let objAux = dadoInscritosJson.filter((e)=>{return e})
 
+    if (cursos !== undefined) {
+        objAux = objAux.filter((e) => {return e.CURSOS.indexOf(cursos) > -1})
+    }
     if (lotacao !== undefined) {
         objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
     }
@@ -1029,8 +1042,14 @@ const htmlConstruirTabelaInscritos = () => {
     table.append(_cabecalho2())
     let indice = 0
     let mesDeReferencia = ''
+
+
+    //trabalhando aqui 2023-03-10
+
+    let cursos = txtCursos.value
+
     for (let i = 0; i < arrOrdemPostoGrad.length; i++) {
-        const objAux =  _ordenarDados(filtrarInscritosJson({ posto_grad: arrOrdemPostoGrad[i] }))
+        const objAux =  _ordenarDados(filtrarInscritosJson({ posto_grad: arrOrdemPostoGrad[i], cursos: cursos }))
         if(objAux.length > 0){
             for(j = 0; j < objAux.length; j++){
                 if(mesDeReferencia === ''){ mesDeReferencia = objAux[j].MES_REFERENCIA }
@@ -1063,7 +1082,7 @@ const htmlConstruirTabelaInscritos = () => {
         tr.innerHTML = `<td class="label_data">${i}</td>` + 
         `<td class="label_data">${aux.SIAPE}</td>` + 
         `<td class="label_data">${aux.POSTO_GRAD}</td>` + 
-        `<td class="label_data" style="text-align: left">${aux.NOME}</td>` + 
+        `<td class="label_data" style="text-align: left" title="${(aux.CURSOS==''? "(Nenhum)" : aux.CURSOS)}">${aux.NOME}</td>` + 
         `<td class="label_data">${aux.LOTAÇÃO}</td>` + 
         `<td class="label_data">${aux.QUADRO}</td>` + 
         `<td class="label_data">${aux.ALA}</td>`

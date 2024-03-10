@@ -46,12 +46,14 @@ const cmdExibirPlanilha = document.getElementById('cmdExibirPlanilha')
 const cmdExibirPlanilhaGrade = document.getElementById('cmdExibirPlanilhaGrade')
 const cmdExportarPdf = document.getElementById('cmdExportarPdf')
 const cmdExibirFaltas = document.getElementById('cmdExibirFaltas')
+const cmdFiltrarCursos = document.getElementById('cmdFiltrarCursos')
 const cmdPesquisarPorSiape = document.getElementById('cmdPesquisarPorSiape')
 const cmdTotaisEnvolvidos = document.getElementById('cmdTotaisEnvolvidos')
 const cmdTotaisEscalados = document.getElementById('cmdTotaisEscalados')
 
 const txtAvancado = document.getElementById('txtAvancado')
 const txtAvancadoAlterarValor = document.getElementById('txtAvancadoAlterarValor')
+const txtCursos = document.getElementById('txtCursos')
 const txtSiape = document.getElementById('txtSiape')
 const txtStatus = document.getElementById('txtStatus')
 
@@ -164,6 +166,11 @@ cmdExibirFaltas.addEventListener('click', (e)=>{
     }else{
         htmlConstruirGrade(objAlvo)
     }
+})
+
+cmdFiltrarCursos.addEventListener('click', (e)=>{
+    e.preventDefault()
+    htmlConstruirTabelaInscritos()
 })
 
 cmdExibirInscritos.addEventListener('click', (e)=>{
