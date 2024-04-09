@@ -62,9 +62,9 @@ function avaliarDadoBruto({htmlRetornado}) {
         if( tipoRetorno === 'Faltas' ){
             dadoBruto = dadoBruto.querySelector(".div_form_faltas")
             dadoBruto = dadoBruto.children[0].children[0]
-            dadoFaltasJson = prepararFaltasJSon(dadoBruto)
+            dadoEscalaJson = prepararFaltasJSon(dadoBruto)
             $info({msg:`Faltas de`,opt:`+n`})
-            $info({msg:`${_extrairMesExtenso(dadoFaltasJson[0].DATA)}/${dadoFaltasJson[0].DATA.split('/')[2]}, retornadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoFaltasJson.length)} faltas`, opt:'+'})
+            $info({msg:`${_extrairMesExtenso(dadoEscalaJson[0].DATA)}/${dadoEscalaJson[0].DATA.split('/')[2]}, retornadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalaJson.length)} faltas`, opt:'+'})
             funcaoAuxiliar = inicializarFaltas
         }
         if( tipoRetorno === 'Inscritos'){
@@ -447,7 +447,7 @@ function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_d
 }
 
 function filtrarFaltasJson({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
-    let objAux = dadoFaltasJson.filter((e)=>{return e})
+    let objAux = dadoEscalaJson.filter((e)=>{return e})
 
     if (data !== undefined) {
         objAux = objAux.filter((e) => { if ( e.DATA.indexOf(data) > -1 ) { return e }})
@@ -531,9 +531,9 @@ function alterarDuracao(criteriosDeConsulta, dadosParaAlteracao) {
 }
 
 function tratarFaltas() {
-    if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
+    if(dadoEscalasJson.length===0 || dadoEscalaJson.length===0){ return }
     
-    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
+    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoEscalaJson[0].DATA.split("/")[1])
     {
         $info({msg:`Períodos incompatívies para tratar faltas`, opt:`+a`})
         return
@@ -551,7 +551,7 @@ function tratarFaltas() {
     
     $info({msg:`, atribuídas: ${contador}`, opt:`+`})
     
-    dadoFaltasJson.forEach((flt)=>{
+    dadoEscalaJson.forEach((flt)=>{
         const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO})
         if (filtroFalta.length == 0){
             // console.log("NotFound", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO)
@@ -1007,8 +1007,8 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
 }
 
 const htmlConstuirFaltasPorDia = (par) => {
-    const objTotaisDeFaltasPorDia = totais(par,dadoFaltasJson)
-    const arrTotaisDeFaltasPorDia = Object.keys(totais(par,dadoFaltasJson)).sort()
+    const objTotaisDeFaltasPorDia = totais(par,dadoEscalaJson)
+    const arrTotaisDeFaltasPorDia = Object.keys(totais(par,dadoEscalaJson)).sort()
     const table = document.createElement('table')
     const cabecalho = `<tr>` + 
                       `<td colspan="2" class="label_data_th">RESUMO SOBRE FALTAS</td>` + 
@@ -1027,6 +1027,35 @@ const htmlConstuirFaltasPorDia = (par) => {
         tr.innerHTML = `<td class="label_data">${elm}</td><td class="label_data">${objTotaisDeFaltasPorDia[elm]}</td>`
         table.append(tr)
         totalizar = totalizar + objTotaisDeFaltasPorDia[elm]
+    })
+    const resumo = `<td class="label_data_th">TOTAL GERAL</td><td class="label_data_th">${totalizar}</td>`
+    const tr = document.createElement('tr')
+    tr.innerHTML = resumo
+    table.append(tr)
+    divResultado.append(table)
+}
+
+const htmlConstruirTotalDeCotasPorData = (arrObj) => {
+    const objTotaisDeCotasPorData = totais('DATA',arrObj)
+    const arrTotaisDeCotasPorData = Object.keys(totais('DATA',arrObj)).sort()
+    const table = document.createElement('table')
+    const cabecalho = `<tr>` + 
+                      `<td colspan="2" class="label_data_th">TOTAIS DE COTAS POR DATA</td>` + 
+                      `</tr>` + 
+                      `<tr>` + 
+                      `<td class="label_data_th">DATA</td>` + 
+                      `<td class="label_data_th">QTD.</td>` + 
+                      `</tr>`
+    let totalizar = 0
+    
+    table.innerHTML = cabecalho
+    
+    divResultado.innerHTML = ""
+    arrTotaisDeCotasPorData.forEach((elm)=>{
+        const tr = document.createElement('tr')
+        tr.innerHTML = `<td class="label_data">${elm}</td><td class="label_data">${objTotaisDeCotasPorData[elm]}</td>`
+        table.append(tr)
+        totalizar = totalizar + objTotaisDeCotasPorData[elm]
     })
     const resumo = `<td class="label_data_th">TOTAL GERAL</td><td class="label_data_th">${totalizar}</td>`
     const tr = document.createElement('tr')

@@ -58,7 +58,7 @@ const txtSiape = document.getElementById('txtSiape')
 const txtStatus = document.getElementById('txtStatus')
 
 let dadoInscritosJson = []
-let dadoFaltasJson = []
+let dadoEscalaJson = []
 let dadoEscalasJson = []
 let conf = {}
 
@@ -119,6 +119,9 @@ cmdAvancadoExibirGrade.addEventListener('click', (e)=>{
                 break;
             case '3':
                 htmlConstruirTotalDeMilitaresEscalados(objAlvo)
+                break;
+            case '4':
+                htmlConstruirTotalDeCotasPorData(objAlvo)
                 break;
             default:
                 htmlConstruirGrade(objAlvo)
@@ -446,7 +449,7 @@ function inicializarEscalas() {
 function inicializarFaltas() {
     $('lblFaltas').style.backgroundColor = ('var(--fundoVerde)')
     navegarPelasGuias({ nomeDaGuia: 'Faltas' })
-    preencherSelect(divFaltaOperacao, totais('OPERAÇÃO', dadoFaltasJson))
+    preencherSelect(divFaltaOperacao, totais('OPERAÇÃO', dadoEscalaJson))
     divResultado.innerHTML = ''
     tratarFaltas()
 }
@@ -501,7 +504,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
     }
     function _limparGuias({ nomeDaGuia }) {
         const te = dadoEscalasJson.length
-        const tf = dadoFaltasJson.length
+        const tf = dadoEscalaJson.length
         const ti = dadoInscritosJson.length
 
         btnGuiaEscalas.className = 'btnDeGuia'
