@@ -69,7 +69,6 @@ function avaliarDadoBruto({htmlRetornado}) {
         }
         if( tipoRetorno === 'Inscritos'){
             dadoBruto = dadoBruto.querySelector(".tbResumo")
-            dadoBruto = dadoBruto.children[0]
             dadoInscritosJson = prepararInscritosJSon(dadoBruto)
             // $info({msg:`Inscritos de`,opt:`+n`})
             // $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, retornados: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoInscritosJson.length)} inscritos`, opt:'+'})
@@ -327,34 +326,70 @@ function prepararFaltasJSon(dadosHtml) {
 
 function prepararInscritosJSon(info) {
     let dadoInscritosJson = []
-    let qtdColunasDias = info.children[0].children[8].colSpan
-    for (i = 0; i < info.childElementCount; i++) {
-        const obj = {}
-        const tr = info.children[i]
-        
-        // remover tag script para poder resgatar os cursos
-        for (j = 0; j < tr.childElementCount; j++) {
-            let tag = tr.children[j]
-            if(tag.nodeName == "SCRIPT") {
-                tag.parentNode.removeChild(tag)
-                j = j - 1
-            }
-        }
 
-        if (tr.children[0].nodeName === "TD") {
-            obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`,
-            obj['MES_REFERENCIA'] = `${_sanitizar(tr.children[1].innerHTML)}`,
-            obj['POSTO_GRAD'] = `${_sanitizar(tr.children[3].innerHTML)}`,
-            obj['NOME'] = `${_sanitizar(tr.children[4].innerHTML)}`,
-            obj['LOTAÇÃO'] = `${_sanitizar(tr.children[5].innerHTML)}`,
-            obj['QUADRO'] = `${_sanitizar(tr.children[6].innerHTML)}`,
-            obj['ALA'] = `${_sanitizar(tr.children[7].innerHTML)}`,
-            obj['CURSOS'] = `${_sanitizar(tr.children[qtdColunasDias + 9].innerHTML)}`,
-            dadoInscritosJson.push(obj)
+    if(info.children[0].children[0].bgColor == "#DDD"){
+        _versao2()
+    }
+    else{
+        _versao1()
+    }
+    
+    return dadoInscritosJson
+    
+    function _versao1(){
+        let qtdColunasDias = info.children[0].children[8].colSpan
+        for (i = 0; i < info.childElementCount; i++) {
+            info = info.children[0]
+            let obj = {}
+            let tr = info.children[i]
+            
+            // remover tag script para poder resgatar os cursos
+            for (j = 0; j < tr.childElementCount; j++) {
+                let tag = tr.children[j]
+                if(tag.nodeName == "SCRIPT") {
+                    tag.parentNode.removeChild(tag)
+                    j = j - 1
+                }
+            }
+
+            if (tr.children[0].nodeName === "TD") {
+                obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`,
+                obj['MES_REFERENCIA'] = `${_sanitizar(tr.children[1].innerHTML)}`,
+                obj['POSTO_GRAD'] = `${_sanitizar(tr.children[3].innerHTML)}`,
+                obj['NOME'] = `${_sanitizar(tr.children[4].innerHTML)}`,
+                obj['LOTAÇÃO'] = `${_sanitizar(tr.children[5].innerHTML)}`,
+                obj['QUADRO'] = `${_sanitizar(tr.children[6].innerHTML)}`,
+                obj['ALA'] = `${_sanitizar(tr.children[7].innerHTML)}`,
+                obj['CURSOS'] = `${_sanitizar(tr.children[qtdColunasDias + 9].innerHTML)}`,
+                dadoInscritosJson.push(obj)
+            }
         }
     }
 
-    return dadoInscritosJson
+    function _versao2(){
+        for(i = 0; info.childElementCount; i++){
+            info = info.children[1]
+            let obj = {}
+            let separar = null
+            let tr = info.children[i]
+
+            // trabalhando aqui...
+            console.log(i)
+            
+            if(tr.children[0].nodeName === "TD") {
+                separar = _sanitizar(tr.children[1].innerHTML).split("<br>")
+                obj['SIAPE'] = separar[0],
+                obj['POSTO_GRAD'] = separar[1],
+                obj['QUADRO'] = separar[2],
+                obj['NOME'] = `${_sanitizar(tr.children[2].innerHTML)}`,
+                obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
+                obj['ALA'] = `${_sanitizar(tr.children[4].innerHTML)}`,
+                obj['MES_REFERENCIA'] = ``,
+                obj['CURSOS'] = `${_sanitizar(tr.children[7].innerHTML)}`,
+                dadoInscritosJson.push(obj)
+            }
+        }
+    }
         
     function _sanitizar(parametro) {
         let retorno = parametro.replace("\n", "")
