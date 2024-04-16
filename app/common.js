@@ -310,7 +310,6 @@ function prepararFaltasJSon(dadosHtml) {
             obj['QUADRO'] = `${_sanitizar(tr.children[9].innerHTML)}`
             obj['ALA'] = `${_sanitizar(tr.children[10].innerHTML)}`
             obj['FALTA'] = `${_sanitizar(tr.children[11].innerHTML)}`
-
             dadoFaltasJson.push(obj)
         }
     }
@@ -328,9 +327,10 @@ function prepararInscritosJSon(info) {
     let dadoInscritosJson = []
 
     if(info.children[0].children[0].bgColor == "#DDD"){
+        info = info.children[1]
         _versao2()
-    }
-    else{
+    } else {
+        info = info.children[0]
         _versao1()
     }
     
@@ -339,12 +339,10 @@ function prepararInscritosJSon(info) {
     function _versao1(){
         let qtdColunasDias = info.children[0].children[8].colSpan
         for (i = 0; i < info.childElementCount; i++) {
-            info = info.children[0]
             let obj = {}
             let tr = info.children[i]
             
-            // remover tag script para poder resgatar os cursos
-            for (j = 0; j < tr.childElementCount; j++) {
+            for (j = 0; j < tr.childElementCount; j++) {  // remover tag script para poder resgatar os cursos
                 let tag = tr.children[j]
                 if(tag.nodeName == "SCRIPT") {
                     tag.parentNode.removeChild(tag)
@@ -367,14 +365,11 @@ function prepararInscritosJSon(info) {
     }
 
     function _versao2(){
-        for(i = 0; info.childElementCount; i++){
-            info = info.children[1]
+        let mes_referencia = info.parentNode.parentNode.children[1].innerHTML
+        for(i = 0; i < info.childElementCount; i++){ // trabalhando aqui 2024-04-16...
             let obj = {}
             let separar = null
             let tr = info.children[i]
-
-            // trabalhando aqui...
-            console.log(i)
             
             if(tr.children[0].nodeName === "TD") {
                 separar = _sanitizar(tr.children[1].innerHTML).split("<br>")
@@ -384,7 +379,7 @@ function prepararInscritosJSon(info) {
                 obj['NOME'] = `${_sanitizar(tr.children[2].innerHTML)}`,
                 obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
                 obj['ALA'] = `${_sanitizar(tr.children[4].innerHTML)}`,
-                obj['MES_REFERENCIA'] = ``,
+                obj['MES_REFERENCIA'] = mes_referencia,
                 obj['CURSOS'] = `${_sanitizar(tr.children[7].innerHTML)}`,
                 dadoInscritosJson.push(obj)
             }
@@ -526,7 +521,8 @@ function filtrarInscritosJson({ cursos, lotacao, nome, quadro, posto_grad, siape
     let objAux = dadoInscritosJson.filter((e)=>{return e})
 
     if (cursos !== undefined) {
-        objAux = objAux.filter((e) => {return e.CURSOS.indexOf(cursos) > -1})
+        objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
+        //objAux = objAux.filter((e) => {return e.CURSOS.indexOf(cursos) > -1})
     }
     if (lotacao !== undefined) {
         objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
@@ -1106,11 +1102,8 @@ const htmlConstruirTabelaInscritos = () => {
     table.append(_cabecalho2())
     let indice = 0
     let mesDeReferencia = ''
-
-
-    //trabalhando aqui 2023-03-10
-
     let cursos = txtCursos.value
+    let total = 0
 
     for (let i = 0; i < arrOrdemPostoGrad.length; i++) {
         const objAux =  _ordenarDados(filtrarInscritosJson({ posto_grad: arrOrdemPostoGrad[i], cursos: cursos }))
