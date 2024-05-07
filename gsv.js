@@ -307,11 +307,6 @@ radQui2.addEventListener('click', (e)=>{
 })
 
 radQui3.addEventListener('change', (e)=>{
-    const dtRef = new Date(`${dtDia.value}T00:00:00`)
-    const dtAux = new Date(dtRef.setMonth(dtRef.getMonth()+1))
-    const dtUltimoDia = new Date(dtAux.setDate(dtAux.getDate()-1))
-    dtDia.min = dtDia.value
-    dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`
     dtDia.disabled = false
 
     const par = {data:`${dtDia.value.split('-')[2]}/${dtDia.value.split('-')[1]}/${dtDia.value.split('-')[0]}`}
@@ -438,12 +433,21 @@ function inicializarEscalas() {
     $('lblEscalas').style.backgroundColor = ('var(--fundoVerde)')
     navegarPelasGuias({ nomeDaGuia: 'Escalas' })
     dtDia.value = `${dadoEscalasJson[0].DATA.split('/')[2]}-${dadoEscalasJson[0].DATA.split('/')[1]}-${dadoEscalasJson[0].DATA.split('/')[0]}`
+    _apenasMesVigente()
     preencherSelect(divEscalaGrupo, totais('GRUPO', dadoEscalasJson))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', dadoEscalasJson))
     preencherSelect(divEscalaHorario, totais('HORA', dadoEscalasJson))
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', dadoEscalasJson))
     divResultado.innerHTML = ''
     tratarFaltas()
+
+    function _apenasMesVigente(){
+        const dtRef = new Date(`${dtDia.value}T00:00:00`)
+        const dtAux = new Date(dtRef.setMonth(dtRef.getMonth()+1))
+        const dtUltimoDia = new Date(dtAux.setDate(dtAux.getDate()-1))
+        dtDia.min = dtDia.value
+        dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`    
+    }
 }
 
 function inicializarFaltas() {
