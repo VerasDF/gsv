@@ -443,10 +443,11 @@ function inicializarEscalas() {
 
     function _apenasMesVigente(){
         const dtRef = new Date(`${dtDia.value}T00:00:00`)
-        const dtAux = new Date(dtRef.setMonth(dtRef.getMonth()+1))
-        const dtUltimoDia = new Date(dtAux.setDate(dtAux.getDate()-1))
+        const dtRefMonthPlus = new Date(dtRef.setMonth(dtRef.getMonth()+1))
+        const dtRefDayFirst = new Date(dtRefMonthPlus.setDate(1))
+        const dtUltimoDia = new Date(dtRefDayFirst.setDate(dtRefDayFirst.getDate()-1))
         dtDia.min = dtDia.value
-        dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`    
+        dtDia.max = `${dtUltimoDia.getFullYear()}-${("00"+(parseInt(dtUltimoDia.getMonth())+1)).slice(-2)}-${("00" + dtUltimoDia.getDate()).slice(-2)}`
     }
 }
 
