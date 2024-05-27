@@ -149,7 +149,7 @@ function prepararEscalasJSon(dadosHtml) {
                     obj['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`,
                     obj['ALA'] = `${_sanitizar(tr.children[5].innerHTML)}`,
                     obj['GRUPO'] = _classificarGrupo(opr.name_dois),
-                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: obj['GRUPO']}),
+                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: obj['GRUPO'], tres: opr.name_tres }),
                     obj['HORA'] = _extrairHorario(opr.name_quatro),
                     obj['LOCAL'] = '', //falta implementar
                     obj['MÊS'] = _extrairMesExtenso(opr.name_tres),
@@ -214,7 +214,10 @@ function prepararEscalasJSon(dadosHtml) {
 
     function _extrairGbm(parametro) {
         let retorno = parametro.quatro.split('-');
+        let ano = parametro.tres.split("/");
+        ano = ano[2];
         retorno = retorno[1].trim();
+        
         //---Acertar GBMs de destino------------------
         if (retorno === "HRC" || retorno === "HRT" || retorno === "IHBDF") {
             retorno = "GAEPH";
@@ -236,9 +239,16 @@ function prepararEscalasJSon(dadosHtml) {
                 retorno = "GPCIV"
             }
         }
+        
         //---Acertar Operação Verde Vivo 2023---------
         if (retorno.indexOf("VERDE VIVO") > -1) {
-            retorno = parametro.um;
+            if(ano == "2023"){
+                retorno = parametro.um;
+            }
+            if(ano == "2024"){
+                retorno = parametro.quatro.split("-");
+                retorno = retorno[2].trim();
+            }
         }
         return retorno;
     }
@@ -965,13 +975,13 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
         const objOficial = arrObj.filter((item) => {
             if(item.SIAPE !== 'SV' && item.QUADRO.indexOf('QOBM')>-1 && item.GRUPO === strGrupo && item.GBM_DESTINO === strGbmDestino){return item}
         })
-        const arrTotalOficial = objOficial.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index)
+        const arrTotalOficial = objOficial.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index);
 
-        const tdGbmDestino = document.getElementById(`GRUPO-${codGrupo}-GBM-${codGbmDestino}`)
-        tdGbmDestino.children[0].title = `${_tipsOperacoes(arrTips)}`
-        tdGbmDestino.children[1].innerHTML = `` //`${arrTotalGeral.length}`
-        tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`
-        tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`
+        const tdGbmDestino = document.getElementById(`GRUPO-${codGrupo}-GBM-${codGbmDestino}`);
+        tdGbmDestino.children[0].title = `${_tipsOperacoes(arrTips)}`;
+        tdGbmDestino.children[1].innerHTML = ``//${arrTotalGeral.length}`; //'' Total de Cotas
+        tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`; //'' Total de Oficiais
+        tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`; //'' Total de Praças
     }
 }
 
