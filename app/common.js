@@ -55,7 +55,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoEscalasJson = prepararEscalasJSon(dadoBruto)
             $info({msg:`Escala de`,opt:`+n`})
             $info({msg:`${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}, gerenciadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalasJson.length)} cotas`, opt:'+'})
-            conf.arquivo = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
+            conf.arquivo = `${dadoEscalasJson[0].DATA.split('/')[2]}-${dadoEscalasJson[0].DATA.split('/')[1]}-${dadoEscalasJson[0]["MÊS"]}`
             conf.mesAno = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
             funcaoAuxiliar = inicializarEscalas
         }
@@ -882,7 +882,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
     if (divResultado.innerHTML){
         setTimeout(()=>{
             if(confirm(`Deseja baixar esses dados convertidos em um arquivo PDF?`)) gerarPdf(divResultado)
-        },500)
+        },1000)
     }else{
         $info({msg:`Não há dados a serem convertidos para PDF.`, opt:`+a`})
     }
@@ -890,7 +890,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
     function _incluirCabecalhoParaPdf(){
         const tbResultado = document.getElementById('tbResultado')
         const thisH1 = document.createElement('h1')
-        thisH1.innerHTML = `MILITARES ENVOLVIDOS<br>${arrObj[0].MÊS}/${arrObj[0].DATA.split("/")[2]}`
+        thisH1.innerHTML = `TOTAL DE MILITARES ENVOLVIDOS COM GSV<br>${arrObj[0].MÊS}/${arrObj[0].DATA.split("/")[2]}`
         thisH1.style.display = 'flexbox'
         thisH1.style.textAlign = 'center'
         thisH1.style.width = '100%'
