@@ -93,7 +93,7 @@ cmdAvancadoAlterar.addEventListener('click', ()=>{
         $info({msg:`(Avançado) Não há critérios para serem processados`, opt:'+n'})
         return
     }
-    if(confirm('Cuidado!\n\nEsta alteração é de caráter AVANÇADO.\n\nSerão alteradas a DURAÇÃO e o VALOR das cotas conforme filtro informado.\n\n Essa mudança se aplica apenas a essa seção de consulta de dados em memória RAM.\n\nDeseja continuar?')){
+    if(confirm('C U I D A D O!\n\nEsta alteração é de caráter AVANÇADO.\n\nPoderão ser alterados a DURAÇÃO e o VALOR das cotas conforme filtro informado.\n\n Essa mudança se aplica apenas a essa seção de consulta de dados em memória RAM.\n\nDeseja continuar?')){
         alterarDuracao(txtAvancado.value, {tempo:selAvancadoAlterarDuracao.value, valor:txtAvancadoAlterarValor.value})
     }
 })
@@ -122,6 +122,9 @@ cmdAvancadoExibirGrade.addEventListener('click', (e)=>{
                 break;
             case '4':
                 htmlConstruirTotalDeCotasPorData(objAlvo)
+                break;
+            case '5':
+                htmlConstruirTotaisPorDiasCotasOficiaisPraças(objAlvo)
                 break;
             default:
                 htmlConstruirGrade(objAlvo)

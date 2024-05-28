@@ -979,7 +979,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
 
         const tdGbmDestino = document.getElementById(`GRUPO-${codGrupo}-GBM-${codGbmDestino}`);
         tdGbmDestino.children[0].title = `${_tipsOperacoes(arrTips)}`;
-        tdGbmDestino.children[1].innerHTML = ``//${arrTotalGeral.length}`; //'' Total de Cotas
+        tdGbmDestino.children[1].innerHTML = ''//`${arrTotalGeral.length}`; //'' Total de Cotas
         tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`; //'' Total de Oficiais
         tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`; //'' Total de Praças
     }
@@ -1103,6 +1103,85 @@ const htmlConstruirTotalDeCotasPorData = (arrObj) => {
     tr.innerHTML = resumo
     table.append(tr)
     divResultado.append(table)
+}
+
+const htmlConstruirTotaisPorDiasCotasOficiaisPraças = (arrObj) => {
+    const arrOperacoes = Object.keys(totais('OPERAÇÃO', arrObj)).sort()
+    const arrDatasNoMes = Object.keys(totais('DATA', arrObj)).sort()
+    let dadoTemp = []
+    let listaDeOperacoes = ''
+    
+    $info({ msg:`Quantidade de OPERAÇÔES retornadas: ${arrOperacoes.length}`, opt: '+n'})
+    $info({ msg:`Quantidade de DIAS no mês retornadas: ${arrDatasNoMes.length}`, opt: '+n'})
+    
+    for(let i = 0; i < arrDatasNoMes.length; i++){
+        const dataTemp = arrObj.filter((item, index) => {if(arrObj[index].DATA == arrDatasNoMes[i]) {return item}})
+            const obj = {}
+            let totalDePracas = 0
+            let totalDeOficiais = 0
+            let totalDeCotas = 0
+            if(dataTemp.length>0){
+                obj['DATA'] = arrDatasNoMes[i]
+                for(let j = 0; j < dataTemp.length; j++){
+                    if (dataTemp[j].CIRCULO == 'Oficial'){
+                        totalDeOficiais = totalDeOficiais + 1
+                    }
+                    if (dataTemp[j].CIRCULO == 'Praça'){
+                        totalDePracas = totalDePracas + 1
+                    }
+                    totalDeCotas = totalDeCotas + 1
+                }
+                obj['PRAÇAS'] = totalDePracas
+                obj['OFICIAIS'] = totalDeOficiais
+                obj['TOTAL'] = totalDeCotas
+                dadoTemp.push(obj)
+            }
+    }
+
+    divResultado.innerHTML = ""
+    const table = document.createElement('table')
+    table.append(_cabecalho1())
+    table.append(_cabecalho2())
+    table.append(_cabecalho3())
+    for(x = 0; x < dadoTemp.length; x++){
+        table.append(_incluirDado(dadoTemp[x]))
+    }
+    divResultado.append(table)
+
+    for(z = 0; z < arrOperacoes.length; z++){
+        listaDeOperacoes += `${arrOperacoes[z]}<br>`
+    }
+    $('thMesReferenciaInscritos').innerHTML = listaDeOperacoes
+
+    function _cabecalho1(){
+        const tr = document.createElement('tr')
+        tr.innerHTML = `<th class="label_th" colspan="4" id="thMesReferenciaInscritos"></th>`
+        return tr
+    }
+    function _cabecalho2(){
+        const tr = document.createElement('tr')
+        tr.innerHTML = `<th class="label_th" rowspan="2">DATA</th>` +
+        `<th class="label_th" colspan="3">COTAS</th>`
+        return tr
+    }
+    function _cabecalho3(){
+        const tr = document.createElement('tr')
+        tr.innerHTML = `` + 
+        `<th class="label_th">OFICIAIS</th>` + 
+        `<th class="label_th">PRAÇAS</th>` + 
+        `<th class="label_th">TOTAL</th>`
+        return tr
+    }
+    function _incluirDado(aux){
+        const tr = document.createElement('tr')
+        tr.innerHTML = `` + 
+        `<td class="label_data">${aux.DATA}</td>` + 
+        `<td class="label_data">${aux.OFICIAIS}</td>` + 
+        `<td class="label_data">${aux.PRAÇAS}</td>` +
+        `<td class="label_data">${aux.TOTAL}</td>`
+        return tr
+
+    }
 }
 
 const htmlConstruirTabelaInscritos = () => {
