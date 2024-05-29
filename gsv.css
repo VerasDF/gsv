@@ -24,9 +24,21 @@
     border-top-right-radius: 5px;
 }
 
-#divParametros {
+#divParametros{
     margin: 20px auto;
     width: 600px;
+}
+
+#cmdOcultar {
+    margin: 10px auto;  
+    display: block;
+    box-shadow: 3px 3px 10px grey;
+}
+.visivel{
+    display: inline-block;
+}
+.invisivel{
+    display: none;
 }
 
 #fldStatus textarea {
@@ -226,8 +238,6 @@ button:active,
     background-color: var(--padraoVermelho);
     transition: 500ms;
 }
-
-
 
 
 

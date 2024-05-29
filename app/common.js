@@ -804,7 +804,7 @@ function fncEdicaoAlterarDados(index){
 }
 
 const htmlConstruirEscala = (info) => {
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
 
     const table = document.createElement('table')
     const cabecalho = `<td class="label_data_th">POSTO/GRAD</td><td class="label_data_th">NOME</td><td class="label_data_th">SIAPE</td><td class="label_data_th">LOTAÇÃO</td><td class="label_data_th">QUADRO</td><td class="label_data_th">ALA</td><td class="label_data_th">ASSINATURA</td>`
@@ -863,7 +863,7 @@ const htmlConstruirEscala = (info) => {
 }
 
 const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
 
     const arrGrupo = arrObj.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)})
     for(let i = 0; i < arrGrupo.length; i++) {
@@ -877,14 +877,28 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
         }
     }
     
+    _incluirBotaoOcultar()
     _incluirCabecalhoParaPdf()
-
-    if (divResultado.innerHTML){
-        setTimeout(()=>{
-            if(confirm(`Deseja baixar esses dados convertidos em um arquivo PDF?`)) gerarPdf(divResultado)
-        },1000)
-    }else{
-        $info({msg:`Não há dados a serem convertidos para PDF.`, opt:`+a`})
+    
+    function _incluirBotaoOcultar(){
+        const divBotaoAux = document.getElementById('divBotaoAux')
+        const btn = document.createElement('button')
+        btn.id = 'cmdOcultar'
+        btn.innerHTML = 'Criar PDF'
+        btn.addEventListener('click', (e)=>{
+            e.preventDefault()
+            if(confirm('Deseja alternar os totais de cotas entre oculto/visivel?')){
+                const ctrs = document.querySelectorAll(".visivel")
+                ctrs.forEach((ctr) => ctr.classList.toggle("invisivel"))
+            }
+            setTimeout(()=>{
+                if(confirm(`Deseja baixar esses dados convertidos em um arquivo PDF?`)){
+                    gerarPdf(divResultado)
+                    document.getElementById('divBotaoAux').innerHTML=''
+                }
+            },500)
+        })
+        divBotaoAux.append(btn)
     }
 
     function _incluirCabecalhoParaPdf(){
@@ -907,7 +921,8 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
 
     function _criarTagGrupo(codGrupo, strTexto){
         if (divResultado.childElementCount === 0) {
-            divResultado.innerHTML = `<table class="tabelaDeResultado" id="tbResultado"></table><br>`
+            divResultado.innerHTML = `` +
+            `<table class="tabelaDeResultado" id="tbResultado"></table><br>`
         }
         const tbResultado = document.getElementById("tbResultado")
         tbResultado.innerHTML += `
@@ -979,7 +994,7 @@ const htmlConstruirTotalDeMilitaresEnvolvidos = (arrObj) => {
 
         const tdGbmDestino = document.getElementById(`GRUPO-${codGrupo}-GBM-${codGbmDestino}`);
         tdGbmDestino.children[0].title = `${_tipsOperacoes(arrTips)}`;
-        tdGbmDestino.children[1].innerHTML = ''//`${arrTotalGeral.length}`; //'' Total de Cotas
+        tdGbmDestino.children[1].innerHTML = `<span class=visivel>${arrTotalGeral.length}</span>`; //'' Total de Cotas
         tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`; //'' Total de Oficiais
         tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`; //'' Total de Praças
     }
@@ -989,7 +1004,7 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
     
     let par = parametroEscala()
 
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
     let contabilizar_total = 0
     const arrOperacao = arrObj.map((item) => `${item.OPERAÇÃO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
     const table = document.createElement('table')
@@ -1062,7 +1077,7 @@ const htmlConstuirFaltasPorDia = (par) => {
     
     table.innerHTML = cabecalho
     
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
     arrTotaisDeFaltasPorDia.forEach((elm)=>{
         const tr = document.createElement('tr')
         tr.innerHTML = `<td class="label_data">${elm}</td><td class="label_data">${objTotaisDeFaltasPorDia[elm]}</td>`
@@ -1091,7 +1106,7 @@ const htmlConstruirTotalDeCotasPorData = (arrObj) => {
     
     table.innerHTML = cabecalho
     
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
     arrTotaisDeCotasPorData.forEach((elm)=>{
         const tr = document.createElement('tr')
         tr.innerHTML = `<td class="label_data">${elm}</td><td class="label_data">${objTotaisDeCotasPorData[elm]}</td>`
@@ -1138,7 +1153,7 @@ const htmlConstruirTotaisPorDiasCotasOficiaisPraças = (arrObj) => {
             }
     }
 
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
     const table = document.createElement('table')
     table.append(_cabecalho1())
     table.append(_cabecalho2())
@@ -1180,12 +1195,11 @@ const htmlConstruirTotaisPorDiasCotasOficiaisPraças = (arrObj) => {
         `<td class="label_data">${aux.PRAÇAS}</td>` +
         `<td class="label_data">${aux.TOTAL}</td>`
         return tr
-
     }
 }
 
 const htmlConstruirTabelaInscritos = () => {
-    divResultado.innerHTML = ""
+    divResultado.innerHTML = ""; divBotaoAux.innerHTML = "";
     const table = document.createElement('table')
     table.append(_cabecalho1())
     table.append(_cabecalho2())

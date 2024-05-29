@@ -44,7 +44,6 @@ const cmdExibirEscala = document.getElementById('cmdExibirEscala')
 const cmdExibirInscritos = document.getElementById('cmdExibirInscritos')
 const cmdExibirPlanilha = document.getElementById('cmdExibirPlanilha')
 const cmdExibirPlanilhaGrade = document.getElementById('cmdExibirPlanilhaGrade')
-const cmdExportarPdf = document.getElementById('cmdExportarPdf')
 const cmdExibirFaltas = document.getElementById('cmdExibirFaltas')
 const cmdFiltrarCursos = document.getElementById('cmdFiltrarCursos')
 const cmdPesquisarPorSiape = document.getElementById('cmdPesquisarPorSiape')
@@ -174,11 +173,6 @@ cmdExibirFaltas.addEventListener('click', (e)=>{
     }
 })
 
-cmdFiltrarCursos.addEventListener('click', (e)=>{
-    e.preventDefault()
-    htmlConstruirTabelaInscritos()
-})
-
 cmdExibirInscritos.addEventListener('click', (e)=>{
     e.preventDefault()
     htmlConstruirTabelaInscritos()
@@ -205,16 +199,6 @@ cmdExibirPlanilhaGrade.addEventListener('click', (e)=>{
     }}).sort((a,b)=>{return a.SIAPE - b.SIAPE})
     
     htmlConstruirGrade(objAux)
-})
-
-cmdExportarPdf.addEventListener('click', (e)=>{
-    if (divResultado.innerHTML){
-        setTimeout(()=>{
-            if(confirm(`Imprimir PDF?`)) gerarPdf()
-        },200)
-    }else{
-        $info({msg:`Não há dados a serem convertidos para PDF.`, opt:`+a`})
-    }
 })
 
 cmdPesquisarPorSiape.addEventListener('click', (e)=>{
