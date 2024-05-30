@@ -2,6 +2,8 @@ const fileEscalas = document.getElementById('fileEscalas')
 const fileFaltas = document.getElementById('fileFaltas')
 const fileInscritos = document.getElementById('fileInscritos')
 
+const fldConjunto = document.getElementById("fldConjunto") 
+
 const lblEscalas = document.getElementById('lblEscalas')
 const lblFaltas = document.getElementById('lblFaltas')
 const lblInscritos = document.getElementById('lblInscritos')
@@ -21,11 +23,10 @@ const radQui1 = document.getElementById('radQuinzena1')
 const radQui2 = document.getElementById('radQuinzena2')
 const radQui3 = document.getElementById('radQuinzena3')
 
-const radCompulsorio = document.getElementById('radCompulsorio')
-const radPresencas = document.getElementById('radPresencas')
+const radVoluntarioTodos = document.getElementById('radVoluntarioTodos')
 const radVoluntarioCom = document.getElementById('radVoluntarioCom')
 const radVoluntarioSem = document.getElementById('radVoluntarioSem')
-const radVoluntarioTodos = document.getElementById('radVoluntarioTodos')
+const radCompulsorio = document.getElementById('radCompulsorio')
 
 const selAvancadoAlterarDuracao = document.getElementById('selAvancadoAlterarDuracao')
 const selEscalaHorario = document.getElementById('selEscalaHorario')
@@ -245,6 +246,7 @@ fileEscalas.addEventListener('change', (e) => {
     if (fileEscalas.files.length > 0) {
         lblEscalas.innerHTML = fileEscalas.files[0].name
         $readFile(fileEscalas)
+        parametroEscala()
     }
 })
 
@@ -264,7 +266,6 @@ fileInscritos.addEventListener('change', (e) => {
     }
 })
 
-const fldConjunto = document.getElementById("fldConjunto") 
 fldConjunto.addEventListener('click', (e)=>{
     atualizarSelectEscala(selEscalaGrupo.value)
 })
@@ -275,6 +276,7 @@ radQui0.addEventListener('click', (e)=>{
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', dadoEscalasJson))
     preencherSelect(divEscalaHorario, totais('HORA', dadoEscalasJson))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', dadoEscalasJson))
+    parametroEscala()
 })
 
 radQui1.addEventListener('click', (e)=>{
@@ -283,6 +285,7 @@ radQui1.addEventListener('click', (e)=>{
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
+    parametroEscala()
 })
 
 radQui2.addEventListener('click', (e)=>{
@@ -291,6 +294,7 @@ radQui2.addEventListener('click', (e)=>{
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
     preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
+    parametroEscala()
 })
 
 radQui3.addEventListener('change', (e)=>{
@@ -302,6 +306,20 @@ radQui3.addEventListener('change', (e)=>{
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson(par)))
     preencherSelect(divEscalaHorario, totais('HORA', filtrarEscalasJson(par)))
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson(par)))
+    parametroEscala()
+})
+
+radVoluntarioTodos.addEventListener('change', (e)=> {
+    parametroEscala()
+})
+radVoluntarioCom.addEventListener('change', (e)=> {
+    parametroEscala()
+})
+radVoluntarioSem.addEventListener('change', (e)=> {
+    parametroEscala()
+})
+radCompulsorio.addEventListener('change', (e)=> {
+    parametroEscala()
 })
 
 selAvancadoAlterarDuracao.addEventListener('change',()=>{

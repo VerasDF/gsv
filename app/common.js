@@ -1025,17 +1025,17 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
     function _parametros(){
         const tr = document.createElement('tr')
         const par = JSON.stringify(parametroEscala())
-        tr.innerHTML = `<th colspan="3">PARÂMETROS: ${(par == '{}'  ? '{"Nenhum filtro aplicado"}': par)}</th>`
+        tr.innerHTML = `<th colspan="3" style="color:gray">PARÂMETROS: ${(par == '{}'  ? '{"Nenhum filtro aplicado"}': par)}</th>`
         return tr
     }
     function _cabecalho1() {
         const tr = document.createElement('tr')
-        tr.innerHTML = `<th colspan="3">RESUMO DA ESCALA - ${conf.mesAno.toUpperCase()}</th>`
+        tr.innerHTML = `<th colspan="3">RESUMO DE COTAS - ${conf.mesAno.toUpperCase()}</th>`
         return tr
     }
     function _cabecalho2() {
         const tr = document.createElement('tr')
-        tr.innerHTML = `<th>OPERAÇÃO</th>` +
+        tr.innerHTML = `<th>OPERAÇÃO / GBM DE DESTINO</th>` +
             `<th>CARGA<br>HOR.</th>` +
             `<th>COTAS</th>`
         return tr
@@ -1055,8 +1055,16 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
         const totalDeCotas = ((obj[0].TEMPO.indexOf(`24`) > -1) ? 
             `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length) * 2} (${obj.length}x2)` : 
             `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length)}`
-        ) 
-        tr.innerHTML = `<td style="text-align:left">${obj[0].OPERAÇÃO}</td>` + 
+        )
+        
+        let totaisGbm = JSON.stringify(totais('GBM_DESTINO', obj)).
+            replaceAll('"','').
+            replaceAll(':',': ').
+            replaceAll(',',') (').
+            replaceAll('{','(').
+            replaceAll('}',')')
+
+        tr.innerHTML = `<td style="text-align:left">${obj[0].OPERAÇÃO}<br><span style="color:gray">${totaisGbm}</span></td>` + 
             `<td style="text-align:center">${cargaHoraria}</td>` + 
             `<td style="text-align:center">${totalDeCotas}</td>`
         return tr
