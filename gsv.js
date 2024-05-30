@@ -377,7 +377,6 @@ function parametroEscala() {
     if ( txtAvancado ) { txtAvancado.value = JSON.stringify(par) }
 
     return par
-
 }
 
 function parametroFalta(){

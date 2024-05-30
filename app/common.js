@@ -1008,6 +1008,7 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
     let contabilizar_total = 0
     const arrOperacao = arrObj.map((item) => `${item.OPERAÇÃO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
     const table = document.createElement('table')
+    table.append(_parametros())
     table.append(_cabecalho1())
     table.append(_cabecalho2())
     for(let i = 0; i < arrOperacao.length; i++){
@@ -1021,6 +1022,12 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
     table.append(_rodape(contabilizar_total))
     divResultado.append(table)
 
+    function _parametros(){
+        const tr = document.createElement('tr')
+        const par = JSON.stringify(parametroEscala())
+        tr.innerHTML = `<th colspan="3">PARÂMETROS: ${(par == '{}'  ? '{"Nenhum filtro aplicado"}': par)}</th>`
+        return tr
+    }
     function _cabecalho1() {
         const tr = document.createElement('tr')
         tr.innerHTML = `<th colspan="3">RESUMO DA ESCALA - ${conf.mesAno.toUpperCase()}</th>`
