@@ -29,7 +29,7 @@
     width: 600px;
 }
 
-#cmdOcultar {
+#cmdOcultarCotas, #cmdCriarPDF {
     margin: 10px auto;  
     display: block;
     box-shadow: 3px 3px 10px grey;
