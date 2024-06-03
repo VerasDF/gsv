@@ -375,19 +375,17 @@ function prepararInscritosJSon(info) {
         let mes_referencia = info.parentNode.parentNode.children[1].innerHTML
         for(i = 0; i < info.childElementCount; i++){ // trabalhando aqui 2024-04-16...
             let obj = {}
-            let separar = null
             let tr = info.children[i]
             
             if(tr.children[0].nodeName === "TD") {
-                separar = _sanitizar(tr.children[1].innerHTML).split("<br>")
-                obj['SIAPE'] = separar[0],
-                obj['POSTO_GRAD'] = separar[1],
-                obj['QUADRO'] = separar[2],
-                obj['NOME'] = `${_sanitizar(tr.children[2].innerHTML)}`,
-                obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
-                obj['ALA'] = `${_sanitizar(tr.children[4].innerHTML)}`,
+                obj['SIAPE'] = `${_sanitizar(tr.children[1].innerHTML)}`,
+                obj['POSTO_GRAD'] = `${_sanitizar(tr.children[2].innerHTML)}`,
+                obj['QUADRO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
+                obj['NOME'] = `${_sanitizar(tr.children[4].innerHTML)}`,
+                obj['LOTAÇÃO'] = `${_sanitizar(tr.children[5].innerHTML)}`,
+                obj['ALA'] = `${_sanitizar(tr.children[6].innerHTML)}`,
                 obj['MES_REFERENCIA'] = mes_referencia,
-                obj['CURSOS'] = `${_sanitizar(tr.children[7].innerHTML)}`,
+                obj['CURSOS'] = `${_sanitizar(tr.children[9].innerHTML)}`,
                 dadoInscritosJson.push(obj)
             }
         }
@@ -528,8 +526,9 @@ function filtrarInscritosJson({ cursos, lotacao, nome, quadro, posto_grad, siape
     let objAux = dadoInscritosJson.filter((e)=>{return e})
 
     if (cursos !== undefined) {
-        objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
-        //objAux = objAux.filter((e) => {return e.CURSOS.indexOf(cursos) > -1})
+        if(cursos !== ''){
+            objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
+        }
     }
     if (lotacao !== undefined) {
         objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
