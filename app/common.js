@@ -139,33 +139,33 @@ function prepararEscalasJSon(dadosHtml) {
             if (filhos === 7) {
                 if (tr.children[0].nodeName === "TD") {
                     const obj = {};
-                    obj['_ID'] = i
-                    obj['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`,
-                    obj['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`,
-                    obj['ESCALADO'] = `${_sanitizar(tr.children[1].title)}`,
-                    obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`,
-                    obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`,
-                    obj['QUADRO'] = `${_sanitizar(tr.children[4].innerHTML)}`,
-                    obj['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`,
-                    obj['ALA'] = `${_sanitizar(tr.children[5].innerHTML)}`,
-                    obj['GRUPO'] = _classificarGrupo(opr.name_dois),
-                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: obj['GRUPO'], tres: opr.name_tres }),
-                    obj['HORA'] = _extrairHorario(opr.name_quatro),
-                    obj['LOCAL'] = '', //falta implementar
-                    obj['MÊS'] = _extrairMesExtenso(opr.name_tres),
-                    obj['QUINZENA'] = _extrairQuinzena(opr.name_tres),
-                    obj['DATA'] = opr.name_tres, //DATA
-                    obj['ASSINATURA'] = '',
-                    obj['TEMPO'] = _extrairTempo({ data: obj['DATA'], hora: obj['HORA'] }),
-                    obj['VALOR'] = _extrairValor(obj['TEMPO']),
-                    obj['OPERAÇÃO'] = opr.name_dois, //OPERAÇÃO - TIPO
-                    obj['FALTA'] = false
-                    obj['name_um'] = opr.name_um, //OPERAÇÃO - GBM
-                    obj['desc_um'] = opr.desc_um, //SUB_LOTAÇÃO_LOCAL
-                    obj['name_dois'] = opr.name_dois, //OPERAÇÃO - TIPO
-                    obj['name_tres'] = opr.name_tres, //DATA
-                    obj['name_quatro'] = opr.name_quatro, //HORA - OPERAÇÃO - GBM
-                    obj['name_cinco'] = opr.name_cinco, // CATEGORIA
+                    obj['_ID'] = i;  
+                    obj['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`; 
+                    obj['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`; 
+                    obj['ESCALADO'] = `${_sanitizar(tr.children[1].title)}`; 
+                    obj['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`; 
+                    obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`; 
+                    obj['QUADRO'] = `${_sanitizar(tr.children[4].innerHTML)}`; 
+                    obj['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`; 
+                    obj['ALA'] = `${_sanitizar(tr.children[5].innerHTML)}`; 
+                    obj['GRUPO'] = _classificarGrupo(opr.name_dois); 
+                    obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: obj['GRUPO'], tres: opr.name_tres });
+                    obj['HORA'] = _extrairHorario(opr.name_quatro);
+                    obj['LOCAL'] = ''; //falta implementar
+                    obj['MÊS'] = _extrairMesExtenso(opr.name_tres);
+                    obj['QUINZENA'] = _extrairQuinzena(opr.name_tres);
+                    obj['DATA'] = opr.name_tres; //DATA
+                    obj['ASSINATURA'] = '';
+                    obj['TEMPO'] = _extrairTempo({ data: obj['DATA'], hora: obj['HORA'] });
+                    obj['VALOR'] = _extrairValor(obj['TEMPO']);
+                    obj['OPERAÇÃO'] = opr.name_dois; //OPERAÇÃO - TIPO
+                    obj['FALTA'] = false; 
+                    obj['name_um'] = opr.name_um; //OPERAÇÃO - GBM
+                    obj['desc_um'] = opr.desc_um; //SUB_LOTAÇÃO_LOCAL
+                    obj['name_dois'] = opr.name_dois; //OPERAÇÃO - TIPO
+                    obj['name_tres'] = opr.name_tres; //DATA
+                    obj['name_quatro'] = opr.name_quatro; //HORA - OPERAÇÃO - GBM
+                    obj['name_cinco'] = opr.name_cinco; // CATEGORIA
                     dadoEscalasJson.push(obj);
                 }
             }
@@ -208,6 +208,17 @@ function prepararEscalasJSon(dadosHtml) {
             retorno = "DENGUE";
         } else {
             retorno = "EXTRAORDINÁRIO";
+        }
+        return retorno;
+    }
+    function _extrairCirculo(parametro) {
+        let retorno = '';
+        aux = _sanitizar(parametro);
+        if (aux.indexOf("QBMG") > -1) {
+            retorno = "Praça";
+        }
+        if (aux.indexOf("QOBM") > -1) {
+            retorno = "Oficial";
         }
         return retorno;
     }
@@ -256,16 +267,8 @@ function prepararEscalasJSon(dadosHtml) {
         retorno = retorno[0].trim();
         return retorno;
     }
-    function _extrairCirculo(parametro) {
-        let retorno = '';
-        aux = _sanitizar(parametro);
-        if (aux.indexOf("QBMG") > -1) {
-            retorno = "Praça";
-        }
-        if (aux.indexOf("QOBM") > -1) {
-            retorno = "Oficial";
-        }
-        return retorno;
+    function _extrairLocal(parametro){
+//'' aqui 2024-06-03
     }
     function _extrairQuinzena(parametro) {
         const dataDMY = parametro.split('/');
