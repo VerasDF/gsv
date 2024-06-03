@@ -29,9 +29,11 @@ const radVoluntarioSem = document.getElementById('radVoluntarioSem')
 const radCompulsorio = document.getElementById('radCompulsorio')
 
 const selAvancadoAlterarDuracao = document.getElementById('selAvancadoAlterarDuracao')
-const selEscalaHorario = document.getElementById('selEscalaHorario')
-const selEscalaGrupo = document.getElementById('selEscalaGrupo')
 const selEscalaFalta = document.getElementById('selEscalaFalta')
+const selEscalaGbmDestino = document.getElementById('selEscalaGbmDestino')
+const selEscalaGrupo = document.getElementById('selEscalaGrupo')
+const selEscalaHorario = document.getElementById('selEscalaHorario')
+const selEscalaOperacao = document.getElementById('selEscalaOperacao')
 const selFaltaOperacao = document.getElementById('selFaltaOperacao')
 const selPlanilhaGrupo = document.getElementById('selPlanilhaGrupo')
 const selOpcaoExibirFalta = document.getElementById('selOpcaoExibirFalta')
@@ -249,7 +251,6 @@ fileEscalas.addEventListener('change', (e) => {
         parametroEscala()
     }
 })
-
 fileFaltas.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileFaltas.files.length > 0) {
@@ -257,7 +258,6 @@ fileFaltas.addEventListener('change', (e) => {
         $readFile(fileFaltas)
     }
 })
-
 fileInscritos.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileInscritos.files.length > 0) {
@@ -265,7 +265,6 @@ fileInscritos.addEventListener('change', (e) => {
         $readFile(fileInscritos)
     }
 })
-
 fldConjunto.addEventListener('click', (e)=>{
     atualizarSelectEscala(selEscalaGrupo.value)
 })
@@ -278,7 +277,6 @@ radQui0.addEventListener('click', (e)=>{
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', dadoEscalasJson))
     parametroEscala()
 })
-
 radQui1.addEventListener('click', (e)=>{
     dtDia.disabled = true
     preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
@@ -287,7 +285,6 @@ radQui1.addEventListener('click', (e)=>{
     preencherSelect(divEscalaGbmDestino, totais('GBM_DESTINO', filtrarEscalasJson({quinzena:'1ª Quinzena'})))
     parametroEscala()
 })
-
 radQui2.addEventListener('click', (e)=>{
     dtDia.disabled = true
     preencherSelect(divEscalaGrupo, totais('GRUPO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
@@ -296,7 +293,6 @@ radQui2.addEventListener('click', (e)=>{
     preencherSelect(divEscalaOperacao, totais('OPERAÇÃO', filtrarEscalasJson({quinzena:'2ª Quinzena'})))
     parametroEscala()
 })
-
 radQui3.addEventListener('change', (e)=>{
     dtDia.disabled = false
 
@@ -325,12 +321,23 @@ radCompulsorio.addEventListener('change', (e)=> {
 selAvancadoAlterarDuracao.addEventListener('change',()=>{
     txtAvancadoAlterarValor.value = selAvancadoAlterarDuracao.value * 50
 })
-
+selEscalaGbmDestino.addEventListener('change', (e)=>{
+    e.preventDefault()
+    parametroEscala()
+})
 selEscalaGrupo.addEventListener('change', (e)=>{
     e.preventDefault()
     atualizarSelectEscala(selEscalaGrupo.value)
+    parametroEscala()
 })
-
+selEscalaHorario.addEventListener('change', (e)=>{
+    e.preventDefault()
+    parametroEscala()
+})
+selEscalaOperacao.addEventListener('change', (e)=>{
+    e.preventDefault()
+    parametroEscala()
+})
 selFaltaOperacao.addEventListener('change', (e) => {
     e.preventDefault()
     let contarOperacao = 0
@@ -341,18 +348,16 @@ selFaltaOperacao.addEventListener('change', (e) => {
     if(contarOperacao>9){
         alert("A lógica implementada tem capacidade de processar até 10 itens selecionados!")
     }
+    parametroEscala()
 })
-
 selOpcaoExibirFalta.addEventListener('change', (e)=>{
     e.preventDefault()
     htmlConstuirFaltasPorDia($('selOpcaoExibirFalta').value)
 })
-
 selPlanilhaGrupo.addEventListener('change', (e) => {
     e.preventDefault()
     atualizarSelectPlanilha({tag:selPlanilhaGrupo.id, grupo:selPlanilhaGrupo.value})
 })
-
 selPlanilhaOperacao.addEventListener('change', (e) => {
     e.preventDefault()
     let contarOperacao = 0

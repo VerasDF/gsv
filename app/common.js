@@ -138,7 +138,7 @@ function prepararEscalasJSon(dadosHtml) {
 
             if (filhos === 7) {
                 if (tr.children[0].nodeName === "TD") {
-                    const obj = {};                
+                    const obj = {};
                     obj['_ID'] = i
                     obj['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`,
                     obj['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`,
@@ -186,9 +186,9 @@ function prepararEscalasJSon(dadosHtml) {
         retorno = retorno.replace("&nbsp;", "").trim();
         return retorno;
     }
-
     function _classificarGrupo(parametro) {
         let retorno = '';
+        retorno = _sanitizar(parametro);
 
         if (parametro.indexOf("REFORÇO") > -1) {
             retorno = "REFORÇO OPERACIONAL";
@@ -211,7 +211,6 @@ function prepararEscalasJSon(dadosHtml) {
         }
         return retorno;
     }
-
     function _extrairGbm(parametro) {
         let retorno = parametro.quatro.split('-');
         let ano = parametro.tres.split("/");
@@ -252,32 +251,28 @@ function prepararEscalasJSon(dadosHtml) {
         }
         return retorno;
     }
-
     function _extrairHorario(parametro) {
         let retorno = parametro.split('-');
         retorno = retorno[0].trim();
         return retorno;
     }
-
     function _extrairCirculo(parametro) {
         let retorno = '';
-        if (parametro.indexOf("QBMG") > -1) {
+        aux = _sanitizar(parametro);
+        if (aux.indexOf("QBMG") > -1) {
             retorno = "Praça";
         }
-        else if (parametro.indexOf("QOBM" > -1)) {
+        if (aux.indexOf("QOBM") > -1) {
             retorno = "Oficial";
         }
         return retorno;
     }
-
     function _extrairQuinzena(parametro) {
         const dataDMY = parametro.split('/');
         const dia = dataDMY[0];
         const quinzena = (dia > 15 ? `2ª Quinzena` : `1ª Quinzena`);
         return quinzena;
     }
-
-
     function _extrairTempo(parametro) {
         const auxData = `${parametro.data.substr(6, 4)}-${parametro.data.substr(3, 2)}-${parametro.data.substr(0, 2)}`
         const auxHora = parametro.hora.toLowerCase()
@@ -296,7 +291,6 @@ function prepararEscalasJSon(dadosHtml) {
         }
         return retorno
     }
-
     function _extrairValor(parametro) {
         return (parametro * 50).toString()
     }
