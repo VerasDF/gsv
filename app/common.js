@@ -136,6 +136,13 @@ function prepararEscalasJSon(dadosHtml) {
                 }
             }
 
+// if(i==1779){
+//     console.debug('')
+// }
+// if(i==2249){
+//     console.debug('')
+// }
+
             if (filhos === 7) {
                 if (tr.children[0].nodeName === "TD") {
                     const obj = {};
@@ -151,7 +158,7 @@ function prepararEscalasJSon(dadosHtml) {
                     obj['GRUPO'] = _classificarGrupo(opr.name_dois); 
                     obj['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: obj['GRUPO'], tres: opr.name_tres });
                     obj['HORA'] = _extrairHorario(opr.name_quatro);
-                    obj['LOCAL'] = ''; //falta implementar
+                    obj['LOCAL'] = _extrairLocal(opr.name_quatro);
                     obj['MÊS'] = _extrairMesExtenso(opr.name_tres);
                     obj['QUINZENA'] = _extrairQuinzena(opr.name_tres);
                     obj['DATA'] = opr.name_tres; //DATA
@@ -268,7 +275,11 @@ function prepararEscalasJSon(dadosHtml) {
         return retorno;
     }
     function _extrairLocal(parametro){
-//'' aqui 2024-06-03
+        let retorno = parametro.split('-');
+        if(retorno[retorno.length - 1] != undefined){
+            retorno = retorno[retorno.length - 1].trim();
+        }
+        return retorno;
     }
     function _extrairQuinzena(parametro) {
         const dataDMY = parametro.split('/');
