@@ -261,6 +261,7 @@ fileFaltas.addEventListener('change', (e) => {
 fileInscritos.addEventListener('change', (e) => {
     e.preventDefault()
     if (fileInscritos.files.length > 0) {
+        $('divResultado').innerHTML=''
         lblInscritos.innerHTML = fileInscritos.files[0].name
         $readFile(fileInscritos)
     }
