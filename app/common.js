@@ -539,9 +539,7 @@ function filtrarInscritosJson({ cursos, lotacao, nome, quadro, posto_grad, siape
     let objAux = dadoInscritosJson.filter((e)=>{return e})
 
     if (cursos !== undefined) {
-        if(cursos !== ''){
-            objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
-        }
+        objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
     }
     if (lotacao !== undefined) {
         objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
@@ -560,7 +558,6 @@ function filtrarInscritosJson({ cursos, lotacao, nome, quadro, posto_grad, siape
     }
 
     return objAux
-
 }
 
 function alterarDuracao(criteriosDeConsulta, dadosParaAlteracao) {
@@ -1237,7 +1234,7 @@ const htmlConstruirTabelaInscritos = () => {
     table.append(_cabecalho2())
     let indice = 0
     let mesDeReferencia = ''
-    let cursos = txtCursos.value
+    let cursos = (txtCursos.value == '' ? undefined : txtCursos.value)
     let total = 0
 
     for (let i = 0; i < arrOrdemPostoGrad.length; i++) {
@@ -1251,6 +1248,7 @@ const htmlConstruirTabelaInscritos = () => {
     }
 
     divResultado.append(table)
+    $('divAuxiliar').innerHTML = (cursos == undefined ? '': `Aplicado filtro de cursos : "${cursos}"`)
     $('thMesReferenciaInscritos').innerHTML = mesDeReferencia
 
     function _cabecalho1(){

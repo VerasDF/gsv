@@ -29,6 +29,12 @@
     width: 600px;
 }
 
+#divAuxiliar{
+    display: block;
+    margin: 0px auto;
+    text-align: center;
+}
+
 #cmdOcultarCotas, #cmdCriarPDF {
     margin: 10px auto;  
     display: block;
@@ -206,7 +212,7 @@ fieldset {
 
 #fldAcoesInscritos{
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 4fr;
     gap: 5px;
 }
 
