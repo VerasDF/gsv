@@ -59,9 +59,9 @@ const txtCursos = document.getElementById('txtCursos')
 const txtSiape = document.getElementById('txtSiape')
 const txtStatus = document.getElementById('txtStatus')
 
-let dadoInscritosJson = []
-let dadoEscalaJson = []
 let dadoEscalasJson = []
+let dadoFaltasJson = []
+let dadoInscritosJson = []
 let conf = {}
 
 setTimeout(()=>{ navegarPelasGuias({}) },5)
@@ -463,10 +463,10 @@ function inicializarEscalas() {
 
 function inicializarFaltas() {
     $('lblFaltas').style.backgroundColor = ('var(--fundoVerde)')
-    navegarPelasGuias({ nomeDaGuia: 'Faltas' })
-    preencherSelect(divFaltaOperacao, totais('OPERAÇÃO', dadoEscalaJson))
-    divResultado.innerHTML = ''
-    tratarFaltas()
+    navegarPelasGuias({ nomeDaGuia: 'Faltas' });
+    preencherSelect(divFaltaOperacao, totais('OPERAÇÃO', dadoFaltasJson));
+    divResultado.innerHTML = '';
+    tratarFaltas();
 }
 
 function inicializarInscritos() {
@@ -519,7 +519,7 @@ function navegarPelasGuias({ nomeDaGuia }) {
     }
     function _limparGuias({ nomeDaGuia }) {
         const te = dadoEscalasJson.length
-        const tf = dadoEscalaJson.length
+        const tf = dadoFaltasJson.length
         const ti = dadoInscritosJson.length
 
         btnGuiaEscalas.className = 'btnDeGuia'

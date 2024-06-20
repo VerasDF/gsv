@@ -62,9 +62,9 @@ function avaliarDadoBruto({htmlRetornado}) {
         if( tipoRetorno === 'Faltas' ){
             dadoBruto = dadoBruto.querySelector(".div_form_faltas")
             dadoBruto = dadoBruto.children[0].children[0]
-            dadoEscalaJson = prepararFaltasJSon(dadoBruto)
+            dadoFaltasJson = prepararFaltasJSon(dadoBruto)
             $info({msg:`Faltas de`,opt:`+n`})
-            $info({msg:`${_extrairMesExtenso(dadoEscalaJson[0].DATA)}/${dadoEscalaJson[0].DATA.split('/')[2]}, retornadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoEscalaJson.length)} faltas`, opt:'+'})
+            $info({msg:`${_extrairMesExtenso(dadoFaltasJson[0].DATA)}/${dadoFaltasJson[0].DATA.split('/')[2]}, retornadas: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(dadoFaltasJson.length)} faltas`, opt:'+'})
             funcaoAuxiliar = inicializarFaltas
         }
         if( tipoRetorno === 'Inscritos'){
@@ -271,7 +271,7 @@ function prepararEscalasJSon(dadosHtml) {
     }
     function _extrairHorario(parametro) {
         let retorno = parametro.split('-');
-        retorno = retorno[0].trim();
+        retorno = retorno[0].trim().replaceAll(' à ', ' às ').replaceAll(' À ', ' ÀS ');
         return retorno;
     }
     function _extrairLocal(parametro){
@@ -335,9 +335,9 @@ function prepararFaltasJSon(dadosHtml) {
     return dadoFaltasJson
         
     function _sanitizar(parametro) {
-        let retorno = parametro.replace("\n", "")
-        retorno = retorno.replace("&nbsp;", "").trim()
-        return retorno
+        let retorno = parametro.replace("\n", "");
+        retorno = retorno.replace("&nbsp;", "").trim().replaceAll(' à ', ' às ').replaceAll(' À ', ' ÀS ');
+        return retorno;
     }
 }
 
@@ -506,7 +506,7 @@ function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_d
 }
 
 function filtrarFaltasJson({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
-    let objAux = dadoEscalaJson.filter((e)=>{return e})
+    let objAux = dadoFaltasJson.filter((e)=>{return e})
 
     if (data !== undefined) {
         objAux = objAux.filter((e) => { if ( e.DATA.indexOf(data) > -1 ) { return e }})
@@ -589,9 +589,9 @@ function alterarDuracao(criteriosDeConsulta, dadosParaAlteracao) {
 }
 
 function tratarFaltas() {
-    if(dadoEscalasJson.length===0 || dadoEscalaJson.length===0){ return }
+    if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
     
-    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoEscalaJson[0].DATA.split("/")[1])
+    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
     {
         $info({msg:`Períodos incompatívies para tratar faltas`, opt:`+a`})
         return
@@ -609,7 +609,7 @@ function tratarFaltas() {
     
     $info({msg:`, atribuídas: ${contador}`, opt:`+`})
     
-    dadoEscalaJson.forEach((flt)=>{
+    dadoFaltasJson.forEach((flt)=>{
         const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO})
         if (filtroFalta.length == 0){
             // console.log("NotFound", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO)
@@ -1103,8 +1103,8 @@ const htmlConstruirTotalDeMilitaresEscalados = (arrObj) => {
 }
 
 const htmlConstuirFaltasPorDia = (par) => {
-    const objTotaisDeFaltasPorDia = totais(par,dadoEscalaJson)
-    const arrTotaisDeFaltasPorDia = Object.keys(totais(par,dadoEscalaJson)).sort()
+    const objTotaisDeFaltasPorDia = totais(par,dadoFaltasJson)
+    const arrTotaisDeFaltasPorDia = Object.keys(totais(par,dadoFaltasJson)).sort()
     const table = document.createElement('table')
     const cabecalho = `<tr>` + 
                       `<td colspan="2" class="label_data_th">RESUMO SOBRE FALTAS</td>` + 
@@ -1345,42 +1345,56 @@ const htmlConstruirGrade = (arrObj) => {
 
 const htmlConstruirPlanilha = (arrObj) => {
     
-    divResultado.innerHTML = ''
+    divResultado.innerHTML = '';
     if(arrObj[0] === undefined){
-        $info({msg:`Não há dados a serem processados`, opt:`+a`})
-        return
+        $info({msg:`Não há dados a serem processados`, opt:`+a`});
+        return;
     }
-    const objOper = totais('OPERAÇÃO',arrObj)
-    const mesAno = (`${_extrairMesExtenso(arrObj[0].DATA)}/${arrObj[0].DATA.split('/')[2]}`).toUpperCase()
+    const objOper = totais('OPERAÇÃO',arrObj);
+    const mesAno = (`${_extrairMesExtenso(arrObj[0].DATA)}/${arrObj[0].DATA.split('/')[2]}`).toUpperCase();
     
-    let totalDeColunasDias = _qtdMaxColunasParaDias(arrObj)
+    let totalDeColunasDias = _qtdMaxColunasParaDias(arrObj);
 
-    let cotasTotal = arrObj.length
-    let militaresTotal = 0
-    let contador = 0
-    let valorTotal = 0
+    let cotasTotal = arrObj.length;
+    let militaresTotal = 0;
+    let contador = 0;
+    let valorTotal = 0;
     
-    const table = document.createElement('table')
-    table.append(_cabecalhoLinha1(totalDeColunasDias))
-    table.append(_cabecalhoLinha2(totalDeColunasDias))
-    table.append(_cabecalhoLinha3(totalDeColunasDias))
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+    const tfoot = document.createElement('tfoot');
+    thead.append(_cabecalhoLinha1(totalDeColunasDias));
+    thead.append(_cabecalhoLinha2(totalDeColunasDias));
+    thead.append(_cabecalhoLinha3(totalDeColunasDias));
+    table.append(thead);
     for(let i = 0; i < arrOrdemPostoGrad.length; i++){
         objPosto = arrObj.map((item)=>{return {
-                SIAPE:item.SIAPE, NOME:item.NOME, POSTO_GRAD:item.POSTO_GRAD,DATA:item.DATA, TEMPO:item.TEMPO, VALOR:item.VALOR, FALTA:item.FALTA, OPERAÇÃO:item.OPERAÇÃO
+                _ID:item._ID,
+                SIAPE:item.SIAPE,
+                NOME:item.NOME,
+                POSTO_GRAD:item.POSTO_GRAD,
+                DATA:item.DATA,
+                TEMPO:item.TEMPO,
+                VALOR:item.VALOR,
+                FALTA:item.FALTA,
+                OPERAÇÃO:item.OPERAÇÃO
             }})
         .filter((item)=>{if(item.POSTO_GRAD===arrOrdemPostoGrad[i]){return item}})
         if(objPosto.length > 0){
             const arrSiape = objPosto.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
             for(let j = 0; j < arrSiape.length; j++){
                 objSiape = objPosto.filter((item)=>{if(item.SIAPE === arrSiape[j]){return item}}).sort((a,b)=>{a.DATA < b.DATA})
-                table.append(_linhasContendoDados(objSiape))
+                tbody.append(_linhasContendoDados(objSiape))
             }
         }
     }
-    table.append(_rodapeLinha1(totalDeColunasDias))
-    table.append(_rodapeLinha2(totalDeColunasDias))
-    table.append(_rodapeLinha3(totalDeColunasDias))
+    tfoot.append(_rodapeLinha1(totalDeColunasDias))
+    tfoot.append(_rodapeLinha2(totalDeColunasDias))
+    tfoot.append(_rodapeLinha3(totalDeColunasDias))
     
+    table.append(tbody);
+    table.append(tfoot);
     divResultado.append(table)
     $info({msg:`Planilha processada: ${militaresTotal} militares e ${cotasTotal} cotas`, opt:`+n`})
     
@@ -1457,7 +1471,8 @@ const htmlConstruirPlanilha = (arrObj) => {
             const tdDia = document.createElement('td')
             tdDia.style.textAlign = "center"
             if(obj[l] !== undefined){
-                tdDia.innerHTML = obj[l].DATA.split('/')[0]
+                // tdDia.innerHTML = `<a href='#' onclick='console.log(${obj[l]._ID})'>${obj[l].DATA.split('/')[0]}</a>`;
+                tdDia.innerHTML = obj[l].DATA.split('/')[0];
                 auxTempo = auxTempo + parseInt(obj[l].TEMPO)
                 auxValor = auxValor + parseInt(obj[l].VALOR)
                 if(obj[l].TEMPO === '24'){tdDia.style.backgroundColor = '#99f'} //cor da cota dupla
@@ -1468,6 +1483,10 @@ const htmlConstruirPlanilha = (arrObj) => {
                     tr.append(tdOutroDia)
                     cotasTotal = cotasTotal + 1
                 }
+                tdDia.addEventListener('dblclick', (e)=>{
+                    console.log(obj[l]._ID, dadoEscalasJson.filter((e)=>{ return e._ID==obj[l]._ID }));
+                    //continuar aqui
+                })
             }
             if(tr.childElementCount<totalDeColunasDias+4){tr.append(tdDia)}
         }
