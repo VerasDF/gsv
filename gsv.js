@@ -183,9 +183,7 @@ cmdExibirInscritos.addEventListener('click', (e)=>{
 
 cmdExibirPlanilha.addEventListener('click', (e)=>{
     e.preventDefault()
-    let par = parametroPlanilha()
-    const objAux = filtrarEscalasJson(par)
-    htmlConstruirPlanilha(objAux)
+    htmlConstruirPlanilha()
 })
 
 cmdExibirPlanilhaGrade.addEventListener('click', (e)=>{
