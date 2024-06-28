@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste</title>
+    <link rel="stylesheet" href="principal.css">
+    <link rel="stylesheet" href="gsv_resultado.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="teste.js" defer></script>
+</head>
+
+<body>
+    <div id="divContainerPrincipal" class="container">
+        <div id="divArquivoDeOrigem">
+            <input type="file" id="fileArquivo" multiple>
+            <span style="display: inline-flex; position: relative; top: 25px; margin: 0px auto; color: cornflowerblue; font-size: 0.7em; cursor: context-menu;">Powered by Wagner Veras&reg;</span>
+            <div id="divResumo">
+                <div id="divStatusEscala" title="Escala"></div>
+                <div id="divStatusFalta" title="Faltas"></div>
+                <div id="divStatusInscricao" title="Inscrições"></div>
+            </div>
+            <div id="divTotais"></div>
+        </div>
+        <fieldset id="fldOpcao">
+            <legend class="legDescricao">Opções:</legend>
+            <div id="divFiltroOpcao">
+                <button class="clsOpcoes" aria-pressed="false" aria-label="" id="btnOpcaoTodas">Todas as cotas</button>
+                <button class="clsOpcoes" aria-pressed="true" aria-label="-SV" id="btnOpcaoComVoluntario">Com Voluntário</button>
+                <button class="clsOpcoes" aria-pressed="false" aria-label="SV" id="btnOpcaoSemVoluntario">Sem Voluntário</button>
+                <button class="clsOpcoes" aria-pressed="false" aria-label="compulsória" id="btnOpcaoCompulsorio">Compulsória</button>
+            </div>
+        </fieldset>
+        <fieldset id="fldFalta">
+            <legend class="legDescricao">Faltas:</legend>
+            <div id="divFaltaOpcao">
+                <button class="clsFalta" aria-pressed="true" aria-label="" id="btnFaltaTodas">Todas as cotas</button>
+                <button class="clsFalta" aria-pressed="false" aria-label="false" id="btnFaltaFalse">Apenas Presença</button>
+                <button class="clsFalta" aria-pressed="false" aria-label="true" id="btnFaltaTrue">Apenas Faltas</button>
+            </div>
+        </fieldset>
+        <fieldset id="fldQuinzena">
+            <legend class="legDescricao">Quinzena:</legend>
+            <div id="divQuinzenaOpcao">
+                <button class="clsQuinzena" aria-pressed="true" aria-label="" id="btnQuinzenaMesInteiro">Mês Inteiro</button>
+                <button class="clsQuinzena" aria-pressed="false" aria-label="1ª Quinzena" id="btnQuinzena1">1ª Quinzena</button>
+                <button class="clsQuinzena" aria-pressed="false" aria-label="2ª Quinzena" id="btnQuinzena2">2ª Quinzena</button>
+            </div>
+        </fieldset>
+        <fieldset id="fldGrupo">
+            <legend class="legDescricao">Grupos:</legend>
+            <div class="clsFiltros" id="divFiltroGrupo"></div>
+        </fieldset>
+        <fieldset id="fldDuracao">
+            <legend class="legDescricao">Duração:</legend>
+            <div class="clsFiltros" id="divFiltroDuracao"></div>
+        </fieldset>
+        <fieldset id="fldOperacao">
+            <legend class="legDescricao">Operações:</legend>
+            <div class="clsFiltros" id="divFiltroOperacao"></div>
+        </fieldset>
+        <fieldset id="fldGbmDestino">
+            <legend class="legDescricao">GBM de Destino:</legend>
+            <div class="clsFiltros" id="divFiltroGbmDestino"></div>
+        </fieldset>
+        <fieldset id="fldTurno">
+            <legend class="legDescricao">Turnos:</legend>
+            <div class="clsFiltros" id="divFiltroTurno"></div>
+        </fieldset>
+        <fieldset id="fldCalendario">
+            <legend class="legDescricao">Calendario:</legend><span id="spnDataAux" style="display: none;"></span>
+            <div id="divCalendario">
+                <div class="diaMes">Dom</div>
+                <div class="diaMes">Seg</div>
+                <div class="diaMes">Ter</div>
+                <div class="diaMes">Qua</div>
+                <div class="diaMes">Qui</div>
+                <div class="diaMes">Sex</div>
+                <div class="diaMes">Sab</div>
+            </div>
+        </fieldset>
+        <div id="divExibirResultado" class="exibirResultadoClass">
+            <nav>
+                <ul class="exibirUlClass">
+                    <li class="exibirLiClass">
+                        <a class="exibirAClass" href="#">&lt;&lt;&lt; Exibir Dados</a>
+                        <ul class="exibirUlClass">
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#">&lt;&lt;&lt; Relatorios</a>
+                                <ul class="exibirUlClass">
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(20)">Militares Envolvidos</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(21)">Banco de Dados</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(22)">Planilha Financeira</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(23)">Cota Dobrada</a></li>
+                                </ul>
+                            </li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#">&lt;&lt;&lt; Totais de Cotas</a>
+                                <ul class="exibirUlClass">
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(34)">por Data</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(35)">por Data (Of/Praças)</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(33)">por GBM</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(31)">por Grupo</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(32)">por Operação</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(30)">por Operação/GBM</a></li>
+                                </ul>
+                            </li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#">&lt;&lt;&lt; Ajustar Duração</a>
+                                <ul class="exibirUlClass">
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(40)">para 04 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(41)">para 05 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(42)">para 06 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(43)">para 07 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(44)">para 08 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(45)">para 09 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(46)">para 10 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(47)">para 11 horas</a></li>
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(48)">para 12 horas</a></li>
+                                </ul>
+                            </li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(1)">Escala para BG</a></li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(2)">Voluntários Escalados</a></li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(3)">Grade de Faltas</a></li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(4)">Pencentual de Faltas</a></li>
+                            <li class="exibirLiClass"><a class="exibirAClass" href="#">&lt;&lt;&lt; Cotas por SIAPE</a>
+                                <ul class="exibirUlClass">
+                                    <li class="exibirLiClass"><input type="text" maxlength="7" id="txtCotasPorSiape" class="exibirAClass"></li>
+                                </ul>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div id="divAuxiliar"></div>
+    <div id="divResultado"></div>
+</body>
+
+</html>

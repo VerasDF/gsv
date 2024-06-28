@@ -1,0 +1,37 @@
+<div class="divEditar">
+<fieldset id="fldEditarInfo" class="fldEditar">
+    <legend>Informações sobre a Cota</legend>
+    <input type="hidden" id="txtEditarId">
+    <input type="hidden" id="txtEditarIndex">
+    <label for="txtEditarOperacao"><textarea id="txtEditarOperacao" disabled></textarea></label>
+    <label for="txtEditarDataHora"><input type="text" id="txtEditarDataHora" disabled></label>
+    <label for="txtEditarNome"><input type="text" id="txtEditarNome" disabled></label>
+    <label for="txtEditarLotacao"><input type="text" id="txtEditarLotacao" disabled></label>
+</fieldset>
+<fieldset id="fldEditarFalta" class="fldEditar">
+    <legend>Status da presença</legend>
+    <label for="selEditarFalta"><select id="selEditarFalta"><option value="true">Faltou</option>
+        <option value="false">Não faltou</option></select></label>
+</fieldset>
+<fieldset id="fldEditarDuracao" class="fldEditar">
+    <legend>Duração do serviço</legend>
+    <label for="selEditarFalta">
+        <select id="selEditarDuracao">
+            <option value="04">04 horas</option>
+            <option value="05">05 horas</option>
+            <option value="06">06 horas</option>
+            <option value="07">07 horas</option>
+            <option value="08">08 horas</option>
+            <option value="09">09 horas</option>
+            <option value="10">10 horas</option>
+            <option value="11">11 horas</option>
+            <option value="12">12 horas</option>
+        </select>
+    </label>
+</fieldset>
+<fieldset id="fldEditarAcao" class="fldEditarAcao">
+    <legend>Ação</legend>
+    <button id="btnEditarUpdate">Atualizar</button>
+    <button id="btnEditarCancel">Cancelar</button>
+</fieldset>
+</div>

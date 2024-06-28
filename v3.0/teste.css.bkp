@@ -1,0 +1,70 @@
+
+*{
+    background-color: #222;
+    color: #ccc;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 12px;
+}
+
+.campoCriterio{
+    display: inline-block;
+    width: 100%;
+}
+.container{
+    display: block;
+    position: relative;
+    border: 1px solid #fff;
+    width: 600px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 3px 3px 15px #fff;
+    transition: 200ms;
+}
+.containerTransition{
+    left: -225px;
+    transition: 100ms;
+    box-shadow: none;
+}
+.lblDescricao{
+    position: relative;
+    display: inline-block;
+    left: 15px;
+}
+.selFiltros{
+    width: 100%;
+    height: 100px;
+}
+#selFiltroGrupo{
+    height: 60px;
+}
+.botao{
+    width: 47%;
+    margin: 2px;
+    padding: 5px;
+}
+#divContainerPrincipal{
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+}
+#fldGrupo, #fldOperacao, #fldData{
+    grid-column-start: 1;
+    grid-column-end: 4;
+}
+
+#divDataContainer{
+    display: flex;
+    width: 570px;
+    border: 2px solid gray;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+.clsData{
+    display:inline-block;
+    width: 25px;
+    margin: 1px;
+    padding: 3px;
+    text-align: center;
+}
+[aria-pressed='true']{
+    background-color: green;
+}

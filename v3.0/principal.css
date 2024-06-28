@@ -1,0 +1,349 @@
+:root {
+    --fundo: rgb(250, 250, 255);
+    --fundoDestaque: rgba(248, 248, 201, 0.555);
+    --fundoSelecionado: #ccc;
+    --botao: rgb(250,250,255);
+    --botaoDestacado: #ddd;
+    --corDaFonte: #333;
+    --corDaFonteDestaque: #ddd;
+    --contornoDoBotao: #777;
+    --contornoDoBotaoSelecionado: #555;
+    --destaqueFalta: lightcoral;
+    --padraoVermelho: #f00;
+    --fundoVerde: rgb(200, 255, 200);
+    --sombraDoBox: #555;
+    --borda: #222;
+    --linkA: darkblue;
+    --itemSelecionado: rgba(100, 148, 237, 0.499);
+}
+*{
+    background-color: var(--fundo);
+    box-sizing: border-box;
+    font-size: 12px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: var(--corDaFonte);
+    border-radius: 5px;
+    outline: none;
+}
+fieldset{
+    padding:2px;
+}
+fieldset > div{
+    border: none;
+    /* padding: 5px; */
+    /* box-shadow: 0px 0px 5px var(--sombraDoBox); */
+    /* background-color: var(--fundoSelecionado); */
+}
+[disabled] * {
+    color: gray;
+    background-color: lightgray;
+}
+legend{
+    padding-inline: 5px;
+    margin-top: 10px;
+}
+a{
+    text-decoration: none;
+}
+a:hover{
+    color: var(--corDaFonteDestaque);
+}
+button{
+    background-color: var(--botao);
+    transition: 500ms;
+}
+button:hover{
+    background-color: var(--botaoDestacado);
+    transition: 500ms;
+}
+#divContainerPrincipal{
+    display: grid;
+    grid-template-columns: 25px 25px 25px 25px 25px 
+    25px 25px 25px 25px 25px 
+    25px 25px 25px 25px 25px 
+    25px 25px 25px 25px 25px 
+    25px 25px 25px 25px;
+    grid-auto-columns: 25px;
+    width: 650px;
+    margin: auto;
+}
+#divTotais{
+    display:flex;
+    position: relative;
+    float: right;
+    border: 1px solid var(--corDaFonte);
+    width: 120px;
+    height: 35px;
+    padding-left: 5px;
+    box-shadow: 2px 2px 5px var(--sombraDoBox);
+    background-color: var(--fundoDestaque);
+}
+#divResumo{
+    display:flex;
+    position: relative;
+    float: right;
+    height: 30px;
+    padding-left: 5px;
+    flex-direction: column;
+    background-color: none;
+}
+#divStatusEscala,
+#divStatusFalta,
+#divStatusInscricao{
+    border: none; 
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
+#divArquivoDeOrigem,
+#fldOperacao{
+    grid-column-start: 1;
+    grid-column-end: 25;
+}
+#fldOpcao{
+    grid-column-start: 1;
+    grid-column-end: 6;
+}
+#fldFalta{
+    grid-column-start: 6;
+    grid-column-end: 10;
+}
+#fldQuinzena{
+    grid-column-start: 10;
+    grid-column-end: 14;
+}
+#fldGrupo{
+    grid-column-start: 14;
+    grid-column-end: 21;
+}
+#fldDuracao{
+    grid-column-start: 21;
+    grid-column-end: 25;
+}
+#fldGbmDestino{
+    grid-column-start: 1;
+    grid-column-end: 7;
+}
+#fldTurno{
+    grid-column-start: 7;
+    grid-column-end: 16;
+}
+#fldCalendario{
+    grid-column-start: 16;
+    grid-column-end: 25;  
+}
+#divFiltroGbmDestino,
+#divFiltroTurno{
+    height: 180px;
+}
+.clsOpcoes,
+.clsQuinzena,
+.clsFalta,
+.campoCriterio{
+    display: flex;
+    width: 100%;
+    justify-content: left;
+    text-align: left;
+    border: 1px solid var(--contornoDoBotao);
+}
+.clsFiltros{
+    height: 80px;
+    overflow-y: scroll;
+}
+#divCalendario{
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
+}
+.diaMes, #divAuxiliar{
+    text-align: center;
+    justify-content: center;
+    padding: 2px;
+}
+.diaMes{
+    border: 1px solid var(--contornoDoBotao);
+}
+.tdFalta{
+    background-color: var(--destaqueFalta);
+}
+[aria-pressed='true']{
+    background-color: var(--itemSelecionado);
+}
+
+
+/**MENU/
+/* #divResultado{
+    justify-content: center;
+} */
+#divResultado > table > tr > td{
+    border: 1px solid var(--borda);
+    text-align: center;
+}
+#divExibirResultado{
+    display:flex;
+    width: fit-content;
+    justify-content: center;
+    grid-column-start: 20;
+    position: relative;
+    top: -10px;
+    box-shadow: 2px 2px 5px var(--sombraDoBox);
+}
+.clsClassificarCabecalho{
+    background-color: var(--fundo);
+    color: var(--linkA);
+    border: 0px;
+    text-decoration: none;
+}
+.clsClassificarCabecalho:hover{
+    background-color: var(--fundo);
+    color: var(--linkA);
+    border: 0px;
+}
+
+/* Menu */
+/* Fix IE. Hide from IE Mac \*/
+* html ul li { float: left; }
+* html ul li a { height: 1%; }
+/* End */
+
+.exibirUlClass{
+    list-style: none;
+    width: 130px;
+    margin: 0;
+    padding: 0;
+}
+.exibirLiClass {
+    position: relative; /* Necessário para flutuar os submenus */
+}
+.exibirAClass {
+    color: var(--corDaFonte);
+    border: 1px  solid var(--contornoDoBotao);
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+}
+.exibirAClass:hover {
+    background-color: var(--contornoDoBotaoSelecionado);
+    color: var(--corDaFonteDestaque);
+}
+.exibirLiClass .exibirUlClass {
+    display: none;
+}
+.exibirLiClass:hover > .exibirUlClass {
+    display: block;
+}
+.exibirLiClass .exibirUlClass {
+    position: absolute;
+    right: 100%; /* Posiciona o menu filho ao lado do menu pai */
+    top: 0; /* Posiciona o menu filho no topo do menu pai */
+}
+
+
+/*----------*/
+/* TreeView */
+/*----------*/
+
+#divTreeView{
+    display:grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr ;
+    grid-auto-columns: 80px;
+    width: 570px;
+    margin: auto;
+}
+#btnTrv_0{
+    grid-column-start: 5;
+}
+#divNav{
+    display:grid;
+}
+#navTreeView{
+    display: grid;
+}
+
+.ulClass{
+    margin: 0;
+    margin-left: 20px;
+    padding: 0;
+}
+.liClass{
+    display: block;
+    margin-left: 10px;
+}
+.liClass ul{
+    display: block;
+}
+#txtCotasPorSiape{
+    color: var(--corDaFonte);
+    box-shadow: inset 2px 2px 3px black;
+    width: 130px;
+    text-align: center;
+}
+#txtCotasPorSiape:hover{
+    color: var(--corDaFonte);
+    background-color: var(--fundoDestaque);
+}
+
+
+/*Dialogo para edição*/
+.divDialogoEdicao{
+    display: flexbox;
+    position: absolute;
+    width: 450px;
+    margin-left: -200px;
+    margin-top: -255px;
+}
+
+.divEditar{
+    display: grid;
+    border: 1px solid lightgray;
+    box-shadow: 5px 5px 15px black;
+}
+
+.divEditar > #fldEditarInfo{
+    grid-column-start: 1;
+    grid-column-end: 5;
+}
+.divEditar > #fldEditarInfo > label > input,
+.divEditar > #fldEditarInfo > label > textarea{
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+
+.divEditar > #fldEditarFalta{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.divEditar > #fldEditarDuracao{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+
+
+.divEditar > #fldEditarAcao {
+    grid-column-start: 3;
+    grid-column-end: 5;
+}
+
+.divEditar input,
+.divEditar select,
+.divEditar textarea{
+    font-weight: bold;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.fldEditarAcao{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+#txtEditarOperacao{
+  resize: none;  
+}
+#btnEditarUpdate{
+    border: 2px solid red;
+}
+#btnEditarCancel{
+    border: 1px solid black;
+}

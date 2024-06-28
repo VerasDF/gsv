@@ -1,0 +1,111 @@
+
+#divResultado *{
+    font-family: Arial, Helvetica, sans-serif;
+}
+#divResultado{
+    margin: 20px auto;
+    align-items: center;
+}
+
+table {
+    border: 1px solid #000;
+    margin-top: 10px;
+    margin: auto;
+    box-shadow: 0px 0px 15px var(--padrao-cinza-escuro);
+}
+
+table,
+th,
+td,
+span {
+    border-radius: 2px;
+    color: #000;
+    background: #fff;
+}
+
+th,
+td {
+    border: 1px solid #000;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-spacing: 0px;
+}
+
+
+
+
+.nivel_um,
+.nivel_dois,
+.nivel_tres,
+.nivel_quatro,
+.nivel_cinco,
+.name_um,
+.name_dois,
+.name_tres,
+.name_quatro,
+.name_cinco,
+.label_data {
+    text-align: center;
+}
+.label_data_valor{
+    text-align: right;
+}
+
+.nivel_quatro,
+.name_tres,
+.name_quatro {
+    background-color: #999;
+    /* opacity: 1; */
+}
+
+.nivel_um,
+.name_um,
+.desc_um {
+    background-color: #e6f0ff;
+    font-weight: bold;
+    /* font-size: 120%; */
+}
+
+.nivel_um,
+.nivel_quatro,
+.nivel_cinco {
+    font-weight: bold;
+}
+
+.nivel_quatro{
+    /* border: none;
+    border-radius: 0px; */
+    padding-top: 10px;
+    text-align: left;
+}
+
+.desc_um {
+    font-weight: bold;
+}
+
+.label_data_th {
+    background-color: #ccc;
+    text-align: center;
+}
+
+.escalaCompulsoria{
+    background-color: rgb(240, 255, 240);
+}
+
+.faltou{
+    background-color: rgb(255, 200, 200);
+}
+
+.visivel{
+    display: inline-block;
+}
+.invisivel{
+    display: none;
+}
+.exibirResultadoClass,
+.exibirResultadoClass > *{
+    background-color: white;
+}
+
+
+/* Impressão */
