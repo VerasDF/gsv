@@ -816,6 +816,9 @@ const html = {
             case 23:
                 html.exibirCotaDobrada();
                 break;
+            case 24:
+                html.criarArquivoExcel();
+                break;
             case 30:
                 html.totalDeCotasEscaladas(objAux);
                 break;
@@ -1354,6 +1357,45 @@ const html = {
             for(i = 0; i < arr.length; i++) {txt += arr[i] + '\n'}
             return txt
         }
+    },
+    criarArquivoExcel: function(){
+        if(dadoEscalasJson.length == 0){
+            alert('Não há dados a serem processados!');
+            return false;
+        }
+    
+        const objAux = dadoEscalasJson.map(e =>{
+            return {
+                'GRAD':e.POSTO_GRAD, 
+                'NOME':e.NOME,
+                'SIAPE':e.SIAPE,
+                'GBM_ORIGEM':e.LOTAÇÃO,
+                'QUADRO':e.QUADRO,
+                'ALA':e.ALA,
+                'CIRCULO':e.CIRCULO,
+                'DATA':e.DATA,
+                'HORA':e.HORA,
+                'GBM_DESTINO':e.GBM_DESTINO,
+                'LOCAL':e.LOCAL,
+                'OPERAÇÃO':e.OPERAÇÃO,
+                'GRUPO':e.GRUPO,
+                'TEMPO':e.TEMPO,
+                'VALOR':e.VALOR,
+                'MES':e.MÊS,
+                'FALTA':e.FALTA,
+                'QUINZENA':e.QUINZENA
+            }
+        })
+        
+        html.construirGrade(objAux)
+    
+        const tbRes = $('tbResultado');
+        const Dados = new Blob(["\ufeff" + tbRes.outerHTML], {type:"application/vnd.ms-excel"});
+        const url = window.URL.createObjectURL(Dados);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'NomeDoArquivo';
+        a.click();
     },
     construirPlanilha: function (objAux) {
     
