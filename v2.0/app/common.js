@@ -135,14 +135,6 @@ function prepararEscalasJSon(dadosHtml) {
                     }
                 }
             }
-
-// if(i==1779){
-//     console.debug('')
-// }
-// if(i==2249){
-//     console.debug('')
-// }
-
             if (filhos === 7) {
                 if (tr.children[0].nodeName === "TD") {
                     const obj = {};
@@ -777,7 +769,7 @@ function fncEditarCota(id){
         div.innerHTML = conteudoHtml
         $('divParametros').insertBefore(div, $('divParametros').children[0])
         $('btnEditarUpdate').addEventListener('click', (e)=>{
-            fncEdicaoAlterarDados($('txtEditarIndex').value)
+            fncEdicaoAlterarDados($('txtEditarIndex').value, htmlConstruirPlanilha)
             $('btnEditarCancel').click()
         })
         $('btnEditarCancel').addEventListener('click', (e)=>{
@@ -810,14 +802,15 @@ function fncEdicaoCarregarDadosParaAlteracao(id){
     }
 }
 
-function fncEdicaoAlterarDados(index){
-    if(dadoEscalasJson[parseInt(index)]._ID === parseInt($('txtEditarId').value)){
-        dadoEscalasJson[parseInt(index)].FALTA = ($('selEditarFalta').value === 'true' ? true : false)
-        dadoEscalasJson[parseInt(index)].TEMPO = $('selEditarDuracao').value.toString()
-        dadoEscalasJson[parseInt(index)].VALOR = parseInt($('selEditarDuracao').value) * 50
-        dadoEscalasJson[parseInt(index)].ASSINATURA = ($('selEditarFalta').value === 'true' ? `AUDITORIA` : ``)
+function fncEdicaoAlterarDados(id, funcRetornno = undefined){
+    if(dadoEscalasJson[parseInt(id)]._ID === parseInt($('txtEditarId').value)){
+        dadoEscalasJson[parseInt(id)].FALTA = ($('selEditarFalta').value === 'true' ? true : false)
+        dadoEscalasJson[parseInt(id)].TEMPO = $('selEditarDuracao').value.toString()
+        dadoEscalasJson[parseInt(id)].VALOR = parseInt($('selEditarDuracao').value) * 50
+        dadoEscalasJson[parseInt(id)].ASSINATURA = ($('selEditarFalta').value === 'true' ? `AUDITORIA` : ``)
         $info({msg:`Alterado apenas em memória`, opt:`+n`})
     }
+    if(funcRetornno){funcRetornno()}
 }
 
 const htmlConstruirEscala = (info) => {
@@ -1343,19 +1336,23 @@ const htmlConstruirGrade = (arrObj) => {
     }
 }
 
-const htmlConstruirPlanilha = (arrObj) => {
+const htmlConstruirPlanilha = () => {
     
     divResultado.innerHTML = '';
-    if(arrObj[0] === undefined){
+
+    const par = parametroPlanilha();
+    const objAux = filtrarEscalasJson(par);
+
+    if(objAux[0] === undefined){
         $info({msg:`Não há dados a serem processados`, opt:`+a`});
         return;
     }
-    const objOper = totais('OPERAÇÃO',arrObj);
-    const mesAno = (`${_extrairMesExtenso(arrObj[0].DATA)}/${arrObj[0].DATA.split('/')[2]}`).toUpperCase();
+    const objOper = totais('OPERAÇÃO',objAux);
+    const mesAno = (`${_extrairMesExtenso(objAux[0].DATA)}/${objAux[0].DATA.split('/')[2]}`).toUpperCase();
     
-    let totalDeColunasDias = _qtdMaxColunasParaDias(arrObj);
+    let totalDeColunasDias = _qtdMaxColunasParaDias(objAux);
 
-    let cotasTotal = arrObj.length;
+    let cotasTotal = objAux.length;
     let militaresTotal = 0;
     let contador = 0;
     let valorTotal = 0;
@@ -1369,7 +1366,7 @@ const htmlConstruirPlanilha = (arrObj) => {
     thead.append(_cabecalhoLinha3(totalDeColunasDias));
     table.append(thead);
     for(let i = 0; i < arrOrdemPostoGrad.length; i++){
-        objPosto = arrObj.map((item)=>{return {
+        objPosto = objAux.map((item)=>{return {
                 _ID:item._ID,
                 SIAPE:item.SIAPE,
                 NOME:item.NOME,
@@ -1484,8 +1481,7 @@ const htmlConstruirPlanilha = (arrObj) => {
                     cotasTotal = cotasTotal + 1
                 }
                 tdDia.addEventListener('dblclick', (e)=>{
-                    console.log(obj[l]._ID, dadoEscalasJson.filter((e)=>{ return e._ID==obj[l]._ID }));
-                    //continuar aqui
+                    fncEditarCota(obj[l]._ID, dadoEscalasJson.filter((e)=>{ return e._ID==obj[l]._ID }));
                 })
             }
             if(tr.childElementCount<totalDeColunasDias+4){tr.append(tdDia)}
