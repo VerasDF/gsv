@@ -837,6 +837,9 @@ const html = {
             case 35:
                 html.totalDeCotasOficiasPracas(objAux);
                 break;
+            case 36:
+                html.exibirTotais('SIAPE', objAux);
+                break;
             case 40:
                 edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'200', tempo:'04'});
                 break;
@@ -1262,7 +1265,7 @@ const html = {
         function _incluirCabecalhoParaPdf(){
             const tbResultado = document.getElementById('tbResultado');
             const cabecalhoH1 = document.createElement('h1');
-            cabecalhoH1.innerHTML = `TOTAL DE MILITARES ENVOLVIDOS COM GSV<br>${arrAux[0].MÊS}/${arrAux[0].DATA.split("/")[2]}`;
+            cabecalhoH1.innerHTML = `TOTAL DE MILITARES ENVOLVIDOS<br>GSV de ${arrAux[0].MÊS}/${arrAux[0].DATA.split("/")[2]}`;
             cabecalhoH1.style.display = 'flexbox';
             cabecalhoH1.style.textAlign = 'center';
             cabecalhoH1.style.width = '100%';
