@@ -494,13 +494,16 @@ function inicializarInterfaceDeEscalas(){
 }
 function inicializarInterfaceDeFaltas(){
     if(dadoEscalasJson.length==0){
-        alert('É necessário que os dados de escala estejam carregados');
+        setTimeout(() => {
+            inicializarInterfaceDeFaltas();
+        }, 200);
+        console.log('Os dados de escala não foram carregados completamente...');
         return;
     }
     else{
         setTimeout(() => {
             tratarFaltas();
-        }, 500);
+        }, 200);
     }
 }
 function inicializarInterfaceDeInscritos(){
@@ -533,7 +536,7 @@ const opcoes = {
             $('btnOpcaoSemVoluntario').ariaPressed = 'false';
             $('btnOpcaoCompulsorio').ariaPressed = 'true';
         }
-        this._acao();
+        opcoes._acao();
     },
     falta: function(ctrAux){
         if(ctrAux.id == 'btnFaltaTodas'){
@@ -551,7 +554,7 @@ const opcoes = {
             $('btnFaltaFalse').ariaPressed = 'false';
             $('btnFaltaTrue').ariaPressed = 'true';
         }
-        this._acao();
+        opcoes._acao();
     },
     quinzena: function(ctrAux){
         if(ctrAux.id == 'btnQuinzenaMesInteiro'){
@@ -569,7 +572,7 @@ const opcoes = {
             $('btnQuinzena1').ariaPressed = 'false';
             $('btnQuinzena2').ariaPressed = 'true';
         }
-        this._acao();
+        opcoes._acao();
     },
     _acao:function(){
         const objAux = filtrarEscalasJson(_parametros());
@@ -631,6 +634,13 @@ const dados = {
             divTurno.append(dados._criarItemDaLista(divTurno, arrAux[i]));
         }
     },
+    quadro:function(arrAux){
+        const divQuadro = $('divFiltroQuadro');
+        dados._limparLista(divQuadro);
+        for(let i = 0; i < arrAux.length; i++){
+            divQuadro.append(dados._criarItemDaLista(divQuadro, arrAux[i]));
+        }
+    },
     carregarControles:function(){
         limparTudo();
         const arrDias = dadoEscalasJson.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
@@ -639,28 +649,37 @@ const dados = {
         const arrGrupo = dadoEscalasJson.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         const arrOperacao = dadoEscalasJson.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         const arrTurno = dadoEscalasJson.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrQuadro = dadoEscalasJson.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        
         dados.grupo(arrGrupo);
         dados.duracao(arrDuracao);
         dados.operacao(arrOperacao);
         dados.gbmDestino(arrGbmDestino);
         dados.turno(arrTurno);
+        dados.quadro(arrQuadro);
         dados._criarCalendario(parseInt(arrDias[0].split('/')[2]), parseInt(arrDias[0].split('/')[1]));
         dados.data(arrDias);
+        
         $('divTotais').innerHTML = `Cotas Mês: ${dadoEscalasJson.length.toLocaleString('pt-BR')}<br>Filtradas: ${filtrarEscalasJson(_parametros()).length.toLocaleString('pt-BR')}`
         $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
         $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
         $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
-        $('fldGbmDestino').children[0].innerHTML = `GBM de Destino: (${arrGbmDestino.length})`;
+        $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
         $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
+        $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
         $('fldCalendario').children[0].innerHTML = `Calendário: (${conf.mesAno})`;
+
+        setTimeout(() => {
+            filtrar.prepararDados(filtrarEscalasJson(_parametros()));
+        }, 500);
     },
     _criarItemDaLista:function(objTag, strTexto){
         const btnTemp = document.createElement('button');
         btnTemp.id = objTag.id+'Btn';
-        btnTemp.ariaLabel = strTexto;
+        btnTemp.ariaLabel = `${strTexto}`;
         btnTemp.ariaPressed = 'false';
         btnTemp.className = 'campoCriterio';
-        btnTemp.innerHTML = strTexto;
+        btnTemp.innerHTML = `${strTexto}`;
         btnTemp.addEventListener('click', (e)=>{
             if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
             filtrar.processarClickDoBotao(btnTemp);
@@ -718,6 +737,10 @@ const dados = {
 
 const filtrar = {
     processarClickDoBotao:function(botao){
+        if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
         if ( botao.id == 'divFiltroDuracaoBtn' ) {
             const objAux = filtrarEscalasJson(_parametros());
             filtrar.prepararDados(objAux);
@@ -730,15 +753,15 @@ const filtrar = {
             const objAux = filtrarEscalasJson(_parametros());
             filtrar.prepararDados(objAux);
         }
-        if ( botao.id == 'divFiltroTurnoBtn' ) {
-            const objAux = filtrarEscalasJson(_parametros());
-            filtrar.prepararDados(objAux);
-        }
         if ( botao.id == 'divFiltroOperacaoBtn' ) {
             const objAux = filtrarEscalasJson(_parametros());
             filtrar.prepararDados(objAux);
         }
-        if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
+        if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroTurnoBtn' ) {
             const objAux = filtrarEscalasJson(_parametros());
             filtrar.prepararDados(objAux);
         }
@@ -749,19 +772,24 @@ const filtrar = {
         const arrOperacao = objAux.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         const arrGbmDestino = objAux.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         const arrTurno = objAux.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrQuadro = objAux.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        this.destacar(arrDuracao, $('divFiltroDuracao'));
-        this.destacar(arrGrupo, $('divFiltroGrupo'));
-        this.destacar(arrOperacao, $('divFiltroOperacao'));
-        this.destacar(arrGbmDestino, $('divFiltroGbmDestino'));
-        this.destacar(arrTurno, $('divFiltroTurno'));
-        this.destacar(arrDatas, $('divCalendario'));
+        
+        filtrar.destacar(arrDuracao, $('divFiltroDuracao'));
+        filtrar.destacar(arrGrupo, $('divFiltroGrupo'));
+        filtrar.destacar(arrOperacao, $('divFiltroOperacao'));
+        filtrar.destacar(arrGbmDestino, $('divFiltroGbmDestino'));
+        filtrar.destacar(arrTurno, $('divFiltroTurno'));
+        filtrar.destacar(arrQuadro, $('divFiltroQuadro'));
+        filtrar.destacar(arrDatas, $('divCalendario'));
+        
         $('divTotais').innerHTML = `Total Mês: ${dadoEscalasJson.length.toLocaleString('pt-BR')}<br>Filtrado: ${objAux.length.toLocaleString('pt-BR')}`;
         $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
         $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
         $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
-        $('fldGbmDestino').children[0].innerHTML = `GBM de Destino: (${arrGbmDestino.length})`;
+        $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
         $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
+        $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
     destacar:function(arrAux, ctrAux){
         const divAux = ctrAux;
@@ -2160,6 +2188,7 @@ function _parametros(foco){
     const _divFiltroOperacao = $('divFiltroOperacao');
     const _divFiltroGbmDestino = $('divFiltroGbmDestino');
     const _divFiltroTurno = $('divFiltroTurno');
+    const _divFiltroQuadro = $('divFiltroQuadro');
     const _divCalendario = $('divCalendario');
     const _filtroOpcao = $('divFiltroOpcao')
     const _quinzenaOpcao = $('divQuinzenaOpcao')
@@ -2171,6 +2200,7 @@ function _parametros(foco){
     let arrOper = [];
     let arrGbmDestino = [];
     let arrTurno = [];
+    let arrQuadro = [];
     let arrData = [];
     let arrSiape = undefined;
     let arrQuinzena = undefined;
@@ -2181,6 +2211,7 @@ function _parametros(foco){
     if(foco == undefined || foco == `operacao`){ arrOper = _buscarSelecionados(_divFiltroOperacao) }
     if(foco == undefined || foco == `gbm_destino`){ arrGbmDestino = _buscarSelecionados(_divFiltroGbmDestino) }
     if(foco == undefined || foco == `turno`){ arrTurno = _buscarSelecionados(_divFiltroTurno) }
+    if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados(_divFiltroQuadro) }
     if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados(_divCalendario) }
     if(foco == undefined || foco == `opcao`){ arrSiape = _buscarSelecionados(_filtroOpcao) }
     if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados(_quinzenaOpcao) }
@@ -2191,6 +2222,7 @@ function _parametros(foco){
     if(arrOper.length > 0) { par.operacao = arrOper }
     if(arrGbmDestino.length > 0) { par.gbm_destino = arrGbmDestino }
     if(arrTurno.length > 0){ par.horario = arrTurno }
+    if(arrQuadro.length > 0){ par.quadro = arrQuadro }
     if(arrData.length > 0){ par.data = arrData }
     if(arrSiape.length > 0){
         if(arrSiape[0] != 'compulsória'){
@@ -2250,7 +2282,7 @@ function tratarFaltas() {
     if(dadoFaltasJson.length != contador){
         $led(21);
     }
-    console.log('(Processametno de faltas)', dadoFaltasJson.length, contador)
+    $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
 
     dadoFaltasJson.forEach((flt)=>{
         const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});

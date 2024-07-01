@@ -123,18 +123,23 @@ button:hover{
 }
 #fldGbmDestino{
     grid-column-start: 1;
-    grid-column-end: 7;
+    grid-column-end: 6;
 }
 #fldTurno{
-    grid-column-start: 7;
-    grid-column-end: 16;
+    grid-column-start: 6;
+    grid-column-end: 11;
+}
+#fldQuadro{
+    grid-column-start: 11;
+    grid-column-end: 15;
 }
 #fldCalendario{
-    grid-column-start: 16;
+    grid-column-start: 15;
     grid-column-end: 25;  
 }
 #divFiltroGbmDestino,
-#divFiltroTurno{
+#divFiltroTurno,
+#divFiltroQuadro{
     height: 180px;
 }
 .clsOpcoes,

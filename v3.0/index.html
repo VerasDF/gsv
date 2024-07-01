@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste</title>
+    <title>SeGSV - Ferramenta para análise</title>
     <link rel="stylesheet" href="principal.css">
     <link rel="stylesheet" href="gsv_resultado.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -21,7 +21,7 @@
     <div id="divContainerPrincipal" class="container">
         <div id="divArquivoDeOrigem">
             <input type="file" id="fileArquivo" multiple>
-            <span style="display: inline-flex; position: relative; top: 25px; margin: 0px auto; color: cornflowerblue; font-size: 0.7em; cursor: context-menu;">Powered by Wagner Veras&reg;</span>
+            <span style="display: inline-flex; position: relative; top: 20px; margin: 0px auto; color: cornflowerblue; font-size: 0.7em; cursor: context-menu;">Powered by Wagner Veras&reg;</span>
             <div id="divResumo">
                 <div id="divStatusEscala" title="Escala"></div>
                 <div id="divStatusFalta" title="Faltas"></div>
@@ -67,12 +67,16 @@
             <div class="clsFiltros" id="divFiltroOperacao"></div>
         </fieldset>
         <fieldset id="fldGbmDestino">
-            <legend class="legDescricao">GBM de Destino:</legend>
+            <legend class="legDescricao">Destino:</legend>
             <div class="clsFiltros" id="divFiltroGbmDestino"></div>
         </fieldset>
         <fieldset id="fldTurno">
             <legend class="legDescricao">Turnos:</legend>
             <div class="clsFiltros" id="divFiltroTurno"></div>
+        </fieldset>
+        <fieldset id="fldQuadro">
+            <legend class="legDescricao">Quadros:</legend>
+            <div class="clsFiltros" id="divFiltroQuadro"></div>
         </fieldset>
         <fieldset id="fldCalendario">
             <legend class="legDescricao">Calendario:</legend><span id="spnDataAux" style="display: none;"></span>
