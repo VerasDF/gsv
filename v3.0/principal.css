@@ -59,13 +59,13 @@ button:hover{
 }
 #divContainerPrincipal{
     display: grid;
-    grid-template-columns: 25px 25px 25px 25px 25px 
-    25px 25px 25px 25px 25px 
-    25px 25px 25px 25px 25px 
-    25px 25px 25px 25px 25px 
-    25px 25px 25px 25px;
-    grid-auto-columns: 25px;
-    width: 650px;
+    grid-template-columns: 30px 30px 30px 30px 30px 
+    30px 30px 30px 30px 30px 
+    30px 30px 30px 30px 30px 
+    30px 30px 30px 30px 30px 
+    30px 30px 30px 30px;
+    grid-auto-columns: 30px;
+    width: 720px;
     margin: auto;
 }
 #divTotais{
@@ -156,9 +156,16 @@ button:hover{
     height: 80px;
     overflow-y: scroll;
 }
-#divCalendario{
+.clsCalendario{
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
+}
+.clsDiaCalendario{
+    border: 1px solid var(--borda);
+    text-align: left;
+    justify-content: left;
+    padding: 0px;
+    height: 50px;
 }
 .diaMes, #divAuxiliar{
     text-align: center;
@@ -192,6 +199,7 @@ button:hover{
     position: relative;
     top: -10px;
     box-shadow: 2px 2px 5px var(--sombraDoBox);
+    z-index: 10;
 }
 .clsClassificarCabecalho{
     background-color: var(--fundo);

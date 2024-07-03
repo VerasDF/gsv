@@ -706,7 +706,7 @@ const dados = {
         }
         function _criarBtnDia(diaAux){
             const btnTemp = document.createElement('button');
-            btnTemp.id = 'btnDiaDoMes'+(diaAux==undefined?'-':("00"+diaAux.getDate()).slice(-2));
+            btnTemp.id = 'btnDiaDoMes'+(diaAux == undefined ? '-' : ("00"+diaAux.getDate()).slice(-2));
             btnTemp.ariaLabel = (diaAux!=undefined?diaAux.toLocaleDateString():'');
             btnTemp.ariaPressed = 'false';
             btnTemp.className = 'diaMes';
@@ -1828,6 +1828,9 @@ const edicaoDeCota = {
             $('btnEditarUpdate').addEventListener('click', (e)=>{
                 edicaoDeCota.alterarDados($('txtEditarIndex').value);
                 $('div'+id.toString()).style.display = 'none';
+                setTimeout(()=>{
+                    dados.carregarControles();
+                },200);
                 setTimeout(() => {
                     const objAux = filtrarEscalasJson(_parametros());
                     html.construirPlanilha(objAux);
@@ -1906,7 +1909,62 @@ const edicaoDeCota = {
 
 //Area de testes
 
+function cotasNoCalendario(objAux){
+    limparTudo();
+    if(objAux.length == 0){ return }
+    const divResultado = $('divResultado');
+    const divCalendario = document.createElement('div');
+    const totDia = totais("DATA", objAux);
+    divCalendario.className = "clsCalendario";
+    divCalendario.style.width = "700px";
+    divCalendario.style.margin = "0 auto";
+    divCalendario.style.zIndex = "-1";
+    divResultado.append(divCalendario);
 
+    let dataInicio = _extrairDataInicio(objAux[0].DATA);
+    let dataAux = new Date(dataInicio);
+    let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
+    dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
+
+    dataAux = new Date(dataInicio);
+    divCalendario.innerHTML = `<div style="text-align:center">Domingo</div>
+                               <div style="text-align:center">Segunda</div>
+                               <div style="text-align:center">Terça</div>
+                               <div style="text-align:center">Quata</div>
+                               <div style="text-align:center">Quita</div>
+                               <div style="text-align:center">Sexta</div>
+                               <div style="text-align:center">Sábado</div>`;
+
+    
+    while(dataAux <= dataTermino){
+        if( dataAux.getDate() == 1){
+            for(let i = 0; i < 7; i++){
+                if(i < dataAux.getDay()){
+                    divCalendario.appendChild(_criarBtnDia());
+                }else{break}
+            }
+        }
+        const btn = _criarBtnDia(dataAux);
+        btn.innerHTML += `<div style="font-size:20px; display:flex-inline; position:relative; text-align:center">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
+        divCalendario.appendChild(btn);
+        dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
+    }
+    
+
+    function _criarBtnDia(dtAux){
+        const divTemp = document.createElement('div');
+        divTemp.id = 'divDiaDoMes'+(dtAux == undefined ? '-' : ("00"+dtAux.getDate()).slice(-2));
+        divTemp.className = 'clsDiaCalendario';
+        divTemp.innerHTML = (dtAux==undefined?'-':("00"+dtAux.getDate()).slice(-2));
+        return divTemp
+    }
+    function _extrairDataInicio(strData) {
+        const arrData = strData.split('/');
+        const dataInicio = new Date(`${arrData[2]}-${arrData[1]}-01T00:00:00`);
+        return dataInicio;
+    }
+    
+}
 
 
 
