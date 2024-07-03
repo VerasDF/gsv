@@ -15,6 +15,7 @@
     --borda: #222;
     --linkA: darkblue;
     --itemSelecionado: rgba(100, 148, 237, 0.499);
+    --teste:#efefef;
 }
 
 *{
@@ -59,13 +60,13 @@ button:hover{
 }
 #divContainerPrincipal{
     display: grid;
-    grid-template-columns: 25px 25px 25px 25px 25px 
-    25px 25px 25px 25px 25px 
-    25px 25px 25px 25px 25px 
-    25px 25px 25px 25px 25px 
-    25px 25px 25px 25px;
-    grid-auto-columns: 25px;
-    width: 650px;
+    grid-template-columns: 30px 30px 30px 30px 30px 
+    30px 30px 30px 30px 30px 
+    30px 30px 30px 30px 30px 
+    30px 30px 30px 30px 30px 
+    30px 30px 30px 30px;
+    grid-auto-columns: 30px;
+    width: 720px;
     margin: auto;
 }
 #divTotais{
@@ -151,6 +152,8 @@ button:hover{
     justify-content: left;
     text-align: left;
     border: 1px solid var(--contornoDoBotao);
+    word-wrap: break-word;
+    word-break:break-all;
 }
 .clsFiltros{
     height: 80px;
