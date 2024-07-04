@@ -307,6 +307,7 @@ button:hover{
     width: 450px;
     margin-left: -200px;
     margin-top: -255px;
+    z-index: 11;
 }
 
 .divEditar{
