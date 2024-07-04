@@ -581,7 +581,9 @@ const opcoes = {
 }
 
 const dados = {
-    data:function(arrAux){
+    carregarDataDoMes:function(){
+        dados._criarCalendario();
+        const arrAux = dadoEscalasJson.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         const divCalendario = $('divCalendario');
         for(let i = 0; i < divCalendario.childElementCount; i++){
             const btnAux = divCalendario.children[i];
@@ -598,80 +600,77 @@ const dados = {
             }
         })
     },
-    duracao:function(arrAux){
-        const divDuracao = $('divFiltroDuracao');
-        dados._limparLista(divDuracao);
-        for(let i = 0; i < arrAux.length; i++){
-            divDuracao.append(dados._criarItemDaLista(divDuracao, arrAux[i]));
-        }
-    },
-    gbmDestino:function(arrAux){
-        const divGbmDestino = $('divFiltroGbmDestino');
-        dados._limparLista(divGbmDestino);
-        for(let i = 0; i < arrAux.length; i++){
-            arrAux = arrAux.sort(ordenarPorGBM)
-            divGbmDestino.append(dados._criarItemDaLista(divGbmDestino, arrAux[i]));
-        }
-    },
-    grupo:function(arrAux){
-        const divGrupo = $('divFiltroGrupo');
-        dados._limparLista(divGrupo);
-        for(let i = 0; i < arrAux.length; i++){
-            divGrupo.append(dados._criarItemDaLista(divGrupo, arrAux[i]));
-        }
-    },
-    operacao:function(arrAux){
-        const divOperacao = $('divFiltroOperacao');
-        dados._limparLista(divOperacao);
-        for(let i = 0; i < arrAux.length; i++){
-            divOperacao.append(dados._criarItemDaLista(divOperacao, arrAux[i]));
-        }
-    },
-    turno:function(arrAux){
-        const divTurno = $('divFiltroTurno');
-        dados._limparLista(divTurno);
-        for(let i = 0; i < arrAux.length; i++){
-            divTurno.append(dados._criarItemDaLista(divTurno, arrAux[i]));
-        }
-    },
-    quadro:function(arrAux){
-        const divQuadro = $('divFiltroQuadro');
-        dados._limparLista(divQuadro);
-        for(let i = 0; i < arrAux.length; i++){
-            divQuadro.append(dados._criarItemDaLista(divQuadro, arrAux[i]));
-        }
-    },
     carregarControles:function(){
         limparTudo();
-        const arrDias = dadoEscalasJson.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const arrDuracao = dadoEscalasJson.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const arrGbmDestino = dadoEscalasJson.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const arrGrupo = dadoEscalasJson.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const arrOperacao = dadoEscalasJson.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const arrTurno = dadoEscalasJson.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const arrQuadro = dadoEscalasJson.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         
-        dados.grupo(arrGrupo);
-        dados.duracao(arrDuracao);
-        dados.operacao(arrOperacao);
-        dados.gbmDestino(arrGbmDestino);
-        dados.turno(arrTurno);
-        dados.quadro(arrQuadro);
-        dados._criarCalendario(parseInt(arrDias[0].split('/')[2]), parseInt(arrDias[0].split('/')[1]));
-        dados.data(arrDias);
-        
+        dados.carregarGrupo();
+        dados.carregarDuracao();
+        dados.carregarOperacao();
+        dados.carregarGbmDestino();
+        dados.carregarTurno();
+        dados.carregarQuadro();
+        dados.carregarDataDoMes();
         $('divTotais').innerHTML = `Cotas Mês: ${dadoEscalasJson.length.toLocaleString('pt-BR')}<br>Filtradas: ${filtrarEscalasJson(_parametros()).length.toLocaleString('pt-BR')}`
-        $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
-        $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
-        $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
-        $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
-        $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
-        $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
-        $('fldCalendario').children[0].innerHTML = `Calendário: (${conf.mesAno})`;
-
+        
         setTimeout(() => {
             filtrar.prepararDados(filtrarEscalasJson(_parametros()));
         }, 500);
+    },
+    carregarGrupo: function(){
+        const arrGrupo = dadoEscalasJson.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divGrupo = $('divFiltroGrupo');
+        dados._limparLista(divGrupo);
+        for(let i = 0; i < arrGrupo.length; i++){
+            divGrupo.append(dados._criarItemDaLista(divGrupo, arrGrupo[i]));
+        }
+        $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
+    },
+    carregarDuracao: function(){
+        const arrDuracao = dadoEscalasJson.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divDuracao = $('divFiltroDuracao');
+        $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
+        dados._limparLista(divDuracao);
+        for(let i = 0; i < arrDuracao.length; i++){
+            divDuracao.append(dados._criarItemDaLista(divDuracao, arrDuracao[i]));
+        }
+    },
+    carregarOperacao: function(){
+        const arrOperacao = dadoEscalasJson.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divOperacao = $('divFiltroOperacao');
+        dados._limparLista(divOperacao);
+        for(let i = 0; i < arrOperacao.length; i++){
+            divOperacao.append(dados._criarItemDaLista(divOperacao, arrOperacao[i]));
+        }
+        $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
+    },
+    carregarGbmDestino: function(){
+        const arrGbmDestino = dadoEscalasJson.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        let arrAux = arrGbmDestino;
+        const divGbmDestino = $('divFiltroGbmDestino');
+        dados._limparLista(divGbmDestino);
+        for(let i = 0; i < arrGbmDestino.length; i++){
+            arrAux = arrAux.sort(ordenarPorGBM);
+            divGbmDestino.append(dados._criarItemDaLista(divGbmDestino, arrAux[i]));
+        }
+        $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
+    },
+    carregarTurno: function(){
+        const arrTurno = dadoEscalasJson.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divTurno = $('divFiltroTurno');
+        dados._limparLista(divTurno);
+        for(let i = 0; i < arrTurno.length; i++){
+            divTurno.append(dados._criarItemDaLista(divTurno, arrTurno[i]));
+        }
+        $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
+    },
+    carregarQuadro: function(){
+        const arrQuadro = dadoEscalasJson.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divQuadro = $('divFiltroQuadro');
+        dados._limparLista(divQuadro);
+        for(let i = 0; i < arrQuadro.length; i++){
+            divQuadro.append(dados._criarItemDaLista(divQuadro, arrQuadro[i]));
+        }
+        $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
     _criarItemDaLista:function(objTag, strTexto){
         const btnTemp = document.createElement('button');
@@ -686,7 +685,12 @@ const dados = {
         })
         return btnTemp
     },
-    _criarCalendario:function(ano, mes){
+    _criarCalendario:function(){
+        const arrDias = dadoEscalasJson[0].DATA;
+        const ano = parseInt(arrDias.split('/')[2]);
+        const mes = parseInt(arrDias.split('/')[1]);
+        $('fldCalendario').children[0].innerHTML = `Calendário: (${conf.mesAno})`;
+
         let dataInicio = new Date(`${ano.toString()}-${("00"+mes.toString()).slice(-2)}-01T00:00:00`);
         let dataAux = new Date(dataInicio);
         let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
@@ -870,32 +874,35 @@ const html = {
             case 36:
                 html.exibirTotais('SIAPE', objAux);
                 break;
+            case 37:
+                html.cotasNoCalendario(objAux);
+                break;
             case 40:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'200', tempo:'04'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'200', tempo:'04'});
                 break;
             case 41:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'250', tempo:'05'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'250', tempo:'05'});
                 break;
             case 42:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'300', tempo:'06'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'300', tempo:'06'});
                 break;
             case 43:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'350', tempo:'07'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'350', tempo:'07'});
                 break;
             case 44:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'400', tempo:'08'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'400', tempo:'08'});
                 break;
             case 45:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'450', tempo:'09'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'450', tempo:'09'});
                 break;
             case 46:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'500', tempo:'10'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'500', tempo:'10'});
                 break;
             case 47:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'550', tempo:'11'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'550', tempo:'11'});
                 break;
             case 48:
-                edicaoDeCota.alterarDuracaoTodasAsCotasFiltradas({valor:'600', tempo:'12'});
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'600', tempo:'12'});
                 break;
             default:
                 alert('Opção não definida!')
@@ -1079,11 +1086,12 @@ const html = {
     },
     exibirCotaDobrada: function() {
         limparTudo();
-        const arrDia = dadoEscalasJson.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
+        const objAux = filtrarEscalasJson(_parametros());
+        const arrDia = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
         const table = document.createElement('table')
         table.innerHTML = `<tr><th>DIA</th><th>SIAPE</th><th>ACHADOS</th></tr>`
         for(let i = 0; i < arrDia.length; i++) {
-            const objDia = dadoEscalasJson.filter((item)=>{if(item.DATA === arrDia[i]){return item}})
+            const objDia = objAux.filter((item)=>{if(item.DATA === arrDia[i]){return item}})
             const objTotalSiape = totais('SIAPE', objDia)
             for (const property in objTotalSiape) {
                 const tr = document.createElement('tr')
@@ -1391,6 +1399,63 @@ const html = {
             return txt
         }
     },
+    cotasNoCalendario: function(objAux){
+        limparTudo();
+        if(objAux.length == 0){ return }
+        const divResultado = $('divResultado');
+        const divCalendario = document.createElement('div');
+        const totDia = totais("DATA", objAux);
+        divCalendario.className = "clsCalendario";
+        divCalendario.style.width = "700px";
+        divCalendario.style.margin = "0 auto";
+        divCalendario.style.zIndex = "-1";
+        divResultado.append(divCalendario);
+
+        let dataInicio = _extrairDataInicio(objAux[0].DATA);
+        let dataAux = new Date(dataInicio);
+        let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
+        dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
+
+        dataAux = new Date(dataInicio);
+        divCalendario.innerHTML = `
+                                <div style="text-align:center">Domingo</div>
+                                <div style="text-align:center">Segunda</div>
+                                <div style="text-align:center">Terça</div>
+                                <div style="text-align:center">Quarta</div>
+                                <div style="text-align:center">Quinta</div>
+                                <div style="text-align:center">Sexta</div>
+                                <div style="text-align:center">Sábado</div>`;
+
+        
+        while(dataAux <= dataTermino){
+            if( dataAux.getDate() == 1){
+                for(let i = 0; i < 7; i++){
+                    if(i < dataAux.getDay()){
+                        divCalendario.appendChild(_criarDivDia());
+                    }else{break}
+                }
+            }
+            const btn = _criarDivDia(dataAux);
+            btn.innerHTML += `<div style="font-size:20px; display:flex-inline; position:relative; text-align:center">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
+            divCalendario.appendChild(btn);
+            dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
+        }
+        
+
+        function _criarDivDia(dtAux){
+            const divTemp = document.createElement('div');
+            divTemp.id = 'divDiaDoMes'+(dtAux == undefined ? '-' : ("00"+dtAux.getDate()).slice(-2));
+            divTemp.className = 'clsDiaCalendario';
+            divTemp.innerHTML = (dtAux==undefined ? '-' : 'dia '+("00"+dtAux.getDate()).slice(-2));
+            return divTemp
+        }
+        function _extrairDataInicio(strData) {
+            const arrData = strData.split('/');
+            const dataInicio = new Date(`${arrData[2]}-${arrData[1]}-01T00:00:00`);
+            return dataInicio;
+        }
+        
+    },
     criarArquivoExcel: function(){
         if(dadoEscalasJson.length == 0){
             alert('Não há dados a serem processados!');
@@ -1574,7 +1639,7 @@ const html = {
                         cotasTotal = cotasTotal + 1;
                     }
                     tdDia.addEventListener('dblclick', (e)=>{
-                        edicaoDeCota.carregarInterface('div'+obj[l]._ID);
+                        editarCota.carregarInterface('div'+obj[l]._ID);
                     })
                 }
                 if(tr.childElementCount<totalDeColunasDias+4){tr.append(tdDia)}
@@ -1816,7 +1881,7 @@ const html = {
     }
 }
 
-const edicaoDeCota = {
+const editarCota = {
     carregarInterface: function(id){
 
         $ajax({urlDoArquivo:'editar.html', funcaoDeRetorno:(conteudoHtml)=>{
@@ -1828,15 +1893,16 @@ const edicaoDeCota = {
             div.innerHTML = conteudoHtml;
             $(id).insertBefore(div, $(id).children[0]);
             $('btnEditarUpdate').addEventListener('click', (e)=>{
-                edicaoDeCota.alterarDados($('txtEditarIndex').value);
+                editarCota.alterarDados($('txtEditarIndex').value);
                 $('div'+id.toString()).style.display = 'none';
                 setTimeout(()=>{
-                    dados.carregarControles();
+                    dados.carregarDuracao();
                 },200);
-                setTimeout(() => {
-                    const objAux = filtrarEscalasJson(_parametros());
-                    html.construirPlanilha(objAux);
-                }, 500);
+                limparTudo();
+                // setTimeout(() => {
+                //     const objAux = filtrarEscalasJson(_parametros());
+                //     html.construirPlanilha(objAux);
+                // }, 500);
                 
             })
             $('btnEditarCancel').addEventListener('click', (e)=>{
@@ -1848,7 +1914,7 @@ const edicaoDeCota = {
             if($('txtEditarId')){
                 clearInterval(timerDeAlteracao);
                 const id = parseInt(document.querySelector('.divDialogoEdicao').id.replace('div',''));
-                edicaoDeCota.carregarDadosParaAlteracao(id);
+                editarCota.carregarDadosParaAlteracao(id);
             }
         }, 100)
     },
@@ -1911,62 +1977,6 @@ const edicaoDeCota = {
 
 //Area de testes
 
-function cotasNoCalendario(objAux){
-    limparTudo();
-    if(objAux.length == 0){ return }
-    const divResultado = $('divResultado');
-    const divCalendario = document.createElement('div');
-    const totDia = totais("DATA", objAux);
-    divCalendario.className = "clsCalendario";
-    divCalendario.style.width = "700px";
-    divCalendario.style.margin = "0 auto";
-    divCalendario.style.zIndex = "-1";
-    divResultado.append(divCalendario);
-
-    let dataInicio = _extrairDataInicio(objAux[0].DATA);
-    let dataAux = new Date(dataInicio);
-    let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
-    dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
-
-    dataAux = new Date(dataInicio);
-    divCalendario.innerHTML = `<div style="text-align:center">Domingo</div>
-                               <div style="text-align:center">Segunda</div>
-                               <div style="text-align:center">Terça</div>
-                               <div style="text-align:center">Quata</div>
-                               <div style="text-align:center">Quita</div>
-                               <div style="text-align:center">Sexta</div>
-                               <div style="text-align:center">Sábado</div>`;
-
-    
-    while(dataAux <= dataTermino){
-        if( dataAux.getDate() == 1){
-            for(let i = 0; i < 7; i++){
-                if(i < dataAux.getDay()){
-                    divCalendario.appendChild(_criarBtnDia());
-                }else{break}
-            }
-        }
-        const btn = _criarBtnDia(dataAux);
-        btn.innerHTML += `<div style="font-size:20px; display:flex-inline; position:relative; text-align:center">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
-        divCalendario.appendChild(btn);
-        dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
-    }
-    
-
-    function _criarBtnDia(dtAux){
-        const divTemp = document.createElement('div');
-        divTemp.id = 'divDiaDoMes'+(dtAux == undefined ? '-' : ("00"+dtAux.getDate()).slice(-2));
-        divTemp.className = 'clsDiaCalendario';
-        divTemp.innerHTML = (dtAux==undefined?'-':("00"+dtAux.getDate()).slice(-2));
-        return divTemp
-    }
-    function _extrairDataInicio(strData) {
-        const arrData = strData.split('/');
-        const dataInicio = new Date(`${arrData[2]}-${arrData[1]}-01T00:00:00`);
-        return dataInicio;
-    }
-    
-}
 
 
 
