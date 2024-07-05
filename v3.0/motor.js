@@ -1467,9 +1467,15 @@ const html = {
                     }else{break}
                 }
             }
-            const btn = _criarDivDia(dataAux);
-            btn.innerHTML += `<div style="font-size:20px; display:flex-inline; position:relative; text-align:center">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
-            divCalendario.appendChild(btn);
+            const divDiaDoMes = _criarDivDia(dataAux);
+            divDiaDoMes.innerHTML += `<div style="font-size:20px; display:flex-inline; position:relative; text-align:center">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
+            divDiaDoMes.addEventListener('click',(e)=>{
+                const divTmp = e.target.parentElement;
+                const dtDiaAux = divTmp.id.replace('divDiaDoMes','')
+                const operacoes = _extrairOperacoes();
+                divTmp.title = operacoes;
+            })
+            divCalendario.appendChild(divDiaDoMes);
             dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
         }
         
@@ -1486,7 +1492,19 @@ const html = {
             const dataInicio = new Date(`${arrData[2]}-${arrData[1]}-01T00:00:00`);
             return dataInicio;
         }
-        
+        function _extrairOperacoes(dataAux){
+            const objAux = filtrarEscalasJson(_parametros());
+            const tmp = totais("OPERAÇÃO", objAux.filter((e)=>{return e.DATA == dataAux.toLocaleDateString('pt-BR')}));
+            let ret = '';
+            for (const key in tmp) {
+                if (Object.hasOwnProperty.call(tmp, key)) {
+                    const total = tmp[key];
+                    const chave = key;
+                    ret += `${chave}: (${total})\n`;
+                }
+            }
+            return ret;
+        }
     },
     criarArquivoExcel: function(){
         if(dadoEscalasJson.length == 0){
