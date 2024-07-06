@@ -1102,11 +1102,11 @@ const html = {
                     trAux.append(thAuxPerc);
                 }
                 else if(trAux.children[0].innerHTML=='TOTAL GERAL'){
-                    tdAuxFalta.innerHTML = intTotalGeralFaltas;
+                    thAuxFalta.innerHTML = intTotalGeralFaltas;
                     intTotalGeral = parseInt('0'+trAux.children[1].innerHTML.replace('.',''))
-                    tdAuxPerc.innerHTML = `${((intTotalGeralFaltas * 100) / intTotalGeral).toFixed(2)} %`;
-                    trAux.append(tdAuxFalta);
-                    trAux.append(tdAuxPerc);
+                    thAuxPerc.innerHTML = `${((intTotalGeralFaltas * 100) / intTotalGeral).toFixed(2)} %`;
+                    trAux.append(thAuxFalta);
+                    trAux.append(thAuxPerc);
                 }
                 else{
                     trAux.append(tdAuxFalta);
