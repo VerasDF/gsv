@@ -16,6 +16,8 @@
     --linkA: darkblue;
     --itemSelecionado: rgba(100, 148, 237, 0.499);
     --teste:#efefef;
+
+    --larguraTotal: 720px;
 }
 
 *{
@@ -66,8 +68,15 @@ button:hover{
     30px 30px 30px 30px 30px 
     30px 30px 30px 30px;
     grid-auto-columns: 30px;
-    width: 720px;
+    width: var(--larguraTotal);
     margin: auto;
+}
+#fldAtualizarCalendario{
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    margin: auto;
+    margin-bottom: 10px;
+    width: var(--larguraTotal);
 }
 #divTotais{
     display:flex;
@@ -162,6 +171,11 @@ button:hover{
 .clsCalendario{
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
+}
+.clsCalendarioResultado{
+    width: var(--larguraTotal);
+    margin: 0 auto;
+    z-index: -1;
 }
 .clsDiaCalendario{
     border: 1px solid var(--borda);

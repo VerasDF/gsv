@@ -1432,16 +1432,25 @@ const html = {
         }
     },
     cotasNoCalendario: function(objAux){
-        limparTudo();
+        $('divResultado').innerHTML = '';
         if(objAux.length == 0){ return }
+        
         const divResultado = $('divResultado');
+        const divAuxiliar = $('divAuxiliar');
         const divCalendario = document.createElement('div');
         const totDia = totais("DATA", objAux);
-        divCalendario.className = "clsCalendario";
-        divCalendario.style.width = "700px";
-        divCalendario.style.margin = "0 auto";
-        divCalendario.style.zIndex = "-1";
+        const lblTitulo = document.createElement('label');
+        
+        divCalendario.className = "clsCalendario clsCalendarioResultado";
         divResultado.append(divCalendario);
+        lblTitulo.innerHTML = conf.mesAno.toUpperCase();
+        lblTitulo.style = 'font-size:18px; font-weight:bold';
+        
+        if($('divAuxiliar').innerHTML.toString().indexOf('Calendario') == -1){
+            $('divAuxiliar').innerHTML = '';
+            divAuxiliar.append(_inserirBotoesDeControle());
+            divAuxiliar.append(lblTitulo);
+        }
 
         let dataInicio = _extrairDataInicio(objAux[0].DATA);
         let dataAux = new Date(dataInicio);
@@ -1469,11 +1478,13 @@ const html = {
             }
             const divDiaDoMes = _criarDivDia(dataAux);
             divDiaDoMes.innerHTML += `<div style="font-size:20px; display:flex-inline; position:relative; text-align:center">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
-            divDiaDoMes.addEventListener('click',(e)=>{
+            divDiaDoMes.addEventListener('mousemove',(e)=>{
                 const divTmp = e.target.parentElement;
-                const dtDiaAux = divTmp.id.replace('divDiaDoMes','')
-                const operacoes = _extrairOperacoes();
-                divTmp.title = operacoes;
+                if(divTmp.title==''){
+                    const dtDiaAux = divTmp.ariaValueText;
+                    const detalheTitle = document.getElementsByName('radTipoClassificacaoDetalhe')[0].checked ? _extrairOperacoes(dtDiaAux) : _extrairGbmDestino(dtDiaAux);
+                    divTmp.title = detalheTitle;
+                }
             })
             divCalendario.appendChild(divDiaDoMes);
             dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
@@ -1483,6 +1494,7 @@ const html = {
         function _criarDivDia(dtAux){
             const divTemp = document.createElement('div');
             divTemp.id = 'divDiaDoMes'+(dtAux == undefined ? '-' : ("00"+dtAux.getDate()).slice(-2));
+            divTemp.ariaValueText = dtAux == undefined ? '' : dtAux.toLocaleDateString('pt-BR');
             divTemp.className = 'clsDiaCalendario';
             divTemp.innerHTML = (dtAux==undefined ? '-' : 'dia '+("00"+dtAux.getDate()).slice(-2));
             return divTemp
@@ -1493,17 +1505,76 @@ const html = {
             return dataInicio;
         }
         function _extrairOperacoes(dataAux){
-            const objAux = filtrarEscalasJson(_parametros());
-            const tmp = totais("OPERAÇÃO", objAux.filter((e)=>{return e.DATA == dataAux.toLocaleDateString('pt-BR')}));
-            let ret = '';
+            let par = _parametros();
+            if(par.data){
+                par.data.push(dataAux);
+            }
+            else{
+                par.data = [dataAux];
+            }
+            const objAux = filtrarEscalasJson(par);
+            const tmp = totais("OPERAÇÃO", objAux);
+            let ret = [];
             for (const key in tmp) {
                 if (Object.hasOwnProperty.call(tmp, key)) {
                     const total = tmp[key];
                     const chave = key;
-                    ret += `${chave}: (${total})\n`;
+                    ret.push(`${chave}: (${total})|`);
                 }
             }
-            return ret;
+            return (ret.sort()).toString().replaceAll('|,', '\n').replace('|','');
+        }
+        function _extrairGbmDestino(dataAux){
+            let par = _parametros();
+            if(par.data){
+                par.data.push(dataAux);
+            }
+            else{
+                par.data = [dataAux];
+            }
+            const objAux = filtrarEscalasJson(par);
+            const tmp = totais("GBM_DESTINO", objAux);
+            let ret = [];
+            for (const key in tmp) {
+                if (Object.hasOwnProperty.call(tmp, key)) {
+                    const total = tmp[key];
+                    const chave = key;
+                    ret.push(`${chave}: (${total})|`);
+                }
+            }
+            return (ret.sort()).toString().replaceAll('|,', '\n').replace('|','');
+        }
+        function _inserirBotoesDeControle(){
+            const fld = document.createElement('fieldset');
+            const btn = document.createElement('button');
+            const rad1 = document.createElement('input');
+            const rad2 = document.createElement('input');
+            const lab1 = document.createElement('label');
+            const lab2 = document.createElement('label');
+            
+            fld.id = 'fldAtualizarCalendario';
+            rad1.type = 'radio';
+            rad1.name = 'radTipoClassificacaoDetalhe';
+            rad2.name = rad1.name;
+            rad1.checked = true;
+            rad2.type = 'radio';
+            lab1.innerHTML = 'Operação';
+            lab2.innerHTML = 'GBM de Destino';
+            btn.id = 'btnAtualizarCalendario';
+            btn.style = 'display:flex; margin:0 auto;';
+            btn.innerHTML = 'Atualizar';
+            btn.addEventListener('click', (e)=>{
+                // html.processarMenuExibirResultado(37);
+                
+                const objAux = filtrarEscalasJson(_parametros());
+                html.cotasNoCalendario(objAux);
+            })
+            lab1.append(rad1);
+            lab2.append(rad2);
+            fld.append(lab1);
+            fld.append(lab2);
+            fld.append(btn);
+            return fld;
         }
     },
     criarArquivoExcel: function(){
