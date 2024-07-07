@@ -1443,7 +1443,7 @@ const html = {
         
         divCalendario.className = "clsCalendario clsCalendarioResultado";
         divResultado.append(divCalendario);
-        lblTitulo.innerHTML = conf.mesAno.toUpperCase();
+        lblTitulo.innerHTML = `CONTAGEM DE COTAS\n${conf.mesAno.toUpperCase()}`;
         lblTitulo.style = 'font-size:18px; font-weight:bold';
         
         if($('divAuxiliar').innerHTML.toString().indexOf('Calendario') == -1){
