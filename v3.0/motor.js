@@ -1558,16 +1558,22 @@ const html = {
             rad2.name = rad1.name;
             rad1.checked = true;
             rad2.type = 'radio';
-            lab1.innerHTML = 'Operação';
-            lab2.innerHTML = 'GBM de Destino';
+            lab1.innerHTML = 'Totais por Operação (no detalhe)';
+            lab2.innerHTML = 'Totais por GBM de Destino (no detalhe)';
             btn.id = 'btnAtualizarCalendario';
             btn.style = 'display:flex; margin:0 auto;';
             btn.innerHTML = 'Atualizar';
             btn.addEventListener('click', (e)=>{
-                // html.processarMenuExibirResultado(37);
-                
                 const objAux = filtrarEscalasJson(_parametros());
                 html.cotasNoCalendario(objAux);
+            })
+            rad1.addEventListener('change', (e)=>{
+                const objAux = filtrarEscalasJson(_parametros());
+                html.cotasNoCalendario(objAux);
+            })
+            rad2.addEventListener('change', (e)=>{
+                const objAux = filtrarEscalasJson(_parametros());
+                html.cotasNoCalendario(objAux);            
             })
             lab1.append(rad1);
             lab2.append(rad2);
