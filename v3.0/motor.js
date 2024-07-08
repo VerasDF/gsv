@@ -75,23 +75,32 @@ window.onload = function(){
     })
 }
 const $readFile = (input) => {
+    let carregado = false;
     for (let i = 0; i < input.files.length; i++) {
         if (input.files[i].name.toLowerCase().indexOf('escala') > -1){
             $led(10);
             const file = input.files[i];
             carregarArquivo(file);
+            carregado = true
         }
         if (input.files[i].name.toLowerCase().indexOf('falta') > -1){
             $led(20);
             const file = input.files[i];
             carregarArquivo(file);
+            carregado = true
         }
         if (input.files[i].name.toLowerCase().indexOf('inscrito') > -1){
             $led(30);
             const file = input.files[i];
             carregarArquivo(file);
+            carregado = true
         }
     }
+
+    if(carregado == false){
+        alert('O nome do arquivo não informa a forma como os dados devem ser processados!');
+    }
+
     function carregarArquivo(file){
         try {
             const reader = new FileReader();
