@@ -1846,26 +1846,15 @@ const html = {
         function _opcoesParaFaltas(){
             if(dadoFaltasJson.length > 0){
                 const divAuxilar = $('divAuxiliar');
-                const btnApenasPresenca = document.createElement('button');
-                const btnApenasFaltas = document.createElement('button');
-                btnApenasPresenca.id = 'btnApenasPresenca';
-                btnApenasFaltas.id = 'btnApenasFaltas';
-                btnApenasPresenca.innerHTML = 'Apenas Presença';
-                btnApenasFaltas.innerHTML = 'Apenas Faltas';
-                btnApenasPresenca.addEventListener('click', (e)=>{
-                    // let _par = _parametros();
-                    // _par.falta = false;
-                    const objAux = filtrarEscalasJson(_par);
+                const btnAtualizar = document.createElement('button');
+                btnAtualizar.id = 'btnAtualizar';
+                btnAtualizar.innerHTML = 'Atualizar';
+                btnAtualizar.style.padding = '10px'
+                btnAtualizar.addEventListener('click', (e)=>{
+                    const objAux = filtrarEscalasJson(_parametros());
                     html.construirPlanilha(objAux);
                 });
-                btnApenasFaltas.addEventListener('click', (e)=>{
-                    // let _par = _parametros();
-                    // _par.falta = true;
-                    const objAux = filtrarEscalasJson(_par);
-                    html.construirPlanilha(objAux);
-                });
-                divAuxilar.append(btnApenasPresenca);
-                divAuxilar.append(btnApenasFaltas);
+                divAuxilar.append(btnAtualizar);
             }
         }
     },
