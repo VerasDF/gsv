@@ -80,18 +80,21 @@ const $readFile = (input) => {
         if (input.files[i].name.toLowerCase().indexOf('escala') > -1){
             $led(10);
             const file = input.files[i];
+            // conf.dataHoraEscala = Date(file.lastModified);
             carregarArquivo(file);
             carregado = true
         }
         if (input.files[i].name.toLowerCase().indexOf('falta') > -1){
             $led(20);
             const file = input.files[i];
+            // conf.dataHoraFalta = Date(file.lastModified);
             carregarArquivo(file);
             carregado = true
         }
         if (input.files[i].name.toLowerCase().indexOf('inscrito') > -1){
             $led(30);
             const file = input.files[i];
+            // conf.dataHoraInscrito = Date(file.lastModified);
             carregarArquivo(file);
             carregado = true
         }
@@ -100,6 +103,7 @@ const $readFile = (input) => {
     if(carregado == false){
         alert('O nome do arquivo não informa a forma como os dados devem ser processados!');
     }
+    // input.title = `Escala: ${(conf.dataHoraEscala == undefined ? "" : conf.dataHoraEscala)}\nFalta: ${(conf.dataHoraFalta == undefined ? "" : conf.dataHoraFalta)}\nInscrito: ${(conf.dataHoraInscrito == undefined ? "" : conf.dataHoraInscrito)}`;
 
     function carregarArquivo(file){
         try {
