@@ -1,0 +1,26 @@
+:root{
+    --fundo:rgb(0, 0, 0);
+    --fonte:rgb(255,255,255);
+}
+*{
+    background-color: var(--fundo);
+    color: var(--fonte);
+}
+body{
+    display: grid;
+    grid-template-columns: 1fr 5fr 1fr;
+}
+#divMenuLateralEsquerdo,
+#divMenuSuperior,
+#divMenuLateralDireito{
+    border: 1px solid pink;
+}
+#divMenuLateralEsquerdo{
+    left: 0px;
+}
+#divMenuSuperior{
+    margin: 0 auto;
+}
+#divMenuLateralDireito{
+    right: 0px;
+}
