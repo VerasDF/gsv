@@ -8,19 +8,30 @@
 }
 body{
     display: grid;
-    grid-template-columns: 1fr 5fr 1fr;
+    grid-template-columns: 25px 1fr 25px;
 }
-#divMenuLateralEsquerdo,
-#divMenuSuperior,
-#divMenuLateralDireito{
+div{
     border: 1px solid pink;
 }
 #divMenuLateralEsquerdo{
-    left: 0px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    writing-mode: vertical-lr;
+    direction: rtl;
 }
 #divMenuSuperior{
-    margin: 0 auto;
+    grid-column-start: 2;
+    grid-column-end: 3;
 }
 #divMenuLateralDireito{
-    right: 0px;
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+#divAuxiliar{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+#divResultado{
+    grid-column-start: 2;
+    grid-column-end: 3;
 }
