@@ -1,8 +1,15 @@
 :root{
     --fundo:rgb(0, 0, 0);
     --fonte:rgb(255,255,255);
+    --borda:rgb(100,100,100);
+    --botaoBorda:rgb(50,50,50);
+    --botaoFundo:rgb(0,0,0);
+    --botaoFundoDestacado:rgb(80,80,80);
+    --itemSelecionadoFundo:rgb(100,150,240);
+    --larguraTotal:720px;
 }
 *{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--fundo);
     color: var(--fonte);
 }
@@ -11,13 +18,26 @@ body{
     grid-template-columns: 25px 1fr 25px;
 }
 div{
-    border: 1px solid pink;
+    /* border: 1px solid pink; */
+}
+button{
+    background-color: var(--botaoFundo);
+    transition: 500ms;
+}
+button:hover{
+    background-color: var(--botaoFundoDestacado);
+    transition: 500ms;
+}
+[disabled] * {
+    color: gray;
+    background-color: lightgray;
+}
+[aria-pressed='true']{
+    background-color: var(--itemSelecionadoFundo);
 }
 #divMenuLateralEsquerdo{
     grid-column-start: 1;
     grid-column-end: 2;
-    writing-mode: vertical-lr;
-    direction: rtl;
 }
 #divMenuSuperior{
     grid-column-start: 2;
@@ -34,4 +54,97 @@ div{
 #divResultado{
     grid-column-start: 2;
     grid-column-end: 3;
+}
+#divArquivoDeOrigem{
+    width: 250px;
+    display: grid;
+    grid-template-columns: 10fr 2fr;
+}
+#divResumo{
+    display:flex;
+    position: relative;
+    float: right;
+    height: 30px;
+    padding-left: 5px;
+    flex-direction: column;
+    background-color: none;
+}
+#divResumo > div{
+    /* border: none;  */
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
+#divOpcoes{
+    display: grid;
+    width: var(--larguraTotal);
+    grid-template-columns: repeat(24, 30px);
+    grid-auto-columns: 30px;
+    align-items: stretch;
+    margin: auto;
+}
+#fldOpcao{
+    grid-column: 1 / 6;
+    height: 110px;
+}
+#fldFalta{
+    grid-column: 6 / 11;
+    height: 110px;
+}
+#fldQuinzena{
+    grid-column: 11 / 15;
+    height: 110px;
+}
+#fldGrupo{
+    grid-column: 15 / 21;
+    height: 110px;
+}
+#fldDuracao{
+    grid-column: 21 / 25;
+    height: 110px;
+}
+#fldOperacao{
+    grid-column: 1 / 25;
+    height: 180px;
+}
+#fldGbmDestino{
+    grid-column: 1 / 6;
+    height: 180px;
+}
+#fldTurno{
+    grid-column: 6 / 11;
+    height: 180px;
+}
+#fldQuadro{
+    grid-column: 11 / 15;
+    height: 180px;
+}
+#fldCalendario{
+    grid-column: 15 / 25;
+}
+#divCalendario{
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
+}
+.clsLedDesligado{border: 1px solid var(--botaoBorda);}
+.clsLedVermelho{background-color: red;}
+.clsLedAmarelo{background-color: yellow;}
+.clsLedVerde{background-color: lightgreen;}
+.clsOpcoes,
+.clsQuinzena,
+.clsFalta,
+.campoCriterio{
+    display: flex;
+    width: 100%;
+    justify-content: left;
+    text-align: left;
+    border: 1px solid var(--botaoBorda);
+    word-wrap: break-word;
+    word-break:break-all;
+}
+.diaMes{
+    border: 1px solid var(--botaoBorda);
+    text-align: center;
+    padding: 2px;
+    margin: 2px;
 }

@@ -4,14 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="stylesheet" href="menu.v4.css">
     <link rel="stylesheet" href="principal.v4.css">
     <script defer src="motor.v4.js"></script>
     <title>GSV - Ferramenta de Análise</title>
 </head>
 <body>
-    <div id="divMenuLateralEsquerdo">Resultados</div>
-    <div id="divMenuSuperior">&nbsp;</div>
-    <div id="divMenuLateralDireito">Critérios</div>
+    <div id="divMenuLateralEsquerdo">
+        <nav>
+            <ul class="clsMenuLateral_ul_e">
+                <li class="clsMenuLateral_li_e">
+                    <a class="clsMenuLateral_a" href="#">E</a>
+                    <ul class="clsMenuLateral_ul_e">
+                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Arquivos</a>
+                            <ul class="clsMenuLateral_ul_e">
+                            <li class="clsMenuLateral_li_e">
+                                <div id="divArquivoDeOrigem">
+                                    <input type="file" id="fileArquivo" multiple>
+                                    <div id="divResumo">
+                                        <div class="clsLedDesligado" id="divStatusEscala" title="Escala"></div>
+                                        <div class="clsLedDesligado" id="divStatusFalta" title="Faltas"></div>
+                                        <div class="clsLedDesligado" id="divStatusInscricao" title="Inscrições"></div>
+                                    </div>
+                                    <div id="divTotais"></div>
+                                </div>
+                            </li>
+                        </ul>
+                        </li>
+                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Opções</a>
+                        <ul class="clsMenuLateral_ul_e">
+                            <li class="clsMenuLateral_li_e">
+                                <div id="divOpcoes">
+                                    <fieldset id="fldOpcao">
+                                        <legend class="legDescricao">Opções:</legend>
+                                        <div id="divFiltroOpcao">
+                                            <button class="clsOpcoes" aria-pressed="false" aria-label="" id="btnOpcaoTodas">Todas as cotas</button>
+                                            <button class="clsOpcoes" aria-pressed="true" aria-label="-SV" id="btnOpcaoComVoluntario">Com Voluntário</button>
+                                            <button class="clsOpcoes" aria-pressed="false" aria-label="SV" id="btnOpcaoSemVoluntario">Sem Voluntário</button>
+                                            <button class="clsOpcoes" aria-pressed="false" aria-label="compulsória" id="btnOpcaoCompulsorio">Compulsória</button>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset id="fldFalta">
+                                        <legend class="legDescricao">Faltas:</legend>
+                                        <div id="divFaltaOpcao">
+                                            <button class="clsFalta" aria-pressed="true" aria-label="" id="btnFaltaTodas">Todas as cotas</button>
+                                            <button class="clsFalta" aria-pressed="false" aria-label="false" id="btnFaltaFalse">Apenas Presença</button>
+                                            <button class="clsFalta" aria-pressed="false" aria-label="true" id="btnFaltaTrue">Apenas Faltas</button>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset id="fldQuinzena">
+                                        <legend class="legDescricao">Quinzena:</legend>
+                                        <div id="divQuinzenaOpcao">
+                                            <button class="clsQuinzena" aria-pressed="true" aria-label="" id="btnQuinzenaMesInteiro">Mês Inteiro</button>
+                                            <button class="clsQuinzena" aria-pressed="false" aria-label="1ª Quinzena" id="btnQuinzena1">1ª Quinzena</button>
+                                            <button class="clsQuinzena" aria-pressed="false" aria-label="2ª Quinzena" id="btnQuinzena2">2ª Quinzena</button>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset id="fldGrupo">
+                                        <legend class="legDescricao">Grupos:</legend>
+                                        <div class="clsFiltros" id="divFiltroGrupo"></div>
+                                    </fieldset>
+                                    <fieldset id="fldDuracao">
+                                        <legend class="legDescricao">Duração:</legend>
+                                        <div class="clsFiltros" id="divFiltroDuracao"></div>
+                                    </fieldset>
+                                    <fieldset id="fldOperacao">
+                                        <legend class="legDescricao">Operações:</legend>
+                                        <div class="clsFiltros" id="divFiltroOperacao"></div>
+                                    </fieldset>
+                                    <fieldset id="fldGbmDestino">
+                                        <legend class="legDescricao">Destino:</legend>
+                                        <div class="clsFiltros" id="divFiltroGbmDestino"></div>
+                                    </fieldset>
+                                    <fieldset id="fldTurno">
+                                        <legend class="legDescricao">Turnos:</legend>
+                                        <div class="clsFiltros" id="divFiltroTurno"></div>
+                                    </fieldset>
+                                    <fieldset id="fldQuadro">
+                                        <legend class="legDescricao">Quadros:</legend>
+                                        <div class="clsFiltros" id="divFiltroQuadro"></div>
+                                    </fieldset>
+                                    <fieldset id="fldCalendario">
+                                        <legend class="legDescricao">Calendario:</legend><span id="spnDataAux" style="display: none;"></span>
+                                        <div id="divCalendario" class="clsCalendario">
+                                            <div class="diaMes">Dom</div>
+                                            <div class="diaMes">Seg</div>
+                                            <div class="diaMes">Ter</div>
+                                            <div class="diaMes">Qua</div>
+                                            <div class="diaMes">Qui</div>
+                                            <div class="diaMes">Sex</div>
+                                            <div class="diaMes">Sab</div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </li>
+                        </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div id="divMenuSuperior">
+        <div style="display: flex; flex-direction: row; margin: auto; color: cornflowerblue; font-size: 0.7em; cursor: context-menu; justify-content:center;">Builded by Wagner Veras&reg;</div>
+    </div>
+    <div id="divMenuLateralDireito">
+        <nav>
+            <ul class="clsMenuLateral_ul_d">
+                <li class="clsMenuLateral_li_d">
+                    <a class="clsMenuLateral_a" href="#">D</a>
+                    <ul class="clsMenuLateral_ul_d">
+                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#">menu_D_01_01</a></li>
+                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#">menu_D_01_02</a></li>
+                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#">menu_D_01_03</a></li>
+                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#">menu_D_01_04</a></li>
+                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#">menu_D_01_05</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
     <div id="divAuxiliar">&nbsp;</div>
     <div id="divResultado">&nbsp;</div>
 </body>

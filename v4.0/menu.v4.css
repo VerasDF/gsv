@@ -1,0 +1,52 @@
+:root{
+    --menuLateral_fonte: rgb(255,255,255);
+    --menuLateral_fonte_destaque: rgb(255,255,255);
+    --menuLateral_fundo: rgb(0,0,0);
+    --menuLateral_fundo_destaque: rgba(100,150,240,0.499);
+    --menuLateral_borda: rgb(100,100,100);
+    --menuLateral_borda_destaque: rgb(0,0,0);
+}
+
+/* Menu */
+/* Fix IE. Hide from IE Mac \*/
+* html ul li { float: left; }
+* html ul li a { height: 1%; }
+/* End */
+
+.clsMenuLateral_ul_d, .clsMenuLateral_ul_e{
+    list-style: none;
+    /* width: 130px; */
+    margin: 0;
+    padding: 0;
+}
+.clsMenuLateral_li_d, .clsMenuLateral_li_e {
+    position: relative; /* Necessário para flutuar os submenus */
+}
+.clsMenuLateral_a {
+    color: var(--menuLateral_fonte);
+    border: 1px  solid var(--menuLateral_borda);
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.clsMenuLateral_a:hover {
+    background-color: var(--menuLateral_fundo_destaque);
+    color: var(--menuLateral_fonte_destaque);
+}
+.clsMenuLateral_li_d .clsMenuLateral_ul_d, 
+.clsMenuLateral_li_e .clsMenuLateral_ul_e {
+    position: absolute;
+    /* display: none; */
+    top: 0; /* Posiciona o menu filho no topo do menu pai */
+}
+.clsMenuLateral_li_d:hover > .clsMenuLateral_ul_d, 
+.clsMenuLateral_li_e:hover > .clsMenuLateral_ul_e{
+    display: block;
+}
+.clsMenuLateral_li_e .clsMenuLateral_ul_e {
+    left: 100%; /* Posiciona o menu filho ao lado esquerdo do menu pai */
+}
+.clsMenuLateral_li_d .clsMenuLateral_ul_d {
+    right: 100%; /* Posiciona o menu filho ao lado direito do menu pai */
+}
