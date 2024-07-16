@@ -37,7 +37,7 @@
 .clsMenuLateral_li_d .clsMenuLateral_ul_d, 
 .clsMenuLateral_li_e .clsMenuLateral_ul_e {
     position: absolute;
-    /* display: none; */
+    display: none;
     top: 0; /* Posiciona o menu filho no topo do menu pai */
 }
 .clsMenuLateral_li_d:hover > .clsMenuLateral_ul_d, 

@@ -351,7 +351,6 @@ button:hover{
     grid-column-end: 3;
 }
 
-
 .divEditar > #fldEditarAcao {
     grid-column-start: 3;
     grid-column-end: 5;

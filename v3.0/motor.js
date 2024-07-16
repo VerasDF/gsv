@@ -2125,22 +2125,22 @@ const editarCota = {
 
 const $ajax = ({urlDoArquivo, funcaoDeRetorno}) => {
     try {
-        const url = urlDoArquivo
-        const XmlReq = new XMLHttpRequest()
-        XmlReq.open('GET', url, true)
+        const url = urlDoArquivo;
+        const XmlReq = new XMLHttpRequest();
+        XmlReq.open('GET', url, true);
         XmlReq.onreadystatechange = () => {
             if (XmlReq.readyState === 4) {
                 if (XmlReq.status === 200) {
-                    funcaoDeRetorno(XmlReq.response)
+                    funcaoDeRetorno(XmlReq.response);
                 }
                 if (XmlReq.status === 404) {
-                    funcaoDeRetorno(null)
+                    funcaoDeRetorno(null);
                 }
             }
         }
-        XmlReq.send()    
+        XmlReq.send();
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
