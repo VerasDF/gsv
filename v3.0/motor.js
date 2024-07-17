@@ -971,9 +971,9 @@ const html = {
         tb.append(tbody);
         tb.append(tfoot);
         $('divResultado').append(tb);
-        setTimeout(() => {
-            ordenarTabela(0);
-        }, 200);
+        // setTimeout(() => {
+        //     ordenarTabela(0);
+        // }, 200);
     },
     escalasParaBg:function(info){
 
@@ -2356,16 +2356,16 @@ function ordenarTabela(indice){
     const index = (indice == undefined? 0: indice);    // coluna pela qual se quer ordenar
     const tabela = document.getElementById('tbResultado');
     const arr = Array.from(tabela.querySelectorAll('tbody tr'));
-    const asc = (tabela.ariaSort == "true" ? true : false);   // ordem: ascendente ou descendente (true or false)
+    const asc = (tabela.ariaSort == "false" ? false : true);   // ordem: ascendente ou descendente (true or false)
     tabela.ariaSort = !asc;
 
     arr.sort((a, b) => {
         let a_val = undefined; let b_val = undefined;
         a_val = a.children[index].innerText; b_val = b.children[index].innerText;
-        if(a_val.indexOf('º') > -1 || b_val.indexOf('º') > -1){
-            a_val = parseInt(a_val.substr(0, a_val.indexOf("º")));
-            b_val = parseInt(b_val.substr(0, b_val.indexOf("º")));
-            return (asc) ? a_val.localeCompare(b_val, undefined, {numeric: true}) : b_val.localeCompare(a_val, undefined, {numeric: true});
+        // console.log(a_val, " >> ", b_val);
+        if(a_val.indexOf('º') > -1 && b_val.indexOf('º') > -1){
+            a_val = a_val.substr(0, a_val.indexOf("º"));
+            b_val = b_val.substr(0, b_val.indexOf("º"));
         }
         if(Number.isInteger(parseInt(a_val)) && Number.isInteger(parseInt(b_val))){
             return (asc) ? a_val.localeCompare(b_val, undefined, {numeric: true}) : b_val.localeCompare(a_val, undefined, {numeric: true});
