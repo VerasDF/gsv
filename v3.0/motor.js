@@ -948,7 +948,7 @@ const html = {
                 break;
         }
     },
-    exibirTotais:function(campoDePesquisa, objAux){
+    exibirTotais:function(campoDePesquisa, objAux) {
         limparTudo();
         const tmp = totais(campoDePesquisa, objAux);
         const tb = document.createElement('table');
@@ -956,7 +956,7 @@ const html = {
         const tfoot = document.createElement('tfoot');
         let totalGeral = 0;
         tb.id = 'tbResultado';
-        tb.innerHTML = '<thead><tr><th>DESCRIÇÃO</th><th>TOTAL</th></tr></thead>';
+        tb.innerHTML = '<thead><tr><th><a href="#" onClick="ordenarTabela(0,false)">DESCRIÇÃO</a></th><th><a href="#" onClick="ordenarTabela(1,true)">TOTAL</a></th></tr></thead>';
         for (const key in tmp) {
             if (Object.hasOwnProperty.call(tmp, key)) {
                 const total = tmp[key];
@@ -1074,7 +1074,7 @@ const html = {
     exibirPercentualDeFaltas: function(objAux){
         
         if(dadoEscalasJson.length == 0 || dadoFaltasJson.length == 0){
-            alert('É necessário informar os dados de ESCALA e FALTAS para processamento!');
+            alert('É necessário informar os dados da ESCALA e dados das FALTAS para processamento!');
             return false;
         }
 
@@ -2353,22 +2353,28 @@ function ordenarPorPostoGrad(indice){
 }
 
 function ordenarTabela(indice){
-    const asc = true;   // ordem: ascendente ou descendente
     const index = (indice == undefined? 0: indice);    // coluna pela qual se quer ordenar
     const tabela = document.getElementById('tbResultado');
     const arr = Array.from(tabela.querySelectorAll('tbody tr'));
-    
+    const asc = (tabela.ariaSort == "true" ? true : false);   // ordem: ascendente ou descendente (true or false)
+    tabela.ariaSort = !asc;
+
     arr.sort((a, b) => {
-        let a_val = undefined;
-        let b_val = undefined;
-        a_val = a.children[index].innerText;
-        b_val = b.children[index].innerText;
-        if(a_val.indexOf('º') > -1 || b_val.indexOf('º') > -1){isGbmArray = true}
+        let a_val = undefined; let b_val = undefined;
+        a_val = a.children[index].innerText; b_val = b.children[index].innerText;
+        if(a_val.indexOf('º') > -1 || b_val.indexOf('º') > -1){
+            a_val = parseInt(a_val.substr(0, a_val.indexOf("º")));
+            b_val = parseInt(b_val.substr(0, b_val.indexOf("º")));
+            return (asc) ? a_val.localeCompare(b_val, undefined, {numeric: true}) : b_val.localeCompare(a_val, undefined, {numeric: true});
+        }
+        if(Number.isInteger(parseInt(a_val)) && Number.isInteger(parseInt(b_val))){
+            return (asc) ? a_val.localeCompare(b_val, undefined, {numeric: true}) : b_val.localeCompare(a_val, undefined, {numeric: true});
+        }
         return (asc) ? a_val.localeCompare(b_val) : b_val.localeCompare(a_val);
     })
 
     arr.forEach(elem => {
-        tabela.children[1].appendChild(elem)
+        tabela.children[1].appendChild(elem);
     });
 }
 
