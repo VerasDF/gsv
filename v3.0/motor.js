@@ -854,9 +854,11 @@ const filtrar = {
 const html = {
     processarMenuExibirResultado:function(opcao){
         const objAux = filtrarEscalasJson(_parametros());
-        if(objAux.length == 0){
-            alert('Não há dados a serem exibidos!');
-            return 0;
+        if(![21].includes(opcao)){
+            if(objAux.length == 0){
+                alert('Não há dados a serem exibidos!');
+                return 0;
+            }
         }
         const strFiltro = JSON.stringify( _parametros() )
         // $('divAuxiliar').innerHTML = strFiltro == `{}` ? `{Nenhum Filtro Aplicado!}` :  strFiltro;
