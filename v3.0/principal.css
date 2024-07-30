@@ -198,6 +198,10 @@ button:hover{
 [aria-pressed='true']{
     background-color: var(--itemSelecionado);
 }
+[aria-disabled="true"]{
+    /* display: none; */
+    color: #bbb;
+}
 
 
 /**MENU/

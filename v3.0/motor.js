@@ -840,10 +840,12 @@ const filtrar = {
             const ctr = divAux.children[i];
             if(ctr.ariaLabel){
                 const contagem = arrAux.filter((e)=>{return e == ctr.ariaLabel});
-                ctr.style.color = '#bbb';
+                ctr.ariaDisabled = 'true';
+                // ctr.style.color = '#bbb';
                 // ctr.style.backgroundColor = '#efefef';
                 if(contagem.length > 0){
-                    ctr.style.color = '';
+                    ctr.ariaDisabled = 'false';
+                    // ctr.style.color = '';
                     // ctr.style.backgroundColor = '';
                 }
             }
