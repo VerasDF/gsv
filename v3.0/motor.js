@@ -618,23 +618,7 @@ const dados = {
         }, 500);
     },
     carregarDataDoMes:function(){
-        dados._criarCalendario();
-        const arrAux = dadoEscalasJson.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const divCalendario = $('divCalendario');
-        for(let i = 0; i < divCalendario.childElementCount; i++){
-            const btnAux = divCalendario.children[i];
-            if(btnAux.nodeName.toLowerCase() == 'button'){
-                btnAux.style.color='#444';
-
-            }
-        }
-        arrAux.forEach(ctr=>{
-            const arrDia = ctr.split('/');
-            if(Array.isArray(arrDia)){
-                const dia = arrDia[0];
-                $(`btnDiaDoMes${dia}`).style.color = "";
-            }
-        })
+        dados._criarCalendarioDoMes();
     },
     carregarGrupo: function(){
         const arrGrupo = dadoEscalasJson.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
@@ -705,7 +689,7 @@ const dados = {
         })
         return btnTemp
     },
-    _criarCalendario:function(){
+    _criarCalendarioDoMes:function(){
         const arrDias = dadoEscalasJson[0].DATA;
         const ano = parseInt(arrDias.split('/')[2]);
         const mes = parseInt(arrDias.split('/')[1]);
@@ -733,6 +717,7 @@ const dados = {
             btnTemp.id = 'btnDiaDoMes'+(diaAux == undefined ? '-' : ("00"+diaAux.getDate()).slice(-2));
             btnTemp.ariaLabel = (diaAux!=undefined?diaAux.toLocaleDateString():'');
             btnTemp.ariaPressed = 'false';
+            btnTemp.ariaDisabled = 'false'
             btnTemp.className = 'diaMes';
             btnTemp.innerHTML = (diaAux==undefined?'-':("00"+diaAux.getDate()).slice(-2));
             btnTemp.addEventListener('click', (e)=>{
@@ -841,12 +826,8 @@ const filtrar = {
             if(ctr.ariaLabel){
                 const contagem = arrAux.filter((e)=>{return e == ctr.ariaLabel});
                 ctr.ariaDisabled = 'true';
-                // ctr.style.color = '#bbb';
-                // ctr.style.backgroundColor = '#efefef';
                 if(contagem.length > 0){
                     ctr.ariaDisabled = 'false';
-                    // ctr.style.color = '';
-                    // ctr.style.backgroundColor = '';
                 }
             }
         }

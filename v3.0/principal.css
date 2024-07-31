@@ -200,7 +200,7 @@ button:hover{
 }
 [aria-disabled="true"]{
     /* display: none; */
-    color: #bbb;
+    color: #ccc;
 }
 
 
