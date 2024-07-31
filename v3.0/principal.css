@@ -200,7 +200,10 @@ button:hover{
 }
 [aria-disabled="true"]{
     /* display: none; */
+    /* height: 0px; */
+    /* padding: 0px; */
     color: #ccc;
+    /* color: transparent; */
 }
 
 

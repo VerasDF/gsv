@@ -6,7 +6,7 @@
     --botaoBorda:rgb(50,50,50);
     --botaoFundo:rgb(0,0,0);
     --botaoFundoDestacado:rgb(80,80,80);
-    --itemSelecionadoFundo:rgb(100,150,240);
+    --itemSelecionadoFundo:rgb(50,50,150);
     --larguraTotal:720px;
 }
 *{
@@ -35,6 +35,10 @@ button:hover{
 }
 [aria-pressed='true']{
     background-color: var(--itemSelecionadoFundo);
+}
+[aria-disabled="true"]{
+    /* display: none; */
+    color: #ccc;
 }
 #divMenuLateralEsquerdo{
     grid-column-start: 1;
