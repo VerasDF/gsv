@@ -686,6 +686,7 @@ const dados = {
         btnTemp.addEventListener('click', (e)=>{
             if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
             filtrar.processarClickDoBotao(btnTemp);
+            html.atualizacaoAutomatica();
         })
         return btnTemp
     },
@@ -723,6 +724,7 @@ const dados = {
             btnTemp.addEventListener('click', (e)=>{
                 if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
                 filtrar.processarClickDoBotao(btnTemp);
+                html.atualizacaoAutomatica();
             })
             return btnTemp
         }
@@ -740,22 +742,6 @@ const dados = {
             if(ctrAux.children[i].nodeName.toLowerCase() == 'button'){
                 ctrAux.removeChild(ctrAux.children[i]);
             }
-        }
-    },
-    atualizacaoAutomatica: function(act){
-        if (act == true){
-            conf.automatico = setInterval(() => {
-                console.log(new Date());
-                if(conf.ultimoComando){
-                    if(conf.ultimaAtualizacao != new Date()){
-                        html.processarMenuExibirResultado(conf.ultimoComando);
-                        conf.ultimaAtualizacao = new Date();
-                    }
-                };
-            }, 1000);
-        }
-        else{
-            clearInterval(conf.automatico);
         }
     }
 }
@@ -852,14 +838,14 @@ const filtrar = {
 
 const html = {
     processarMenuExibirResultado:function(opcao){
-        const objAux = filtrarEscalasJson(_parametros());
+        const objAux = filtrarEscalasJson( _parametros() );
         if(![21].includes(opcao)){
             if(objAux.length == 0){
                 alert('Não há dados a serem exibidos!');
                 return 0;
             }
         }
-        const strFiltro = JSON.stringify( _parametros() )
+        const strFiltro = JSON.stringify( _parametros() );
         // $('divAuxiliar').innerHTML = strFiltro == `{}` ? `{Nenhum Filtro Aplicado!}` :  strFiltro;
         $('divAuxiliar').style.color='yellow';
         setTimeout(() => {
@@ -2009,6 +1995,15 @@ const html = {
             }
         }
         return tr;
+    },
+    atualizacaoAutomatica: function(){
+        if(conf.ultimoParametro != JSON.stringify(_parametros())){
+            conf.automatico = setTimeout(() => {
+                clearTimeout(conf.automatico);
+                html.processarMenuExibirResultado(conf.ultimoComando);
+                conf.ultimoParametro = JSON.stringify(_parametros());
+            }, 500);
+        }
     }
 }
 
@@ -2459,8 +2454,7 @@ function _parametros(foco){
     } 
 
     $('divTotais').title = JSON.stringify(par);
-    conf.ultimoParametro = JSON.stringify(par);
-    conf.ultimaAtualizacao = new Date();
+    // conf.ultimaAtualizacao = new Date();
     // limparTudo();
     return par;
 
@@ -2623,7 +2617,14 @@ function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_d
         }
     }
     if (cinco!==undefined) {
-        objAux = objAux.filter((e)=>{return e.name_cinco.indexOf(cinco) > -1})
+        if(Array.isArray(cinco)){
+            if(cinco.length > 0){
+                objAux = objAux.filter((e)=>{return cinco.includes(e.name_cinco)});
+            }
+        }
+        else{
+            objAux = objAux.filter((e)=>{return e.name_cinco.indexOf(cinco) > -1});
+        }
     }
         
     return objAux
