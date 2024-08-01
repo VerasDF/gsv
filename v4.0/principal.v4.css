@@ -2,6 +2,7 @@
     --fundo:rgb(0, 0, 0);
     --fundoDestacado:rgb(30,30,30);
     --fonte:rgb(255,255,255);
+    --fonteDesabilitada:(200,200,200);
     --borda:rgb(100,100,100);
     --botaoBorda:rgb(50,50,50);
     --botaoFundo:rgb(0,0,0);
@@ -38,7 +39,7 @@ button:hover{
 }
 [aria-disabled="true"]{
     /* display: none; */
-    color: #ccc;
+    color: var(--fonteDesabilitada);
 }
 #divMenuLateralEsquerdo{
     grid-column-start: 1;

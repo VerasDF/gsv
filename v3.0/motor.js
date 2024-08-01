@@ -741,6 +741,22 @@ const dados = {
                 ctrAux.removeChild(ctrAux.children[i]);
             }
         }
+    },
+    atualizacaoAutomatica: function(act){
+        if (act == true){
+            conf.automatico = setInterval(() => {
+                console.log(new Date());
+                if(conf.ultimoComando){
+                    if(conf.ultimaAtualizacao != new Date()){
+                        html.processarMenuExibirResultado(conf.ultimoComando);
+                        conf.ultimaAtualizacao = new Date();
+                    }
+                };
+            }, 1000);
+        }
+        else{
+            clearInterval(conf.automatico);
+        }
     }
 }
 
@@ -932,6 +948,7 @@ const html = {
                 alert('Opção não definida!')
                 break;
         }
+        conf.ultimoComando = opcao;
     },
     exibirTotais:function(campoDePesquisa, objAux) {
         limparTudo();
@@ -2442,7 +2459,8 @@ function _parametros(foco){
     } 
 
     $('divTotais').title = JSON.stringify(par);
-    // console.log(JSON.stringify(par));
+    conf.ultimoParametro = JSON.stringify(par);
+    conf.ultimaAtualizacao = new Date();
     // limparTudo();
     return par;
 
