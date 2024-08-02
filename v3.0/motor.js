@@ -719,8 +719,8 @@ const dados = {
             btnTemp.ariaLabel = (diaAux!=undefined?diaAux.toLocaleDateString():'');
             btnTemp.ariaPressed = 'false';
             btnTemp.ariaDisabled = 'false'
-            btnTemp.className = 'diaMes';
-            btnTemp.innerHTML = (diaAux==undefined?'-':("00"+diaAux.getDate()).slice(-2));
+            btnTemp.className = (diaAux==undefined ? `diaMes` : ((([0,6]).includes(new Date(diaAux).getDay())) ? `diaMes diaMesFinalDeSemana` : `diaMes`));
+            btnTemp.innerHTML = (diaAux==undefined ? '-':("00"+diaAux.getDate()).slice(-2));
             btnTemp.addEventListener('click', (e)=>{
                 if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
                 filtrar.processarClickDoBotao(btnTemp);
@@ -1997,6 +1997,7 @@ const html = {
         return tr;
     },
     atualizacaoAutomatica: function(){
+        if(!conf.ultimoComando){return false};
         if(conf.ultimoParametro != JSON.stringify(_parametros())){
             conf.automatico = setTimeout(() => {
                 clearTimeout(conf.automatico);

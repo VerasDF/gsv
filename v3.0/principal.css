@@ -192,6 +192,9 @@ button:hover{
 .diaMes{
     border: 1px solid var(--contornoDoBotao);
 }
+.diaMesFinalDeSemana{
+    color: var(--padraoVermelho);
+}
 .tdFalta{
     background-color: var(--destaqueFalta);
 }
