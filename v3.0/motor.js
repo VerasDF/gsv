@@ -69,6 +69,10 @@ window.onload = function(){
     $('txtCotasPorSiape').addEventListener('keyup',(e)=>{
         if(e.key == 'Enter'){
             const objAux = filtrarEscalasJson({siape: $('txtCotasPorSiape').value});
+            if(objAux.length==0){
+                alert(`Não foram encontradas cotas para o SIAPE informado: ${$('txtCotasPorSiape').value}`);
+                return false;
+            }
             html.escalasParaBg(objAux);
         }
         // console.log(e.key);
@@ -1310,7 +1314,7 @@ const html = {
             const btnOcultarCotas = document.createElement('button')
 
             btnOcultarCotas.id = 'cmdOcultarCotas'
-            btnOcultarCotas.innerHTML = 'Ocultar/Reexibir Cotas'
+            btnOcultarCotas.innerHTML = 'Ocultar/Reexibir Totais de Cotas'
             btnOcultarCotas.addEventListener('click', (e)=>{
                 e.preventDefault()
                 const ctrs = document.querySelectorAll(".visivel")
