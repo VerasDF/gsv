@@ -315,13 +315,15 @@ button:hover{
 .liClass ul{
     display: block;
 }
-#txtCotasPorSiape{
+#txtCotasPorSiape,
+#txtCursos{
     color: var(--corDaFonte);
     box-shadow: inset 2px 2px 3px black;
     width: 130px;
     text-align: center;
 }
-#txtCotasPorSiape:hover{
+#txtCotasPorSiape:hover,
+#txtCursos:hover{
     color: var(--corDaFonte);
     background-color: var(--fundoDestaque);
 }

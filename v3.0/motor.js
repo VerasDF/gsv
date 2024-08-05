@@ -1077,7 +1077,6 @@ const html = {
         let intTotalGeralFaltas = 0;
         let intTotalGeral = 0;
 
-        //trabalhar aqui..
         for(let i = 0; i < tbAux.childElementCount; i++){
             const secAux = tbAux.children[i];
             for(let j = 0; j < secAux.childElementCount; j++){
@@ -1861,25 +1860,24 @@ const html = {
             return;
         }
         const table = document.createElement('table')
-        table.append(_cabecalho1())
-        table.append(_cabecalho2())
-        let indice = 0
-        let mesDeReferencia = ''
-        // let cursos = (txtCursos.value == '' ? undefined : txtCursos.value)
-        let total = 0
+        table.append(_cabecalho1());
+        table.append(_cabecalho2());
+        let indice = 0;
+        let mesDeReferencia = '';
+        let tCursos = $('txtCursos').value == '' ? undefined : $('txtCursos').value;
+        let total = 0;
     
         for (let i = 0; i < arrOrdemPostoGrad.length; i++) {
-            const objAux =  _ordenarDados(filtrarInscritosJson({ posto_grad: arrOrdemPostoGrad[i] }))
+            const objAux =  _ordenarDados(filtrarInscritosJson({ posto_grad: arrOrdemPostoGrad[i], cursos: tCursos }));
             if(objAux.length > 0){
                 for(j = 0; j < objAux.length; j++){
                     if(mesDeReferencia === ''){ mesDeReferencia = objAux[j].MES_REFERENCIA }
-                    table.append(_incluirDado(objAux[j], ++indice))
+                    table.append(_incluirDado(objAux[j], ++indice));
                 }
             }
         }
     
         divResultado.append(table)
-        // $('divAuxiliar').innerHTML = (cursos == undefined ? '': `Aplicado filtro de cursos : "${cursos}"`)
         $('thMesReferenciaInscritos').innerHTML = mesDeReferencia
     
         function _cabecalho1(){
