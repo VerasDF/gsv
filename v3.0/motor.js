@@ -958,7 +958,7 @@ const html = {
                 tbody.append(tr);
             }
         }
-        tfoot.innerHTML = `<tr><th>TOTAL GERAL</th><th>${totalGeral.toLocaleString('pt-BR')}</th></tr>`;
+        tfoot.innerHTML = `<tr><td>TOTAL GERAL</td><td>${totalGeral.toLocaleString('pt-BR')}</td></tr>`;
         
         tb.append(tbody);
         tb.append(tfoot);
@@ -1102,16 +1102,16 @@ const html = {
                 tdAuxFalta.innerHTML = intFaltas;
                 tdAuxPerc.innerHTML = `${intPercent} %`;
 
-                if(trAux.children[0].innerHTML=='DESCRIÇÃO'){
+                if(trAux.children[0].innerHTML=='<a href="#" onclick="ordenarTabela(0,false)">DESCRIÇÃO</a>'){
                     trAux.append(thAuxFalta);
                     trAux.append(thAuxPerc);
                 }
                 else if(trAux.children[0].innerHTML=='TOTAL GERAL'){
-                    thAuxFalta.innerHTML = intTotalGeralFaltas;
+                    tdAuxFalta.innerHTML = intTotalGeralFaltas;
                     intTotalGeral = parseInt('0'+trAux.children[1].innerHTML.replace('.',''))
-                    thAuxPerc.innerHTML = `${((intTotalGeralFaltas * 100) / intTotalGeral).toFixed(2)} %`;
-                    trAux.append(thAuxFalta);
-                    trAux.append(thAuxPerc);
+                    tdAuxPerc.innerHTML = `${((intTotalGeralFaltas * 100) / intTotalGeral).toFixed(2)} %`;
+                    trAux.append(tdAuxFalta);
+                    trAux.append(tdAuxPerc);
                 }
                 else{
                     trAux.append(tdAuxFalta);
