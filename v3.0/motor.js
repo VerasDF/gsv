@@ -175,7 +175,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             }  
             return ret
         }
-
+        conf.auto = true;
     } catch (error) {
         console.log(error)
     }
@@ -874,6 +874,17 @@ const filtrar = {
 
 const html = {
     processarMenuExibirResultado:function(opcao){
+        if(opcao == 100){
+            conf.auto = !conf.auto;
+            if (conf.auto){
+                $("idMenuDeEntrada").innerHTML = '&crarr; Exibir Dados &infin;'
+            }else{
+                $("idMenuDeEntrada").innerHTML = '&crarr; Exibir Dados &empty;'
+            }
+            console.log(conf);
+            return 0;
+        }
+        
         const objAux = filtrarEscalasJson( _parametros() );
         if(![21].includes(opcao)){
             if(objAux.length == 0){
@@ -976,6 +987,7 @@ const html = {
         }else{
             conf.atualizar = true;
         }
+        
     },
     exibirTotais:function(campoDePesquisa, objAux) {
         limparTudo();
@@ -1110,17 +1122,15 @@ const html = {
         html.exibirTotais('OPERAÇÃO', objAux);
 
         const tbAux = $('tbResultado');
-
         let intTotalGeralFaltas = 0;
         let intTotalGeral = 0;
-
-        //Trabalhando aqui...
-        // objAux = filtrarEscalasJson(_parametros());
+        
+        tbAux.tFoot.children[0].children[1].style.textAlign = 'center';
         for(let i = 0; i < tbAux.childElementCount; i++){
             const secAux = tbAux.children[i];
             for(let j = 0; j < secAux.childElementCount; j++){
                 const trAux = secAux.children[j];
-                const objTmp = filtrarEscalasJson({falta:true, operacao:trAux.children[0].innerHTML});
+                const objTmp = objAux.filter((e)=>{return e.FALTA == true && e.OPERAÇÃO == trAux.children[0].innerHTML});
                 const thAuxFalta = document.createElement('th');
                 const thAuxPerc = document.createElement('th');
                 const tdAuxFalta = document.createElement('td');
@@ -2038,11 +2048,12 @@ const html = {
         return tr;
     },
     atualizacaoAutomatica: function(){
+        if(!conf.auto){return false}
         if(!conf.ultimoComando){return false}
         if(conf.atualizar != true){return false}
         if(conf.ultimoParametro != JSON.stringify(_parametros())){
-            conf.automatico = setTimeout(() => {
-                clearTimeout(conf.automatico);
+            conf.tmrAutomatico = setTimeout(() => {
+                clearTimeout(conf.tmrAutomatico);
                 html.processarMenuExibirResultado(conf.ultimoComando);
                 conf.ultimoParametro = JSON.stringify(_parametros());
             }, 200);
