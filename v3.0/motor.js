@@ -526,7 +526,7 @@ function inicializarInterfaceDeFaltas(){
     }
     else{
         setTimeout(() => {
-            tratarFaltas();
+            dados.tratarFaltas();
         }, 200);
     }
 }
@@ -601,6 +601,7 @@ const opcoes = {
     _acao:function(){
         const objAux = filtrarEscalasJson(_parametros());
         filtrar.prepararDados(objAux);
+        html.atualizacaoAutomatica();
     }
 }
 
@@ -679,6 +680,37 @@ const dados = {
             divQuadro.append(dados._criarItemDaLista(divQuadro, arrQuadro[i]));
         }
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
+    },
+    tratarFaltas: function() {
+        if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
+        
+        if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
+        {
+            alert(`Períodos incompatívies para tratar faltas`);
+            return;
+        }
+        
+        let contador = 0;
+        dadoEscalasJson.forEach((elm)=>{
+            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            if(filtroTurno.length > 0){
+                elm.ASSINATURA = 'FALTOU';
+                elm.FALTA = true;
+                contador = contador + 1;
+            }
+        })
+        
+        if(dadoFaltasJson.length != contador){
+            $led(21);
+        }
+        $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
+    
+        dadoFaltasJson.forEach((flt)=>{
+            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+            if (filtroFalta.length == 0){
+                console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
+            }
+        })
     },
     _criarItemDaLista:function(objTag, strTexto){
         const btnTemp = document.createElement('button');
@@ -939,6 +971,11 @@ const html = {
                 break;
         }
         conf.ultimoComando = opcao;
+        if([40,41,42,43,44,45,46,47,48].includes(opcao)){
+            conf.atualizar = false;
+        }else{
+            conf.atualizar = true;
+        }
     },
     exibirTotais:function(campoDePesquisa, objAux) {
         limparTudo();
@@ -1077,11 +1114,13 @@ const html = {
         let intTotalGeralFaltas = 0;
         let intTotalGeral = 0;
 
+        //Trabalhando aqui...
+        // objAux = filtrarEscalasJson(_parametros());
         for(let i = 0; i < tbAux.childElementCount; i++){
             const secAux = tbAux.children[i];
             for(let j = 0; j < secAux.childElementCount; j++){
                 const trAux = secAux.children[j];
-                const objTmp = filtrarFaltasJson({operacao:trAux.children[0].innerHTML});
+                const objTmp = filtrarEscalasJson({falta:true, operacao:trAux.children[0].innerHTML});
                 const thAuxFalta = document.createElement('th');
                 const thAuxPerc = document.createElement('th');
                 const tdAuxFalta = document.createElement('td');
@@ -1999,13 +2038,14 @@ const html = {
         return tr;
     },
     atualizacaoAutomatica: function(){
-        if(!conf.ultimoComando){return false};
+        if(!conf.ultimoComando){return false}
+        if(conf.atualizar != true){return false}
         if(conf.ultimoParametro != JSON.stringify(_parametros())){
             conf.automatico = setTimeout(() => {
                 clearTimeout(conf.automatico);
                 html.processarMenuExibirResultado(conf.ultimoComando);
                 conf.ultimoParametro = JSON.stringify(_parametros());
-            }, 500);
+            }, 200);
         }
     }
 }
@@ -2076,7 +2116,7 @@ const editarCota = {
     alterarDuracaoTodasAsCotasFiltradas: function(dadosParaAlteracao) {
         try {
             const par = _parametros();
-            
+            conf.atualizar = false;
             if(!confirm(`C U I D A D O!\n\n
                 Esta alteração é de caráter AVANÇADO.\n
                 Serão alterados o VALOR e a DURAÇÃO das cotas para:\n
@@ -2087,6 +2127,7 @@ const editarCota = {
                 Deseja continuar?`)){
                 return false;
             }
+            
     
             const objAux = filtrarEscalasJson(par);
             const arrAux = objAux.map((item) => { return item._ID });
@@ -2098,7 +2139,7 @@ const editarCota = {
             }
             setTimeout(() => {
                 dados.carregarControles()
-            }, 500);
+            }, 100);
 
         } catch (error) {
             console.log(error);
@@ -2475,38 +2516,6 @@ function _parametros(foco){
         }
         return arrAux;
     }
-}
-
-function tratarFaltas() {
-    if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
-    
-    if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
-    {
-        alert(`Períodos incompatívies para tratar faltas`);
-        return;
-    }
-    
-    let contador = 0;
-    dadoEscalasJson.forEach((elm)=>{
-        const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
-        if(filtroTurno.length > 0){
-            elm.ASSINATURA = 'FALTOU';
-            elm.FALTA = true;
-            contador = contador + 1;
-        }
-    })
-    
-    if(dadoFaltasJson.length != contador){
-        $led(21);
-    }
-    $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
-
-    dadoFaltasJson.forEach((flt)=>{
-        const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
-        if (filtroFalta.length == 0){
-            console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
-        }
-    })
 }
 
 function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
