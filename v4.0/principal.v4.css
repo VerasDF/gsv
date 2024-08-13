@@ -138,6 +138,14 @@ button:hover{
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
 }
+#fldFuncoes{
+    display: grid;
+    grid-template-columns: 1fr;
+    width: var(--larguraTotal);
+}
+#divFiltroFuncoes{
+    height: 350px;
+}
 .clsLedDesligado{border: 1px solid var(--botaoBorda);}
 .clsLedVermelho{background-color: red;}
 .clsLedAmarelo{background-color: yellow;}
