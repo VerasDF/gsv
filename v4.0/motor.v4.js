@@ -1,25 +1,50 @@
 
 const $ = tag => document.getElementById(tag);
 
-conf = {
-    dadosEscalas: null,
-    dadosFaltas: null,
-    dadosInscritos: null,
+const aux = {
+    ajax: function ({urlDoArquivo, funcaoDeRetorno}) {
+        try {
+            const url = urlDoArquivo;
+            const XmlReq = new XMLHttpRequest();
+            XmlReq.open('GET', url, true);
+            XmlReq.onreadystatechange = () => {
+                if (XmlReq.readyState === 4) {
+                    if (XmlReq.status === 200) {
+                        funcaoDeRetorno(XmlReq.response);
+                    }
+                    if (XmlReq.status === 404) {
+                        funcaoDeRetorno(null);
+                    }
+                }
+            }
+            
+            XmlReq.send();
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+const conf = {
     arrOrdemPostoGrad: ['CEL', 'TC', 'MAJ', 'CAP', '1 TEN', '2 TEN', 'ASP', 'ST', '1 SGT', '2 SGT', '3 SGT', 'CB', 'SD/1', 'SD/2'],
     readFile:function( input ){
         let carregado = false;
         for (let i = 0; i < input.files.length; i++) {
             if (input.files[i].name.toLowerCase().indexOf('escala') > -1){
+                init.led(10);
                 const file = input.files[i];
                 carregarArquivo( file );
                 carregado = true
             }
             if (input.files[i].name.toLowerCase().indexOf('falta') > -1){
+                init.led(20);
                 const file = input.files[i];
                 carregarArquivo( file );
                 carregado = true
             }
             if (input.files[i].name.toLowerCase().indexOf('inscrito') > -1){
+                init.led(30);
                 const file = input.files[i];
                 carregarArquivo( file );
                 carregado = true
@@ -43,7 +68,7 @@ conf = {
     }
 }
 
-init = {
+const init = {
     avaliarDadoBruto: function( {htmlRetornado} ) {
         try {
             if(htmlRetornado === null){ return }
@@ -57,20 +82,20 @@ init = {
             if( tipoRetorno === 'Escalas' ){
                 dadoBruto = dadoBruto.querySelector(".table_relatorio");
                 dadoBruto = dadoBruto.children[0];
-                conf.dadosEscalas = init.prepararEscalasJSon( dadoBruto );
-                conf.arquivo = `${dadosEscalas[0].DATA.split('/')[2]}-${dadosEscalas[0].DATA.split('/')[1]}-${dadosEscalas[0]["MÊS"]}`;
-                conf.mesAno = `${dadosEscalas[0]["MÊS"]}/${dadosEscalas[0].DATA.split('/')[2]}`;
+                dados.escalas = init.prepararEscalasJSon( dadoBruto );
+                conf.arquivoPdf = `${dados.escalas[0].DATA.split('/')[2]}-${dados.escalas[0].DATA.split('/')[1]}-${dados.escalas[0]["MÊS"]}`;
+                conf.mesAno = `${dados.escalas[0]["MÊS"]}/${dados.escalas[0].DATA.split('/')[2]}`;
                 // funcaoAuxiliar = inicializarInterfaceDeEscalas;
             }
             if( tipoRetorno === 'Faltas' ){
                 dadoBruto = dadoBruto.querySelector(".div_form_faltas");
                 dadoBruto = dadoBruto.children[0].children[0];
-                conf.dadosFaltas = init.prepararFaltasJSon( dadoBruto );
+                dados.faltas = init.prepararFaltasJSon( dadoBruto );
                 // funcaoAuxiliar = inicializarInterfaceDeFaltas;
             }
             if( tipoRetorno === 'Inscritos'){
                 dadoBruto = dadoBruto.querySelector(".tbResumo");
-                conf.dadosInscritos = init.prepararInscritosJSon( dadoBruto );
+                dados.inscritos = init.prepararInscritosJSon( dadoBruto );
                 // funcaoAuxiliar = inicializarInterfaceDeInscritos;
             }
             if(funcaoAuxiliar){ funcaoAuxiliar() }
@@ -99,7 +124,7 @@ init = {
                 }  
                 return ret
             }
-            conf.auto = true;
+            conf.autoRefresh = true;
         } catch (error) {
             console.log(error)
         }
@@ -148,7 +173,7 @@ init = {
                         objTmp['GBM_DESTINO'] = _extrairGbm({ quatro: opr.name_quatro, um: opr.desc_um, grupo: objTmp['GRUPO'], tres: opr.name_tres });
                         objTmp['HORA'] = _extrairHorario(opr.name_quatro);
                         objTmp['LOCAL'] = _extrairLocal(opr.name_quatro);
-                        objTmp['MÊS'] = init._extrairMesExtenso(opr.name_tres);
+                        objTmp['MÊS'] = init.extrairMesExtenso(opr.name_tres);
                         objTmp['QUINZENA'] = _extrairQuinzena(opr.name_tres);
                         objTmp['DATA'] = opr.name_tres; //DATA
                         objTmp['ASSINATURA'] = '';
@@ -181,9 +206,11 @@ init = {
                     break;
                 }
             }
+            init.led(12);
             return objEscala
     
         } catch (error) {
+            init.led(11);
             console.log(error)
         }
     
@@ -342,6 +369,7 @@ init = {
             }
         }
     
+        init.led(22);
         return objFalta;
             
         function _sanitizar(parametro) {
@@ -362,6 +390,7 @@ init = {
             _versao1();
         }
         
+        init.led(32);
         return objTmp;
         
         function _versao1(){
@@ -431,7 +460,7 @@ init = {
             return retorno
         }
     },
-    _extrairMesExtenso: function(dataPtBr) {
+    extrairMesExtenso: function(dataPtBr) {
         const dataDMY = dataPtBr.split('/');
         const mes = dataDMY[1];
         let res = '';
@@ -449,8 +478,347 @@ init = {
         if (mes === '12') { res = `Dezembro`; }
         conf.mes = mes;
         return res;
-    }
+    },
+    led: function(cod) {
+        const stEsc = $('divStatusEscala');
+        const stFal = $('divStatusFalta');
+        const stIns = $('divStatusInscricao');
     
+        if(cod==10){
+            stEsc.style.backgroundColor = 'red';
+        }
+        if(cod==11){
+            stEsc.style.backgroundColor = 'yellow';
+        }
+        if(cod==12){
+            stEsc.style.backgroundColor = 'lightgreen';
+        }
+    
+        if(cod==20){
+            stFal.style.backgroundColor = 'red';
+        }
+        if(cod==21){
+            stFal.style.backgroundColor = 'yellow';
+        }
+        if(cod==22){
+            stFal.style.backgroundColor = 'lightgreen';
+        }
+    
+        if(cod==30){
+            stIns.style.backgroundColor = 'red';
+        }
+        if(cod==31){
+            stIns.style.backgroundColor = 'yellow';
+        }
+        if(cod==32){
+            stIns.style.backgroundColor = 'lightgreen';
+        }
+    },
+    tratarFaltas: function() {
+
+        if(dados.escalas.length===0 || dados.faltas.length===0){ return }
+        
+        if(dados.escalas[0].DATA.split("/")[1] !== dados.faltas[0].DATA.split("/")[1])
+        {
+            alert(`Períodos incompatívies para tratar faltas`);
+            return;
+        }
+        
+        let contador = 0;
+        dados.escalas.forEach((elm)=>{
+            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            if(filtroTurno.length > 0){
+                elm.ASSINATURA = 'FALTOU';
+                elm.FALTA = true;
+                contador = contador + 1;
+            }
+        })
+        
+        if(dados.faltas.length != contador){
+            conf.led(21);
+        }
+        conf.faltaStatus = `Processametno de faltas: ${dados.faltas.length}/${contador}`;
+    
+        dados.faltas.forEach((flt)=>{
+            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+            if (filtroFalta.length == 0){
+                console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
+            }
+        })
+    }
+}
+
+const dados = {
+    escalas: null,
+    faltas: null,
+    inscritos: null,
+    parametros: function(foco){
+        const _divFiltroDurcao = $('divFiltroDuracao');
+        const _divFaltaOpcao = $('divFaltaOpcao');
+        const _divFiltroGrupo = $('divFiltroGrupo');
+        const _divFiltroOperacao = $('divFiltroOperacao');
+        const _divFiltroGbmDestino = $('divFiltroGbmDestino');
+        const _divFiltroTurno = $('divFiltroTurno');
+        const _divFiltroQuadro = $('divFiltroQuadro');
+        const _divCalendario = $('divCalendario');
+        const _filtroOpcao = $('divFiltroOpcao')
+        const _quinzenaOpcao = $('divQuinzenaOpcao')
+        
+        let par = {};
+        let arrDuracao = [];
+        let arrFalta = [];
+        let arrGrupo = [];
+        let arrOper = [];
+        let arrGbmDestino = [];
+        let arrTurno = [];
+        let arrQuadro = [];
+        let arrData = [];
+        let arrSiape = [];
+        let arrQuinzena = [];
+        
+        if(foco == undefined || foco == `duracao`){ arrDuracao = _buscarSelecionados(_divFiltroDurcao) }
+        if(foco == undefined || foco == `falta`){ arrFalta = _buscarSelecionados(_divFaltaOpcao) }
+        if(foco == undefined || foco == `grupo`){ arrGrupo = _buscarSelecionados(_divFiltroGrupo) }
+        if(foco == undefined || foco == `operacao`){ arrOper = _buscarSelecionados(_divFiltroOperacao) }
+        if(foco == undefined || foco == `gbm_destino`){ arrGbmDestino = _buscarSelecionados(_divFiltroGbmDestino) }
+        if(foco == undefined || foco == `turno`){ arrTurno = _buscarSelecionados(_divFiltroTurno) }
+        if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados(_divFiltroQuadro) }
+        if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados(_divCalendario) }
+        if(foco == undefined || foco == `opcao`){ arrSiape = _buscarSelecionados(_filtroOpcao) }
+        if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados(_quinzenaOpcao) }
+        
+        if(arrDuracao.length > 0) { par.tempo = arrDuracao}
+        if(arrFalta.length > 0) { par.falta = arrFalta}
+        if(arrGrupo.length > 0) { par.grupo = arrGrupo}
+        if(arrOper.length > 0) { par.operacao = arrOper }
+        if(arrGbmDestino.length > 0) { par.gbm_destino = arrGbmDestino }
+        if(arrTurno.length > 0){ par.horario = arrTurno }
+        if(arrQuadro.length > 0){ par.quadro = arrQuadro }
+        if(arrData.length > 0){ par.data = arrData }
+        if(arrSiape.length > 0){
+            if(arrSiape[0] != 'compulsória'){
+                par.siape = arrSiape[0];
+            }
+            else{
+                par.escaladoPor = 'compulsória';
+            }
+        }
+        if(arrQuinzena.length > 0){
+            par.quinzena = arrQuinzena[0];
+        }
+        if(arrFalta.length > 0){
+            par.falta = (arrFalta[0] == 'true' ? true: (arrFalta[0] == 'false') ? false : '');
+        } 
+    
+        conf.paramJson = JSON.stringify(par);
+        return par;
+    
+        function _buscarSelecionados(auxTag){
+            let arrAux = [];
+            for(let i = 0; i < auxTag.childElementCount; i++){
+                const btnTemp = auxTag.children[i]
+                if(btnTemp.nodeName.toLowerCase() == 'button'){
+                    if(btnTemp.ariaLabel != ""){
+                        if(btnTemp.ariaPressed=="true"){
+                            arrAux.push(btnTemp.ariaLabel);
+                        }
+                    }
+                }
+            }
+            return arrAux;
+        }
+    },
+    filtrarEscalasJson: function({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
+    
+        let objAux = dados.escalas.filter((e)=>{return e})
+    
+        if (assinatura !== undefined) {
+            objAux = objAux.filter((e)=>{return e.ASSINATURA.indexOf(assinatura) > -1})
+        }
+        if (data !== undefined) {
+            if(Array.isArray(data)){
+                if(data.length > 0){
+                    objAux = objAux.filter((e)=>{return data.includes(e.DATA)})
+                }
+            }else{
+                objAux = objAux.filter((e)=>{return data.includes(e.DATA)})
+            }
+        }
+        if (escaladoPor !== undefined) {
+            if(escaladoPor === 'compulsória'){
+                objAux = objAux.filter((e)=>{return e.ESCALADO.split('-').length === 3});
+            }else if(escaladoPor === 'próprio'){
+                objAux = objAux.filter((e)=>{return e.ESCALADO.split('-').length === 2});
+            }else{
+                objAux = objAux.filter((e)=>{return e.ESCALADO.indexOf(escaladoPor) > -1});
+            }
+        }
+        if (falta !== undefined) {
+            objAux = objAux.filter((e)=>{return e.FALTA === falta});
+        }
+        if (grupo !== undefined) {
+            if(Array.isArray(grupo)){
+                if(grupo.length > 0){
+                    objAux = objAux.filter((e)=>{return grupo.includes(e.GRUPO)});
+                }
+            }
+            else{
+                objAux = objAux.filter((e)=>{return e.GRUPO.indexOf(grupo) > -1})
+            }
+        }
+        if (gbm_destino !== undefined) {
+            if(Array.isArray(gbm_destino)){
+                if(gbm_destino.length > 0){
+                    objAux = objAux.filter((e)=>{return gbm_destino.includes(e.GBM_DESTINO)});
+                }
+            }
+            else{
+                objAux = objAux.filter((e)=>{return e.GBM_DESTINO.indexOf(gbm_destino) > -1})
+            }
+        }
+        if (horario !== undefined) {
+            if(Array.isArray(horario)){
+                if(horario.length > 0){
+                    objAux = objAux.filter((e)=>{return horario.includes(e.HORA)})
+                }
+            }
+            else{
+                objAux = objAux.filter((e)=>{return e.HORA.indexOf(horario) > -1})
+            }
+        }
+        if (lotacao !== undefined) {
+            objAux = objAux.filter((e)=>{return e.LOTAÇÃO.indexOf(lotacao) > -1})
+        }
+        if (nome !== undefined) {
+            objAux = objAux.filter((e)=>{return e.NOME.indexOf(nome) > -1})
+        }
+        if (operacao !== undefined) {
+            if(Array.isArray(operacao)){
+                if(operacao.length > 0){
+                    objAux = objAux.filter((e)=>{return operacao.includes(e.OPERAÇÃO)})
+                }
+            }
+            else{
+                objAux = objAux.filter((e)=>{return e.OPERAÇÃO.indexOf(operacao) > -1})
+            }
+        }
+        if (operacao_tipo !== undefined) {
+            objAux = objAux.filter((e)=>{return e.name_um.indexOf(operacao_tipo) > -1})
+        }
+        if (quadro !== undefined) {
+            objAux = objAux.filter((e)=>{return e.QUADRO.indexOf(quadro) > -1})
+        }
+        if (quinzena!==undefined) {
+            objAux = objAux.filter((e)=>{return e.QUINZENA.indexOf(quinzena) > -1})
+        }
+        if (posto_grad!==undefined) {
+            objAux = objAux.filter((e)=>{return e.POSTO_GRAD.indexOf(posto_grad) > -1})
+        }
+        if (sub_lotacao_local!==undefined) {
+            objAux = objAux.filter((e)=>{return e.desc_um.indexOf(sub_lotacao_local) > -1})
+        }
+        if (siape!==undefined) {
+            if(siape.substr(0,1) === '-'){
+                siape = siape.substr(1,siape.length)
+                objAux = objAux.filter((item) => {return item.SIAPE !== siape})
+            }else{
+                objAux = objAux.filter((e)=>{return e.SIAPE.indexOf(siape) > -1})
+            }
+        }
+        if (tempo!==undefined) {
+            if(Array.isArray(tempo)){
+                objAux = objAux.filter((e)=>{return tempo.includes(e.TEMPO)})
+            }
+            else{
+                tempo = tempo.toString()
+                if (tempo.indexOf('12/24') > -1){
+                    objAux = objAux.filter((e)=>{return e.TEMPO=='12' || e.TEMPO == '24'})
+                }else{
+                    objAux = objAux.filter((e)=>{return e.TEMPO.indexOf(tempo) > -1})
+                }
+            }
+        }
+        if (cinco!==undefined) {
+            if(Array.isArray(cinco)){
+                if(cinco.length > 0){
+                    objAux = objAux.filter((e)=>{return cinco.includes(e.name_cinco)});
+                }
+            }
+            else{
+                objAux = objAux.filter((e)=>{return e.name_cinco.indexOf(cinco) > -1});
+            }
+        }
+            
+        return objAux
+    },
+    filtrarFaltasJson: function({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
+        let objAux = dados.faltas.filter((e)=>{return e})
+    
+        if (data !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.DATA.indexOf(data) > -1 ) { return e }})
+        }
+        if (local!==undefined) {
+            objAux = objAux.filter((e)=>{return local.includes(e.LOCAL)})
+        }
+        if (lotacao !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.LOTAÇÃO.indexOf(lotacao) > -1 ) { return e }})
+        }
+        if (nome !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.NOME.indexOf(nome) > -1 ) { return e }})
+        }
+        if (operacao!==undefined) {
+            if(operacao.length > 0){
+                objAux = objAux.filter((e)=>{return operacao.includes(e.OPERAÇÃO)})
+            }
+            else{
+                objAux = objAux.filter((e)=>{return e.OPERAÇÃO.indexOf(operacao) > -1})
+            }
+        }
+        if (quadro !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.QUADRO.indexOf(quadro) > -1 ) { return e }})
+        }
+        if (posto !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.POSTO.indexOf(posto) > -1 ) { return e }})
+        }
+        if (siape !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.SIAPE.indexOf(siape) > -1 ) { return e }})
+        }
+        if (turno !== undefined) {
+            objAux = objAux.filter((e) => { if ( e.TURNO.indexOf(turno) > -1 ) { return e }})
+        }
+    
+        return objAux
+        
+    },
+    filtrarInscritosJson: function({ cursos, lotacao, nome, quadro, posto_grad, siape }) {
+        
+        let objAux = dadoInscritosJson.filter((e)=>{return e})
+    
+        if (cursos !== undefined) {
+            objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
+        }
+        if (lotacao !== undefined) {
+            objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
+        }
+        if (nome !== undefined) {
+            objAux = objAux.filter((e) => {return e.NOME.indexOf(nome) > -1})
+        }
+        if (quadro !== undefined) {
+            objAux = objAux.filter((e) => {return e.QUADRO.indexOf(quadro) > -1})
+        }
+        if (posto_grad !== undefined) {
+            objAux = objAux.filter((e) => {return e.POSTO_GRAD.indexOf(posto_grad) > -1})
+        }
+        if (siape !== undefined) { 
+            objAux = objAux.filter((e) => {return e.SIAPE.indexOf(siape) > -1})
+        }
+    
+        return objAux
+    }
+}
+
+const html = {
+
 }
 
 window.onload = function(){
@@ -461,4 +829,11 @@ window.onload = function(){
         }
     })
 }
+
+
+
+
+
+
+
 
