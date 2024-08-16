@@ -246,7 +246,7 @@ const init = {
         }
         function _extrairCirculo(parametro) {
             let retorno = '';
-            aux = _sanitizar(parametro);
+            const aux = _sanitizar(parametro);
             if (aux.indexOf("QBMG") > -1) {
                 retorno = "Praça";
             }
@@ -460,7 +460,7 @@ const init = {
             return retorno
         }
     },
-    extrairMesExtenso: function(dataPtBr) {
+    extrairMesExtenso: function( dataPtBr ) {
         const dataDMY = dataPtBr.split('/');
         const mes = dataDMY[1];
         let res = '';
@@ -479,7 +479,7 @@ const init = {
         conf.mes = mes;
         return res;
     },
-    led: function(cod) {
+    led: function( cod ) {
         const stEsc = $('divStatusEscala');
         const stFal = $('divStatusFalta');
         const stIns = $('divStatusInscricao');
