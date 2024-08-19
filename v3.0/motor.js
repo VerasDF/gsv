@@ -606,7 +606,7 @@ const opcoes = {
 }
 
 const dados = {
-    carregarControles:function(){
+    carregarControles: function(){
         limparTudo();
         
         dados.carregarGrupo();
@@ -622,7 +622,7 @@ const dados = {
             filtrar.prepararDados(filtrarEscalasJson(_parametros()));
         }, 500);
     },
-    carregarDataDoMes:function(){
+    carregarDataDoMes: function(){
         dados._criarCalendarioDoMes();
     },
     carregarGrupo: function(){
@@ -712,7 +712,7 @@ const dados = {
             }
         })
     },
-    _criarItemDaLista:function(objTag, strTexto){
+    _criarItemDaLista: function(objTag, strTexto){
         const btnTemp = document.createElement('button');
         btnTemp.id = objTag.id+'Btn';
         btnTemp.ariaLabel = `${strTexto}`;
@@ -726,7 +726,7 @@ const dados = {
         })
         return btnTemp
     },
-    _criarCalendarioDoMes:function(){
+    _criarCalendarioDoMes: function(){
         const arrDias = dadoEscalasJson[0].DATA;
         const ano = parseInt(arrDias.split('/')[2]);
         const mes = parseInt(arrDias.split('/')[1]);
@@ -773,7 +773,7 @@ const dados = {
             }
         }
     },
-    _limparLista:function(ctrAux){
+    _limparLista: function(ctrAux){
         for(let i = ctrAux.childElementCount-1; i >= 0; i--){
             if(ctrAux.children[i].nodeName.toLowerCase() == 'button'){
                 ctrAux.removeChild(ctrAux.children[i]);

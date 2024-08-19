@@ -79,7 +79,8 @@ button:hover{
     border-radius: 5px;
 }
 #divTotais{
-    padding-left: 5px;
+    padding-right: 10px;
+    text-align: right;
     background-color: var(--fundoDestacado);
 }
 #divOpcoes{
@@ -93,7 +94,7 @@ button:hover{
 #fldArquivoDeOrigem{
     width: 450px;
     display: grid;
-    grid-template-columns: 1fr 120px 20px;
+    grid-template-columns: 1fr 140px 20px;
 }
 #fldOpcao{
     grid-column: 1 / 6;

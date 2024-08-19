@@ -26,7 +26,85 @@ const aux = {
     }
 }
 
+const menuOpcoes = {
+    cota:function(ctrAux){
+        if(ctrAux.id == 'btnOpcaoTodas'){
+            $('btnOpcaoTodas').ariaPressed = 'true';
+            $('btnOpcaoComVoluntario').ariaPressed = 'false';
+            $('btnOpcaoSemVoluntario').ariaPressed = 'false';
+            $('btnOpcaoCompulsorio').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnOpcaoComVoluntario'){
+            $('btnOpcaoTodas').ariaPressed = 'false';
+            $('btnOpcaoComVoluntario').ariaPressed = 'true';
+            $('btnOpcaoSemVoluntario').ariaPressed = 'false';
+            $('btnOpcaoCompulsorio').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnOpcaoSemVoluntario'){
+            $('btnOpcaoTodas').ariaPressed = 'false';
+            $('btnOpcaoComVoluntario').ariaPressed = 'false';
+            $('btnOpcaoSemVoluntario').ariaPressed = 'true';
+            $('btnOpcaoCompulsorio').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnOpcaoCompulsorio'){
+            $('btnOpcaoTodas').ariaPressed = 'false';
+            $('btnOpcaoComVoluntario').ariaPressed = 'false';
+            $('btnOpcaoSemVoluntario').ariaPressed = 'false';
+            $('btnOpcaoCompulsorio').ariaPressed = 'true';
+        }
+        this._acao();
+    },
+    falta: function(ctrAux){
+        if(ctrAux.id == 'btnFaltaTodas'){
+            $('btnFaltaTodas').ariaPressed = 'true';
+            $('btnFaltaFalse').ariaPressed = 'false';
+            $('btnFaltaTrue').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnFaltaFalse'){
+            $('btnFaltaTodas').ariaPressed = 'false';
+            $('btnFaltaFalse').ariaPressed = 'true';
+            $('btnFaltaTrue').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnFaltaTrue'){
+            $('btnFaltaTodas').ariaPressed = 'false';
+            $('btnFaltaFalse').ariaPressed = 'false';
+            $('btnFaltaTrue').ariaPressed = 'true';
+        }
+        opcoes._acao();
+    },
+    quinzena: function(ctrAux){
+        if(ctrAux.id == 'btnQuinzenaMesInteiro'){
+            $('btnQuinzenaMesInteiro').ariaPressed = 'true';
+            $('btnQuinzena1').ariaPressed = 'false';
+            $('btnQuinzena2').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnQuinzena1'){
+            $('btnQuinzenaMesInteiro').ariaPressed = 'false';
+            $('btnQuinzena1').ariaPressed = 'true';
+            $('btnQuinzena2').ariaPressed = 'false';
+        }
+        if(ctrAux.id == 'btnQuinzena2'){
+            $('btnQuinzenaMesInteiro').ariaPressed = 'false';
+            $('btnQuinzena1').ariaPressed = 'false';
+            $('btnQuinzena2').ariaPressed = 'true';
+        }
+        opcoes._acao();
+    },
+    _acao:function(){
+        const objAux = filtrarEscalasJson( dados.parametros() );
+        filtrar.prepararDados( objAux );
+        html.atualizacaoAutomatica();
+    }
+}
+
 const conf = {
+    arquivoPdf: null,
+    autoRefresh: null,
+    mes: "",
+    mesAno: "",
+    totalEscalas: null,
+    totalFaltas: null,
+    totalInscritos: null,
     arrOrdemPostoGrad: ['CEL', 'TC', 'MAJ', 'CAP', '1 TEN', '2 TEN', 'ASP', 'ST', '1 SGT', '2 SGT', '3 SGT', 'CB', 'SD/1', 'SD/2'],
     readFile:function( input ){
         let carregado = false;
@@ -85,18 +163,20 @@ const init = {
                 dados.escalas = init.prepararEscalasJSon( dadoBruto );
                 conf.arquivoPdf = `${dados.escalas[0].DATA.split('/')[2]}-${dados.escalas[0].DATA.split('/')[1]}-${dados.escalas[0]["MÊS"]}`;
                 conf.mesAno = `${dados.escalas[0]["MÊS"]}/${dados.escalas[0].DATA.split('/')[2]}`;
-                // funcaoAuxiliar = inicializarInterfaceDeEscalas;
+                conf.totalEscalas = dados.escalas.length;
+                funcaoAuxiliar = init.inicializarInterfaceDeEscalas;
             }
             if( tipoRetorno === 'Faltas' ){
                 dadoBruto = dadoBruto.querySelector(".div_form_faltas");
                 dadoBruto = dadoBruto.children[0].children[0];
                 dados.faltas = init.prepararFaltasJSon( dadoBruto );
-                // funcaoAuxiliar = inicializarInterfaceDeFaltas;
+                conf.totalFaltas = dados.faltas.length;
+                funcaoAuxiliar = init.inicializarInterfaceDeFaltas;
             }
-            if( tipoRetorno === 'Inscritos'){
+            if( tipoRetorno === 'Inscritos' ){
                 dadoBruto = dadoBruto.querySelector(".tbResumo");
                 dados.inscritos = init.prepararInscritosJSon( dadoBruto );
-                // funcaoAuxiliar = inicializarInterfaceDeInscritos;
+                conf.totalInscritos = dados.inscritos.length;
             }
             if(funcaoAuxiliar){ funcaoAuxiliar() }
     
@@ -125,8 +205,26 @@ const init = {
                 return ret
             }
             conf.autoRefresh = true;
+            dados.totalStatus();
         } catch (error) {
             console.log(error)
+        }
+    },
+    inicializarInterfaceDeEscalas: function(){
+        dados.carregarControles();
+    },
+    inicializarInterfaceDeFaltas: function(){
+        if(dados.escalas.length==0){
+            setTimeout(() => {
+                init.inicializarInterfaceDeFaltas();
+            }, 200);
+            console.log('Os dados de escala não foram carregados completamente...');
+            return;
+        }
+        else{
+            setTimeout(() => {
+                init.tratarFaltas();
+            }, 200);
         }
     },
     prepararEscalasJSon: function( dadosHtml ) {
@@ -549,9 +647,9 @@ const init = {
 }
 
 const dados = {
-    escalas: null,
-    faltas: null,
-    inscritos: null,
+    escalas: [],
+    faltas: [],
+    inscritos: [],
     parametros: function(foco){
         const _divFiltroDurcao = $('divFiltroDuracao');
         const _divFaltaOpcao = $('divFaltaOpcao');
@@ -814,7 +912,184 @@ const dados = {
         }
     
         return objAux
+    },
+    totalStatus: function(objAux){
+        $('divTotais').innerHTML = `Cotas mês: ${conf.totalEscalas.toLocaleString('pt-BR')} <br>Filtrados: ${Array.isArray(objAux) ? objAux.toLocaleDateString('pt-BR') : conf.totalEscalas.toLocaleString('pt-BR')}`;
+    },
+
+    //acertando daqui para baixo
+    carregarControles: function(){
+        dados.carregarDataDoMes();
+        dados.carregarDuracao();
+        dados.carregarGbmDestino();
+        dados.carregarGrupo();
+        dados.carregarOperacao();
+        dados.carregarQuadro();
+        dados.carregarTurno();
+        dados.totalStatus();
+        setTimeout(() => {
+            filtrar.prepararDados(filtrarEscalasJson(_parametros()));
+        }, 500);
+    },
+    carregarDataDoMes: function(){
+        dados._criarCalendarioDoMes();
+    },
+    carregarGrupo: function(){
+        const arrGrupo = dadoEscalasJson.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divGrupo = $('divFiltroGrupo');
+        dados._limparLista(divGrupo);
+        for(let i = 0; i < arrGrupo.length; i++){
+            divGrupo.append(dados._criarItemDaLista(divGrupo, arrGrupo[i]));
+        }
+        $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
+    },
+    carregarDuracao: function(){
+        const arrDuracao = dadoEscalasJson.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divDuracao = $('divFiltroDuracao');
+        $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
+        dados._limparLista(divDuracao);
+        for(let i = 0; i < arrDuracao.length; i++){
+            divDuracao.append(dados._criarItemDaLista(divDuracao, arrDuracao[i]));
+        }
+    },
+    carregarOperacao: function(){
+        const arrOperacao = dadoEscalasJson.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divOperacao = $('divFiltroOperacao');
+        dados._limparLista(divOperacao);
+        for(let i = 0; i < arrOperacao.length; i++){
+            divOperacao.append(dados._criarItemDaLista(divOperacao, arrOperacao[i]));
+        }
+        $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
+    },
+    carregarGbmDestino: function(){
+        const arrGbmDestino = dadoEscalasJson.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        let arrAux = arrGbmDestino;
+        const divGbmDestino = $('divFiltroGbmDestino');
+        dados._limparLista(divGbmDestino);
+        for(let i = 0; i < arrGbmDestino.length; i++){
+            arrAux = arrAux.sort(ordenarPorGBM);
+            divGbmDestino.append(dados._criarItemDaLista(divGbmDestino, arrAux[i]));
+        }
+        $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
+    },
+    carregarTurno: function(){
+        const arrTurno = dadoEscalasJson.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divTurno = $('divFiltroTurno');
+        dados._limparLista(divTurno);
+        for(let i = 0; i < arrTurno.length; i++){
+            divTurno.append(dados._criarItemDaLista(divTurno, arrTurno[i]));
+        }
+        $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
+    },
+    carregarQuadro: function(){
+        const arrQuadro = dadoEscalasJson.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divQuadro = $('divFiltroQuadro');
+        dados._limparLista(divQuadro);
+        for(let i = 0; i < arrQuadro.length; i++){
+            divQuadro.append(dados._criarItemDaLista(divQuadro, arrQuadro[i]));
+        }
+        $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
+    },
+    tratarFaltas: function() {
+        if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
+        
+        if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
+        {
+            alert(`Períodos incompatívies para tratar faltas`);
+            return;
+        }
+        
+        let contador = 0;
+        dadoEscalasJson.forEach((elm)=>{
+            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            if(filtroTurno.length > 0){
+                elm.ASSINATURA = 'FALTOU';
+                elm.FALTA = true;
+                contador = contador + 1;
+            }
+        })
+        
+        if(dadoFaltasJson.length != contador){
+            $led(21);
+        }
+        $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
+    
+        dadoFaltasJson.forEach((flt)=>{
+            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+            if (filtroFalta.length == 0){
+                console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
+            }
+        })
+    },
+    _criarItemDaLista: function(objTag, strTexto){
+        const btnTemp = document.createElement('button');
+        btnTemp.id = objTag.id+'Btn';
+        btnTemp.ariaLabel = `${strTexto}`;
+        btnTemp.ariaPressed = 'false';
+        btnTemp.className = 'campoCriterio';
+        btnTemp.innerHTML = `${strTexto}`;
+        btnTemp.addEventListener('click', (e)=>{
+            if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
+            filtrar.processarClickDoBotao(btnTemp);
+            html.atualizacaoAutomatica();
+        })
+        return btnTemp
+    },
+    _criarCalendarioDoMes: function(){
+        const arrDias = dadoEscalasJson[0].DATA;
+        const ano = parseInt(arrDias.split('/')[2]);
+        const mes = parseInt(arrDias.split('/')[1]);
+        $('fldCalendario').children[0].innerHTML = `Calendário: (${conf.mesAno})`;
+
+        let dataInicio = new Date(`${ano.toString()}-${("00"+mes.toString()).slice(-2)}-01T00:00:00`);
+        let dataAux = new Date(dataInicio);
+        let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
+        dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
+        dataAux = new Date(dataInicio);
+        _excluirBotoesDia();
+        while(dataAux <= dataTermino){
+            if( dataAux.getDate() == 1){
+                for(let i = 0; i < 7; i++){
+                    if(i < dataAux.getDay()){
+                        $('divCalendario').appendChild(_criarBtnDia());
+                    }else{break}
+                }
+            }
+            $('divCalendario').appendChild(_criarBtnDia(dataAux));
+            dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
+        }
+        function _criarBtnDia(diaAux){
+            const btnTemp = document.createElement('button');
+            btnTemp.id = 'btnDiaDoMes'+(diaAux == undefined ? '-' : ("00"+diaAux.getDate()).slice(-2));
+            btnTemp.ariaLabel = (diaAux!=undefined?diaAux.toLocaleDateString():'');
+            btnTemp.ariaPressed = 'false';
+            btnTemp.ariaDisabled = 'false'
+            btnTemp.className = (diaAux==undefined ? `diaMes` : ((([0,6]).includes(new Date(diaAux).getDay())) ? `diaMes diaMesFinalDeSemana` : `diaMes`));
+            btnTemp.innerHTML = (diaAux==undefined ? '-':("00"+diaAux.getDate()).slice(-2));
+            btnTemp.addEventListener('click', (e)=>{
+                if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
+                filtrar.processarClickDoBotao(btnTemp);
+                html.atualizacaoAutomatica();
+            })
+            return btnTemp
+        }
+        function _excluirBotoesDia(){
+            divCalendario = $('divCalendario');
+            for(let i = divCalendario.childElementCount-1; i > 0; i--){
+                if(divCalendario.children[i].nodeName.toLowerCase() == 'button'){
+                    divCalendario.removeChild(divCalendario.children[i]);
+                }
+            }
+        }
+    },
+    _limparLista: function(ctrAux){
+        for(let i = ctrAux.childElementCount-1; i >= 0; i--){
+            if(ctrAux.children[i].nodeName.toLowerCase() == 'button'){
+                ctrAux.removeChild(ctrAux.children[i]);
+            }
+        }
     }
+
 }
 
 const html = {
@@ -828,6 +1103,53 @@ window.onload = function(){
             conf.readFile($('fileArquivo'));
         }
     })
+    
+    //opções
+    $('btnOpcaoTodas').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.cota(e.target);
+    })
+    $('btnOpcaoComVoluntario').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.cota(e.target);
+    })
+    $('btnOpcaoSemVoluntario').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.cota(e.target);
+    })
+    $('btnOpcaoCompulsorio').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.cota(e.target);
+    })
+    
+    //falta
+    $('btnFaltaTodas').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.falta(e.target);
+    })
+    $('btnFaltaFalse').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.falta(e.target);
+    })
+    $('btnFaltaTrue').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.falta(e.target);
+    })
+    
+    //quinzena
+    $('btnQuinzenaMesInteiro').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.quinzena(e.target);
+    })
+    $('btnQuinzena1').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.quinzena(e.target);
+    })
+    $('btnQuinzena2').addEventListener('click', (e)=>{
+        e.preventDefault();
+        menuOpcoes.quinzena(e.target);
+    })
+    
 }
 
 
