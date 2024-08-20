@@ -91,9 +91,9 @@ const menuOpcoes = {
         opcoes._acao();
     },
     _acao:function(){
-        const objAux = filtrarEscalasJson( dados.parametros() );
+        const objAux = dados.filtrarEscalasJson( dados.parametros() );
         filtrar.prepararDados( objAux );
-        html.atualizacaoAutomatica();
+        // html.atualizacaoAutomatica();
     }
 }
 
@@ -143,6 +143,9 @@ const conf = {
                 console.log(error);
             }
         }
+    },
+    totalStatus: function(objAux){
+        $('divTotais').innerHTML = `Cotas mês: ${conf.totalEscalas.toLocaleString('pt-BR')} <br>Filtrados: ${Array.isArray(objAux) ? objAux.length.toLocaleString('pt-BR') : conf.totalEscalas.toLocaleString('pt-BR')}`;
     }
 }
 
@@ -205,13 +208,13 @@ const init = {
                 return ret
             }
             conf.autoRefresh = true;
-            dados.totalStatus();
+            conf.totalStatus();
         } catch (error) {
             console.log(error)
         }
     },
     inicializarInterfaceDeEscalas: function(){
-        dados.carregarControles();
+        init.carregarControles();
     },
     inicializarInterfaceDeFaltas: function(){
         if(dados.escalas.length==0){
@@ -643,6 +646,286 @@ const init = {
                 console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
             }
         })
+    },
+
+    //acertando daqui para baixo
+    carregarControles: function(){
+        init.carregarDataDoMes();
+        init.carregarDuracao();
+        init.carregarGbmDestino();
+        init.carregarGrupo();
+        init.carregarOperacao();
+        init.carregarQuadro();
+        init.carregarTurno();
+        conf.totalStatus();
+        setTimeout(() => {
+            filtrar.prepararDados(dados.filtrarEscalasJson(dados.parametros()));
+        }, 500);
+    },
+    carregarDataDoMes: function(){
+        init._criarCalendarioDoMes();
+    },
+    carregarGrupo: function(){
+        const arrGrupo = dados.escalas.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divGrupo = $('divFiltroGrupo');
+        init._limparLista(divGrupo);
+        for(let i = 0; i < arrGrupo.length; i++){
+            divGrupo.append(init._criarItemDaLista(divGrupo, arrGrupo[i]));
+        }
+        $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
+    },
+    carregarDuracao: function(){
+        const arrDuracao = dados.escalas.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divDuracao = $('divFiltroDuracao');
+        $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
+        init._limparLista(divDuracao);
+        for(let i = 0; i < arrDuracao.length; i++){
+            divDuracao.append(init._criarItemDaLista(divDuracao, arrDuracao[i]));
+        }
+    },
+    carregarOperacao: function(){
+        const arrOperacao = dados.escalas.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divOperacao = $('divFiltroOperacao');
+        init._limparLista(divOperacao);
+        for(let i = 0; i < arrOperacao.length; i++){
+            divOperacao.append(init._criarItemDaLista(divOperacao, arrOperacao[i]));
+        }
+        $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
+    },
+    carregarGbmDestino: function(){
+        const arrGbmDestino = dados.escalas.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        let arrAux = arrGbmDestino;
+        const divGbmDestino = $('divFiltroGbmDestino');
+        init._limparLista(divGbmDestino);
+        for(let i = 0; i < arrGbmDestino.length; i++){
+            arrAux = arrAux.sort(ordenar.porGBM);
+            divGbmDestino.append(init._criarItemDaLista(divGbmDestino, arrAux[i]));
+        }
+        $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
+    },
+    carregarTurno: function(){
+        const arrTurno = dados.escalas.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divTurno = $('divFiltroTurno');
+        init._limparLista(divTurno);
+        for(let i = 0; i < arrTurno.length; i++){
+            divTurno.append(init._criarItemDaLista(divTurno, arrTurno[i]));
+        }
+        $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
+    },
+    carregarQuadro: function(){
+        const arrQuadro = dados.escalas.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divQuadro = $('divFiltroQuadro');
+        init._limparLista(divQuadro);
+        for(let i = 0; i < arrQuadro.length; i++){
+            divQuadro.append(init._criarItemDaLista(divQuadro, arrQuadro[i]));
+        }
+        $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
+    },
+    tratarFaltas: function() {
+        if(dados.escalas.length===0 || dadoFaltasJson.length===0){ return }
+        
+        if(dados.escalas[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
+        {
+            alert(`Períodos incompatívies para tratar faltas`);
+            return;
+        }
+        
+        let contador = 0;
+        dados.escalas.forEach((elm)=>{
+            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            if(filtroTurno.length > 0){
+                elm.ASSINATURA = 'FALTOU';
+                elm.FALTA = true;
+                contador = contador + 1;
+            }
+        })
+        
+        if(dadoFaltasJson.length != contador){
+            $led(21);
+        }
+        $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
+    
+        dadoFaltasJson.forEach((flt)=>{
+            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+            if (filtroFalta.length == 0){
+                console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
+            }
+        })
+    },
+    _criarItemDaLista: function(objTag, strTexto){
+        const btnTemp = document.createElement('button');
+        btnTemp.id = objTag.id+'Btn';
+        btnTemp.ariaLabel = `${strTexto}`;
+        btnTemp.ariaPressed = 'false';
+        btnTemp.className = 'campoCriterio';
+        btnTemp.innerHTML = `${strTexto}`;
+        btnTemp.addEventListener('click', (e)=>{
+            if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
+            filtrar.processarClickDoBotao(btnTemp);
+            html.atualizacaoAutomatica();
+        })
+        return btnTemp
+    },
+    _criarCalendarioDoMes: function(){
+        const arrDias = dados.escalas[0].DATA;
+        const ano = parseInt(arrDias.split('/')[2]);
+        const mes = parseInt(arrDias.split('/')[1]);
+        $('fldCalendario').children[0].innerHTML = `Calendário: (${conf.mesAno})`;
+
+        let dataInicio = new Date(`${ano.toString()}-${("00"+mes.toString()).slice(-2)}-01T00:00:00`);
+        let dataAux = new Date(dataInicio);
+        let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
+        dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
+        dataAux = new Date(dataInicio);
+        _excluirBotoesDia();
+        while(dataAux <= dataTermino){
+            if( dataAux.getDate() == 1){
+                for(let i = 0; i < 7; i++){
+                    if(i < dataAux.getDay()){
+                        $('divCalendario').appendChild(_criarBtnDia());
+                    }else{break}
+                }
+            }
+            $('divCalendario').appendChild(_criarBtnDia(dataAux));
+            dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
+        }
+        function _criarBtnDia(diaAux){
+            const btnTemp = document.createElement('button');
+            btnTemp.id = 'btnDiaDoMes'+(diaAux == undefined ? '-' : ("00"+diaAux.getDate()).slice(-2));
+            btnTemp.ariaLabel = (diaAux!=undefined?diaAux.toLocaleDateString():'');
+            btnTemp.ariaPressed = 'false';
+            btnTemp.ariaDisabled = 'false'
+            btnTemp.className = (diaAux==undefined ? `diaMes` : ((([0,6]).includes(new Date(diaAux).getDay())) ? `diaMes diaMesFinalDeSemana` : `diaMes`));
+            btnTemp.innerHTML = (diaAux==undefined ? '-':("00"+diaAux.getDate()).slice(-2));
+            btnTemp.addEventListener('click', (e)=>{
+                if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
+                filtrar.processarClickDoBotao(btnTemp);
+                html.atualizacaoAutomatica();
+            })
+            return btnTemp
+        }
+        function _excluirBotoesDia(){
+            divCalendario = $('divCalendario');
+            for(let i = divCalendario.childElementCount-1; i > 0; i--){
+                if(divCalendario.children[i].nodeName.toLowerCase() == 'button'){
+                    divCalendario.removeChild(divCalendario.children[i]);
+                }
+            }
+        }
+    },
+    _limparLista: function(ctrAux){
+        for(let i = ctrAux.childElementCount-1; i >= 0; i--){
+            if(ctrAux.children[i].nodeName.toLowerCase() == 'button'){
+                ctrAux.removeChild(ctrAux.children[i]);
+            }
+        }
+    }
+}
+
+const ordenar = {
+    porData: function(a, b){
+        if(a.DATA == b.DATA){
+            return 0;
+        }
+        if(a.DATA < b.DATA){
+            return -1;
+        }
+        if(a.DATA > b.DATA){
+            return 1;
+        }
+    },
+    porGBM: function(a, b) {
+        let n1, n2
+        const x = a.split(" ")
+        const y = b.split(" ")
+    
+        if(x.length > 1 && y.length > 1)
+        {
+            if(x[0].indexOf("º")>-1 && y[0].indexOf("º")>-1)
+            {
+                n1 = parseInt(x[0].substr(0, x.length))
+                n2 = parseInt(y[0].substr(0, x.length))
+            }
+            if(x[1].indexOf("º")>-1 && y[1].indexOf("º")>-1)
+            {
+                n1 = parseInt(x[1].substr(0, x.length))
+                n2 = parseInt(y[1].substr(0, x.length))
+            }
+        }
+        
+        if(n1 === undefined || n2 === undefined)
+        {
+            let i = 0
+            do
+            {
+                n1 = a.charCodeAt(i)
+                n2 = b.charCodeAt(i)
+                i++
+            }
+            while (n1 === n2)
+        }
+    
+        if(n1 < n2)
+        {
+            return -1
+        }
+        else if(n1 > n2)
+        {
+            return 1
+        }
+        else
+        {
+            return 0
+        }
+    },
+    porPostoGrad: function(indice){
+    
+        const asc = true;   // ordem: ascendente ou descendente
+        const index = (indice == undefined? 0: indice);    // coluna pela qual se quer ordenar
+        const tabela = document.getElementById('tbResultado');
+        const arr = Array.from(tabela.querySelectorAll('tbody tr'));
+    
+        arr.sort((a, b) => {
+            let a_val = undefined;
+            let b_val = undefined;
+            a_val = a.children[index].innerText;
+            b_val = b.children[index].innerText;
+            if(index == 3){
+                a_val = arrOrdemPostoGrad.indexOf(a.children[index].innerText);
+                b_val = arrOrdemPostoGrad.indexOf(b.children[index].innerText);
+                return (asc) ? a_val > b_val : b_val > a_val; 
+            }
+            return (asc) ? a_val.localeCompare(b_val) : b_val.localeCompare(a_val);
+        })
+    
+        arr.forEach(elem => {
+            tabela.children[1].appendChild(elem)
+        });
+    },
+    tabela: function(indice){
+        const index = (indice == undefined? 0: indice);    // coluna pela qual se quer ordenar
+        const tabela = document.getElementById('tbResultado');
+        const arr = Array.from(tabela.querySelectorAll('tbody tr'));
+        const asc = (tabela.ariaSort == "false" ? false : true);   // ordem: ascendente ou descendente (true or false)
+        tabela.ariaSort = !asc;
+    
+        arr.sort((a, b) => {
+            let a_val = undefined; let b_val = undefined;
+            a_val = a.children[index].innerText; b_val = b.children[index].innerText;
+            // console.log(a_val, " >> ", b_val);
+            if(a_val.indexOf('º') > -1 && b_val.indexOf('º') > -1){
+                a_val = a_val.substr(0, a_val.indexOf("º"));
+                b_val = b_val.substr(0, b_val.indexOf("º"));
+            }
+            if(Number.isInteger(parseInt(a_val)) && Number.isInteger(parseInt(b_val))){
+                return (asc) ? a_val.localeCompare(b_val, undefined, {numeric: true}) : b_val.localeCompare(a_val, undefined, {numeric: true});
+            }
+            return (asc) ? a_val.localeCompare(b_val) : b_val.localeCompare(a_val);
+        })
+    
+        arr.forEach(elem => {
+            tabela.children[1].appendChild(elem);
+        });
     }
 }
 
@@ -912,184 +1195,97 @@ const dados = {
         }
     
         return objAux
-    },
-    totalStatus: function(objAux){
-        $('divTotais').innerHTML = `Cotas mês: ${conf.totalEscalas.toLocaleString('pt-BR')} <br>Filtrados: ${Array.isArray(objAux) ? objAux.toLocaleDateString('pt-BR') : conf.totalEscalas.toLocaleString('pt-BR')}`;
-    },
+    }
+}
 
-    //acertando daqui para baixo
-    carregarControles: function(){
-        dados.carregarDataDoMes();
-        dados.carregarDuracao();
-        dados.carregarGbmDestino();
-        dados.carregarGrupo();
-        dados.carregarOperacao();
-        dados.carregarQuadro();
-        dados.carregarTurno();
-        dados.totalStatus();
-        setTimeout(() => {
-            filtrar.prepararDados(filtrarEscalasJson(_parametros()));
-        }, 500);
-    },
-    carregarDataDoMes: function(){
-        dados._criarCalendarioDoMes();
-    },
-    carregarGrupo: function(){
-        const arrGrupo = dadoEscalasJson.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const divGrupo = $('divFiltroGrupo');
-        dados._limparLista(divGrupo);
-        for(let i = 0; i < arrGrupo.length; i++){
-            divGrupo.append(dados._criarItemDaLista(divGrupo, arrGrupo[i]));
+const filtrar = {
+    processarClickDoBotao:function(botao){
+        if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
         }
+        if ( botao.id == 'divFiltroDuracaoBtn' ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroGbmDestinoBtn' ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroGrupoBtn' ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroOperacaoBtn' ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroTurnoBtn' ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+    },
+    prepararDados:function(objAux){
+        filtrar.destacarDuracao(objAux);
+        filtrar.destacarGrupo(objAux);
+        filtrar.destacarOperacao(objAux);
+        filtrar.destacarGbmDestino(objAux);
+        filtrar.destacarTurno(objAux);
+        filtrar.destacarQuadro(objAux);
+        filtrar.destacarDatas(objAux);
+        conf.totalStatus(objAux);
+    },
+    destacarDuracao:function(objAux){
+        const arrDuracao = objAux.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrDuracao, $('divFiltroDuracao'));
+        $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
+    },
+    destacarGrupo:function(objAux){
+        const arrGrupo = objAux.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrGrupo, $('divFiltroGrupo'));
         $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
     },
-    carregarDuracao: function(){
-        const arrDuracao = dadoEscalasJson.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const divDuracao = $('divFiltroDuracao');
-        $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
-        dados._limparLista(divDuracao);
-        for(let i = 0; i < arrDuracao.length; i++){
-            divDuracao.append(dados._criarItemDaLista(divDuracao, arrDuracao[i]));
-        }
-    },
-    carregarOperacao: function(){
-        const arrOperacao = dadoEscalasJson.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const divOperacao = $('divFiltroOperacao');
-        dados._limparLista(divOperacao);
-        for(let i = 0; i < arrOperacao.length; i++){
-            divOperacao.append(dados._criarItemDaLista(divOperacao, arrOperacao[i]));
-        }
+    destacarOperacao:function(objAux){
+        const arrOperacao = objAux.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrOperacao, $('divFiltroOperacao'));
         $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
     },
-    carregarGbmDestino: function(){
-        const arrGbmDestino = dadoEscalasJson.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        let arrAux = arrGbmDestino;
-        const divGbmDestino = $('divFiltroGbmDestino');
-        dados._limparLista(divGbmDestino);
-        for(let i = 0; i < arrGbmDestino.length; i++){
-            arrAux = arrAux.sort(ordenarPorGBM);
-            divGbmDestino.append(dados._criarItemDaLista(divGbmDestino, arrAux[i]));
-        }
+    destacarGbmDestino:function(objAux){
+        const arrGbmDestino = objAux.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrGbmDestino, $('divFiltroGbmDestino'));
         $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
     },
-    carregarTurno: function(){
-        const arrTurno = dadoEscalasJson.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const divTurno = $('divFiltroTurno');
-        dados._limparLista(divTurno);
-        for(let i = 0; i < arrTurno.length; i++){
-            divTurno.append(dados._criarItemDaLista(divTurno, arrTurno[i]));
-        }
+    destacarTurno:function(objAux){
+        const arrTurno = objAux.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrTurno, $('divFiltroTurno'));
         $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
     },
-    carregarQuadro: function(){
-        const arrQuadro = dadoEscalasJson.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
-        const divQuadro = $('divFiltroQuadro');
-        dados._limparLista(divQuadro);
-        for(let i = 0; i < arrQuadro.length; i++){
-            divQuadro.append(dados._criarItemDaLista(divQuadro, arrQuadro[i]));
-        }
+    destacarQuadro:function(objAux){
+        const arrQuadro = objAux.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrQuadro, $('divFiltroQuadro'));
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
-    tratarFaltas: function() {
-        if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
-        
-        if(dadoEscalasJson[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
-        {
-            alert(`Períodos incompatívies para tratar faltas`);
-            return;
-        }
-        
-        let contador = 0;
-        dadoEscalasJson.forEach((elm)=>{
-            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
-            if(filtroTurno.length > 0){
-                elm.ASSINATURA = 'FALTOU';
-                elm.FALTA = true;
-                contador = contador + 1;
-            }
-        })
-        
-        if(dadoFaltasJson.length != contador){
-            $led(21);
-        }
-        $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
-    
-        dadoFaltasJson.forEach((flt)=>{
-            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
-            if (filtroFalta.length == 0){
-                console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
-            }
-        })
+    destacarDatas:function(objAux){
+        const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrDatas, $('divCalendario'));
     },
-    _criarItemDaLista: function(objTag, strTexto){
-        const btnTemp = document.createElement('button');
-        btnTemp.id = objTag.id+'Btn';
-        btnTemp.ariaLabel = `${strTexto}`;
-        btnTemp.ariaPressed = 'false';
-        btnTemp.className = 'campoCriterio';
-        btnTemp.innerHTML = `${strTexto}`;
-        btnTemp.addEventListener('click', (e)=>{
-            if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
-            filtrar.processarClickDoBotao(btnTemp);
-            html.atualizacaoAutomatica();
-        })
-        return btnTemp
-    },
-    _criarCalendarioDoMes: function(){
-        const arrDias = dadoEscalasJson[0].DATA;
-        const ano = parseInt(arrDias.split('/')[2]);
-        const mes = parseInt(arrDias.split('/')[1]);
-        $('fldCalendario').children[0].innerHTML = `Calendário: (${conf.mesAno})`;
-
-        let dataInicio = new Date(`${ano.toString()}-${("00"+mes.toString()).slice(-2)}-01T00:00:00`);
-        let dataAux = new Date(dataInicio);
-        let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
-        dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
-        dataAux = new Date(dataInicio);
-        _excluirBotoesDia();
-        while(dataAux <= dataTermino){
-            if( dataAux.getDate() == 1){
-                for(let i = 0; i < 7; i++){
-                    if(i < dataAux.getDay()){
-                        $('divCalendario').appendChild(_criarBtnDia());
-                    }else{break}
+    destacar:function(arrAux, ctrAux){
+        const divAux = ctrAux;
+        for(let i = 0; i < divAux.childElementCount; i++){
+            const ctr = divAux.children[i];
+            if(ctr.ariaLabel){
+                const contagem = arrAux.filter((e)=>{return e == ctr.ariaLabel});
+                ctr.ariaDisabled = 'true';
+                if(contagem.length > 0){
+                    ctr.ariaDisabled = 'false';
                 }
-            }
-            $('divCalendario').appendChild(_criarBtnDia(dataAux));
-            dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
-        }
-        function _criarBtnDia(diaAux){
-            const btnTemp = document.createElement('button');
-            btnTemp.id = 'btnDiaDoMes'+(diaAux == undefined ? '-' : ("00"+diaAux.getDate()).slice(-2));
-            btnTemp.ariaLabel = (diaAux!=undefined?diaAux.toLocaleDateString():'');
-            btnTemp.ariaPressed = 'false';
-            btnTemp.ariaDisabled = 'false'
-            btnTemp.className = (diaAux==undefined ? `diaMes` : ((([0,6]).includes(new Date(diaAux).getDay())) ? `diaMes diaMesFinalDeSemana` : `diaMes`));
-            btnTemp.innerHTML = (diaAux==undefined ? '-':("00"+diaAux.getDate()).slice(-2));
-            btnTemp.addEventListener('click', (e)=>{
-                if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
-                filtrar.processarClickDoBotao(btnTemp);
-                html.atualizacaoAutomatica();
-            })
-            return btnTemp
-        }
-        function _excluirBotoesDia(){
-            divCalendario = $('divCalendario');
-            for(let i = divCalendario.childElementCount-1; i > 0; i--){
-                if(divCalendario.children[i].nodeName.toLowerCase() == 'button'){
-                    divCalendario.removeChild(divCalendario.children[i]);
-                }
-            }
-        }
-    },
-    _limparLista: function(ctrAux){
-        for(let i = ctrAux.childElementCount-1; i >= 0; i--){
-            if(ctrAux.children[i].nodeName.toLowerCase() == 'button'){
-                ctrAux.removeChild(ctrAux.children[i]);
             }
         }
     }
-
 }
 
 const html = {

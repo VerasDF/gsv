@@ -14,13 +14,11 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--fundo);
     color: var(--fonte);
+    font-size: 12px;
 }
 body{
     display: grid;
     grid-template-columns: 25px 1fr 25px;
-}
-div{
-    /* border: 1px solid pink; */
 }
 button{
     background-color: var(--botaoFundo);
@@ -98,23 +96,25 @@ button:hover{
 }
 #fldOpcao{
     grid-column: 1 / 6;
-    height: 110px;
 }
 #fldFalta{
     grid-column: 6 / 11;
-    height: 110px;
 }
 #fldQuinzena{
     grid-column: 11 / 15;
-    height: 110px;
 }
 #fldGrupo{
     grid-column: 15 / 21;
-    height: 110px;
 }
 #fldDuracao{
     grid-column: 21 / 25;
-    height: 110px;
+}
+#fldOpcao,
+#fldFalta,
+#fldQuinzena,
+#fldGrupo,
+#fldDuracao{
+    height: 90px;
 }
 #fldOperacao{
     grid-column: 1 / 25;
@@ -122,18 +122,21 @@ button:hover{
 }
 #fldGbmDestino{
     grid-column: 1 / 6;
-    height: 180px;
 }
 #fldTurno{
     grid-column: 6 / 11;
-    height: 180px;
 }
 #fldQuadro{
     grid-column: 11 / 15;
-    height: 180px;
 }
 #fldCalendario{
     grid-column: 15 / 25;
+}
+#fldGbmDestino,
+#fldTurno,
+#fldQuadro,
+#fldCalendario{
+    height: 200px;
 }
 #divCalendario{
     display: grid;
@@ -168,4 +171,16 @@ button:hover{
     text-align: center;
     padding: 2px;
     margin: 2px;
+}
+#divFiltroGrupo,
+#divFiltroDuracao,
+#divFiltroOperacao,
+#divFiltroGbmDestino,
+#divFiltroTurno,
+#divFiltroQuadro{
+
+}
+.clsFiltros{
+    overflow-y: scroll;
+    height: 100%;
 }
