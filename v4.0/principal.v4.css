@@ -2,7 +2,7 @@
     --fundo:rgb(0, 0, 0);
     --fundoDestacado:rgb(30,30,30);
     --fonte:rgb(255,255,255);
-    --fonteDesabilitada:(200,200,200);
+    --fonteDesabilitada:rgb(100,100,100);
     --borda:rgb(100,100,100);
     --botaoBorda:rgb(50,50,50);
     --botaoFundo:rgb(0,0,0);
@@ -78,6 +78,7 @@ button:hover{
 }
 #divTotais{
     padding-right: 10px;
+    padding-bottom: 10px;
     text-align: right;
     background-color: var(--fundoDestacado);
 }
@@ -142,12 +143,12 @@ button:hover{
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
 }
-#fldFuncoes{
+#fldFuncao{
     display: grid;
     grid-template-columns: 1fr;
     width: var(--larguraTotal);
 }
-#divFiltroFuncoes{
+#divFiltroFuncao{
     height: 350px;
 }
 .clsLedDesligado{border: 1px solid var(--botaoBorda);}

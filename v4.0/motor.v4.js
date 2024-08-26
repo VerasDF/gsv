@@ -70,7 +70,7 @@ const menuOpcoes = {
             $('btnFaltaFalse').ariaPressed = 'false';
             $('btnFaltaTrue').ariaPressed = 'true';
         }
-        opcoes._acao();
+        this._acao();
     },
     quinzena: function(ctrAux){
         if(ctrAux.id == 'btnQuinzenaMesInteiro'){
@@ -88,12 +88,12 @@ const menuOpcoes = {
             $('btnQuinzena1').ariaPressed = 'false';
             $('btnQuinzena2').ariaPressed = 'true';
         }
-        opcoes._acao();
+        this._acao();
     },
     _acao:function(){
         const objAux = dados.filtrarEscalasJson( dados.parametros() );
         filtrar.prepararDados( objAux );
-        // html.atualizacaoAutomatica();
+        html.atualizacaoAutomatica();
     }
 }
 
@@ -627,7 +627,7 @@ const init = {
         
         let contador = 0;
         dados.escalas.forEach((elm)=>{
-            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            const filtroTurno = dados.filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
             if(filtroTurno.length > 0){
                 elm.ASSINATURA = 'FALTOU';
                 elm.FALTA = true;
@@ -638,7 +638,7 @@ const init = {
         if(dados.faltas.length != contador){
             conf.led(21);
         }
-        conf.faltaStatus = `Processametno de faltas: ${dados.faltas.length}/${contador}`;
+        conf.faltaStatus = `faltas: ${dados.faltas.length}/${contador}`;
     
         dados.faltas.forEach((flt)=>{
             const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
@@ -647,11 +647,10 @@ const init = {
             }
         })
     },
-
-    //acertando daqui para baixo
     carregarControles: function(){
         init.carregarDataDoMes();
         init.carregarDuracao();
+        init.carregarFuncao();
         init.carregarGbmDestino();
         init.carregarGrupo();
         init.carregarOperacao();
@@ -721,10 +720,19 @@ const init = {
         }
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
+    carregarFuncao: function(){
+        const arrFuncao = dados.escalas.map((item)=>`${item.name_cinco}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const divFuncao = $('divFiltroFuncao');
+        init._limparLista(divFuncao);
+        for(let i = 0; i< arrFuncao.length; i++){
+            divFuncao.append(init._criarItemDaLista(divFuncao, arrFuncao[i]));
+        }
+        $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
+    },
     tratarFaltas: function() {
-        if(dados.escalas.length===0 || dadoFaltasJson.length===0){ return }
+        if(dados.escalas.length===0 || dados.faltas.length===0){ return }
         
-        if(dados.escalas[0].DATA.split("/")[1] !== dadoFaltasJson[0].DATA.split("/")[1])
+        if(dados.escalas[0].DATA.split("/")[1] !== dados.faltas[0].DATA.split("/")[1])
         {
             alert(`Períodos incompatívies para tratar faltas`);
             return;
@@ -732,7 +740,7 @@ const init = {
         
         let contador = 0;
         dados.escalas.forEach((elm)=>{
-            const filtroTurno = filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            const filtroTurno = dados.filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
             if(filtroTurno.length > 0){
                 elm.ASSINATURA = 'FALTOU';
                 elm.FALTA = true;
@@ -740,13 +748,13 @@ const init = {
             }
         })
         
-        if(dadoFaltasJson.length != contador){
+        if(dados.faltas.length != contador){
             $led(21);
         }
-        $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
+        $('divStatusFalta').title = `Processametno de faltas: ${dados.faltas.length}/${contador}`;
     
-        dadoFaltasJson.forEach((flt)=>{
-            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+        dados.faltas.forEach((flt)=>{
+            const filtroFalta = dados.filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
             if (filtroFalta.length == 0){
                 console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
             }
@@ -936,6 +944,7 @@ const dados = {
     parametros: function(foco){
         const _divFiltroDurcao = $('divFiltroDuracao');
         const _divFaltaOpcao = $('divFaltaOpcao');
+        const _divFiltroFuncao = $('divFiltroFuncao');
         const _divFiltroGrupo = $('divFiltroGrupo');
         const _divFiltroOperacao = $('divFiltroOperacao');
         const _divFiltroGbmDestino = $('divFiltroGbmDestino');
@@ -948,6 +957,7 @@ const dados = {
         let par = {};
         let arrDuracao = [];
         let arrFalta = [];
+        let arrFuncao = [];
         let arrGrupo = [];
         let arrOper = [];
         let arrGbmDestino = [];
@@ -957,25 +967,27 @@ const dados = {
         let arrSiape = [];
         let arrQuinzena = [];
         
-        if(foco == undefined || foco == `duracao`){ arrDuracao = _buscarSelecionados(_divFiltroDurcao) }
-        if(foco == undefined || foco == `falta`){ arrFalta = _buscarSelecionados(_divFaltaOpcao) }
-        if(foco == undefined || foco == `grupo`){ arrGrupo = _buscarSelecionados(_divFiltroGrupo) }
-        if(foco == undefined || foco == `operacao`){ arrOper = _buscarSelecionados(_divFiltroOperacao) }
-        if(foco == undefined || foco == `gbm_destino`){ arrGbmDestino = _buscarSelecionados(_divFiltroGbmDestino) }
-        if(foco == undefined || foco == `turno`){ arrTurno = _buscarSelecionados(_divFiltroTurno) }
-        if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados(_divFiltroQuadro) }
-        if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados(_divCalendario) }
-        if(foco == undefined || foco == `opcao`){ arrSiape = _buscarSelecionados(_filtroOpcao) }
-        if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados(_quinzenaOpcao) }
+        if(foco == undefined || foco == `duracao`){ arrDuracao = _buscarSelecionados( _divFiltroDurcao) }
+        if(foco == undefined || foco == `falta`){ arrFalta = _buscarSelecionados( _divFaltaOpcao) }
+        if(foco == undefined || foco == `grupo`){ arrGrupo = _buscarSelecionados( _divFiltroGrupo) }
+        if(foco == undefined || foco == `operacao`){ arrOper = _buscarSelecionados( _divFiltroOperacao) }
+        if(foco == undefined || foco == `gbm_destino`){ arrGbmDestino = _buscarSelecionados( _divFiltroGbmDestino) }
+        if(foco == undefined || foco == `turno`){ arrTurno = _buscarSelecionados( _divFiltroTurno) }
+        if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados( _divFiltroQuadro) }
+        if(foco == undefined || foco == `funcao`){ arrFuncao = _buscarSelecionados( _divFiltroFuncao) }
+        if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados( _divCalendario) }
+        if(foco == undefined || foco == `opcao`){ arrSiape = _buscarSelecionados( _filtroOpcao) }
+        if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados( _quinzenaOpcao) }
         
         if(arrDuracao.length > 0) { par.tempo = arrDuracao}
         if(arrFalta.length > 0) { par.falta = arrFalta}
         if(arrGrupo.length > 0) { par.grupo = arrGrupo}
         if(arrOper.length > 0) { par.operacao = arrOper }
         if(arrGbmDestino.length > 0) { par.gbm_destino = arrGbmDestino }
-        if(arrTurno.length > 0){ par.horario = arrTurno }
-        if(arrQuadro.length > 0){ par.quadro = arrQuadro }
-        if(arrData.length > 0){ par.data = arrData }
+        if(arrTurno.length > 0) { par.horario = arrTurno }
+        if(arrQuadro.length > 0) { par.quadro = arrQuadro }
+        if(arrFuncao.length > 0) { par.cinco = arrFuncao}
+        if(arrData.length > 0) { par.data = arrData }
         if(arrSiape.length > 0){
             if(arrSiape[0] != 'compulsória'){
                 par.siape = arrSiape[0];
@@ -1201,31 +1213,35 @@ const dados = {
 const filtrar = {
     processarClickDoBotao:function(botao){
         if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroDuracaoBtn' ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id = 'divFiltroFuncaoBtn' ){
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroGbmDestinoBtn' ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroGrupoBtn' ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroOperacaoBtn' ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroTurnoBtn' ) {
-            const objAux = filtrarEscalasJson(_parametros());
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
     },
@@ -1236,6 +1252,7 @@ const filtrar = {
         filtrar.destacarGbmDestino(objAux);
         filtrar.destacarTurno(objAux);
         filtrar.destacarQuadro(objAux);
+        filtrar.destacarFuncao(objAux);
         filtrar.destacarDatas(objAux);
         conf.totalStatus(objAux);
     },
@@ -1269,6 +1286,11 @@ const filtrar = {
         filtrar.destacar(arrQuadro, $('divFiltroQuadro'));
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
+    destacarFuncao:function(objAux){
+        const arrFuncao = objAux.map((item)=> `${item.name_cinco}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        filtrar.destacar(arrFuncao, $('divFiltroFuncao'));
+        $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
+    },
     destacarDatas:function(objAux){
         const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrDatas, $('divCalendario'));
@@ -1289,7 +1311,9 @@ const filtrar = {
 }
 
 const html = {
+    atualizacaoAutomatica: function(){
 
+    }
 }
 
 window.onload = function(){
