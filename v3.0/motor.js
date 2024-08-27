@@ -703,7 +703,7 @@ const dados = {
         if(dadoFaltasJson.length != contador){
             $led(21);
         }
-        $('divStatusFalta').title = `Processametno de faltas: ${dadoFaltasJson.length}/${contador}`;
+        $('divStatusFalta').title = `faltas: ${dadoFaltasJson.length}/${contador}`;
     
         dadoFaltasJson.forEach((flt)=>{
             const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
@@ -2058,6 +2058,39 @@ const html = {
                 conf.ultimoParametro = JSON.stringify(_parametros());
             }, 200);
         }
+    },
+    exibirFiltrosDeInterface: function(){
+        if(conf.exibirFiltrosDeInterface != false){
+            $('fldOpcao').style.display = "none";
+            $('fldFalta').style.display = "none";
+            $('fldQuinzena').style.display = "none";
+            $('fldGrupo').style.display = "none";
+            $('fldDuracao').style.display = "none";
+            $('fldOperacao').style.display = "none";
+            $('fldGbmDestino').style.display = "none";
+            $('fldTurno').style.display = "none";
+            $('fldQuadro').style.display = "none";
+            $('fldCalendario').style.display = "none";
+            $('divExibirResultado').style.display = "none";
+            $('imgRecolher').src = "setaParaBaixo.png";
+            conf.exibirFiltrosDeInterface = false
+        }
+        else{
+            $('fldOpcao').removeAttribute('style');
+            $('fldFalta').removeAttribute('style');
+            $('fldQuinzena').removeAttribute('style');
+            $('fldGrupo').removeAttribute('style');
+            $('fldDuracao').removeAttribute('style');
+            $('fldOperacao').removeAttribute('style');
+            $('fldGbmDestino').removeAttribute('style');
+            $('fldTurno').removeAttribute('style');
+            $('fldQuadro').removeAttribute('style');
+            $('fldCalendario').removeAttribute('style');
+            $('divExibirResultado').removeAttribute('style');
+            $('imgRecolher').src = "setaParaCima.png";
+            conf.exibirFiltrosDeInterface = true
+        }
+        
     }
 }
 

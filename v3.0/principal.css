@@ -19,7 +19,6 @@
 
     --larguraTotal: 720px;
 }
-
 *{
     background-color: var(--fundo);
     color: var(--corDaFonte);
@@ -211,7 +210,12 @@ button:hover{
     color: #ccc;
     /* color: transparent; */
 }
-
+.clsRecolher{
+    display: flex;
+    position: relative;
+    right: -725px;
+    top: 25px;
+}
 
 /**MENU/
 /* #divResultado{
