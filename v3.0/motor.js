@@ -75,9 +75,24 @@ window.onload = function(){
             }
             html.escalasParaBg(objAux);
         }
-        // console.log(e.key);
+    })
+    //PesquisaPorNome
+    $('txtCotasPorNome').addEventListener('keyup',(e)=>{
+        if(e.key == 'Enter'){
+            if(dadoEscalasJson.length == 0){
+                alert('Selecione uma fonte de dados para realização da pesquisa!');
+                return false;
+            }
+            const objAux = filtrarEscalasJson({nome: $('txtCotasPorNome').value});
+            if(objAux.length==0){
+                alert(`Não foram encontradas cotas relativo ao NOME informado: ${$('txtCotasPorNome').value}`);
+                return false;
+            }
+            html.escalasParaBg(objAux);
+        }
     })
 }
+
 const $readFile = (input) => {
     let carregado = false;
     for (let i = 0; i < input.files.length; i++) {
@@ -131,12 +146,12 @@ function avaliarDadoBruto({htmlRetornado}) {
         const tipoRetorno = _testarArquivoDeOrigem(dadoBruto)
         if( tipoRetorno === false ){return}
         if( tipoRetorno === 'Escalas' ){
-            dadoBruto = dadoBruto.querySelector(".table_relatorio")
-            dadoBruto = dadoBruto.children[0]
-            dadoEscalasJson = prepararEscalasJSon(dadoBruto)
-            conf.arquivo = `${dadoEscalasJson[0].DATA.split('/')[2]}-${dadoEscalasJson[0].DATA.split('/')[1]}-${dadoEscalasJson[0]["MÊS"]}`
-            conf.mesAno = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`
-            funcaoAuxiliar = inicializarInterfaceDeEscalas
+            dadoBruto = dadoBruto.querySelector(".table_relatorio");
+            dadoBruto = dadoBruto.children[0];
+            dadoEscalasJson = prepararEscalasJSon(dadoBruto);
+            conf.arquivo = `${dadoEscalasJson[0].DATA.split('/')[2]}-${dadoEscalasJson[0].DATA.split('/')[1]}-${dadoEscalasJson[0]["MÊS"]}`;
+            conf.mesAno = `${dadoEscalasJson[0]["MÊS"]}/${dadoEscalasJson[0].DATA.split('/')[2]}`;
+            funcaoAuxiliar = inicializarInterfaceDeEscalas;
         }
         if( tipoRetorno === 'Faltas' ){
             dadoBruto = dadoBruto.querySelector(".div_form_faltas");
@@ -145,9 +160,10 @@ function avaliarDadoBruto({htmlRetornado}) {
             funcaoAuxiliar = inicializarInterfaceDeFaltas;
         }
         if( tipoRetorno === 'Inscritos'){
-            dadoBruto = dadoBruto.querySelector(".tbResumo")
-            dadoInscritosJson = prepararInscritosJSon(dadoBruto)
-            funcaoAuxiliar = inicializarInterfaceDeInscritos
+            dadoBruto = dadoBruto.querySelector(".tbResumo");
+            dadoInscritosJson = prepararInscritosJSon(dadoBruto);
+            funcaoAuxiliar = inicializarInterfaceDeInscritos;
+            $('divStatusInscricao').title = `Banco de dados: ${dadoInscritosJson.length.toLocaleString('pt-BR')}`;
         }
         if(funcaoAuxiliar){funcaoAuxiliar()}
 

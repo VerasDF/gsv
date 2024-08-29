@@ -320,14 +320,16 @@ button:hover{
     display: block;
 }
 #txtCotasPorSiape,
-#txtCursos{
+#txtCursos,
+#txtCotasPorNome {
     color: var(--corDaFonte);
     box-shadow: inset 2px 2px 3px black;
     width: 130px;
     text-align: center;
 }
 #txtCotasPorSiape:hover,
-#txtCursos:hover{
+#txtCursos:hover,
+#txtCotasPorNome:hover {
     color: var(--corDaFonte);
     background-color: var(--fundoDestaque);
 }
