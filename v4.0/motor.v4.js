@@ -655,6 +655,7 @@ const init = {
         init.carregarGrupo();
         init.carregarOperacao();
         init.carregarQuadro();
+        init.carregarSiape();
         init.carregarTurno();
         conf.totalStatus();
         setTimeout(() => {
@@ -728,6 +729,15 @@ const init = {
             divFuncao.append(init._criarItemDaLista(divFuncao, arrFuncao[i]));
         }
         $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
+    },
+    carregarSiape: function(){
+        const arrSiape = dados.escalas.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort();
+        const divSiape = $('divFiltroSiape');
+        init._limparLista(divSiape);
+        for(let i = 0; i< arrSiape.length; i++){
+            divSiape.append(init._criarItemDaLista(divSiape, arrSiape[i]));
+        }
+        $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length})`;
     },
     tratarFaltas: function() {
         if(dados.escalas.length===0 || dados.faltas.length===0){ return }
@@ -942,30 +952,32 @@ const dados = {
     faltas: [],
     inscritos: [],
     parametros: function(foco){
-        const _divFiltroDurcao = $('divFiltroDuracao');
         const _divFaltaOpcao = $('divFaltaOpcao');
+        const _divFiltroDurcao = $('divFiltroDuracao');
         const _divFiltroFuncao = $('divFiltroFuncao');
-        const _divFiltroGrupo = $('divFiltroGrupo');
-        const _divFiltroOperacao = $('divFiltroOperacao');
         const _divFiltroGbmDestino = $('divFiltroGbmDestino');
-        const _divFiltroTurno = $('divFiltroTurno');
+        const _divFiltroGrupo = $('divFiltroGrupo');
         const _divFiltroQuadro = $('divFiltroQuadro');
+        const _divFiltroOperacao = $('divFiltroOperacao');
+        const _divFiltroTurno = $('divFiltroTurno');
+        const _divFiltroSiape = $('divFiltroSiape');
         const _divCalendario = $('divCalendario');
         const _filtroOpcao = $('divFiltroOpcao')
         const _quinzenaOpcao = $('divQuinzenaOpcao')
         
         let par = {};
+        let arrData = [];
         let arrDuracao = [];
         let arrFalta = [];
         let arrFuncao = [];
-        let arrGrupo = [];
-        let arrOper = [];
         let arrGbmDestino = [];
-        let arrTurno = [];
+        let arrGrupo = [];
+        let arrOpcao = [];
+        let arrOper = [];
         let arrQuadro = [];
-        let arrData = [];
-        let arrSiape = [];
         let arrQuinzena = [];
+        let arrTurno = [];
+        let arrSiape = [];
         
         if(foco == undefined || foco == `duracao`){ arrDuracao = _buscarSelecionados( _divFiltroDurcao) }
         if(foco == undefined || foco == `falta`){ arrFalta = _buscarSelecionados( _divFaltaOpcao) }
@@ -975,8 +987,9 @@ const dados = {
         if(foco == undefined || foco == `turno`){ arrTurno = _buscarSelecionados( _divFiltroTurno) }
         if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados( _divFiltroQuadro) }
         if(foco == undefined || foco == `funcao`){ arrFuncao = _buscarSelecionados( _divFiltroFuncao) }
+        if(foco == undefined || foco == `siape`){ arrSiape = _buscarSelecionados( _divFiltroSiape) }
         if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados( _divCalendario) }
-        if(foco == undefined || foco == `opcao`){ arrSiape = _buscarSelecionados( _filtroOpcao) }
+        if(foco == undefined || foco == `opcao`){ arrOpcao = _buscarSelecionados( _filtroOpcao) }
         if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados( _quinzenaOpcao) }
         
         if(arrDuracao.length > 0) { par.tempo = arrDuracao}
@@ -988,13 +1001,12 @@ const dados = {
         if(arrQuadro.length > 0) { par.quadro = arrQuadro }
         if(arrFuncao.length > 0) { par.cinco = arrFuncao}
         if(arrData.length > 0) { par.data = arrData }
-        if(arrSiape.length > 0){
-            if(arrSiape[0] != 'compulsória'){
-                par.siape = arrSiape[0];
-            }
-            else{
+        if(arrSiape.length > 0) { par.siape = arrSiape } 
+        else {
+            if(arrOpcao[0] == 'compulsória'){
                 par.escaladoPor = 'compulsória';
             }
+            par.siape = arrOpcao[0];
         }
         if(arrQuinzena.length > 0){
             par.quinzena = arrQuinzena[0];
@@ -1111,12 +1123,18 @@ const dados = {
             objAux = objAux.filter((e)=>{return e.desc_um.indexOf(sub_lotacao_local) > -1})
         }
         if (siape!==undefined) {
-            if(siape.substr(0,1) === '-'){
-                siape = siape.substr(1,siape.length)
-                objAux = objAux.filter((item) => {return item.SIAPE !== siape})
-            }else{
-                objAux = objAux.filter((e)=>{return e.SIAPE.indexOf(siape) > -1})
+            if(Array.isArray(siape)){
+                objAux = objAux.filter((e)=>{return siape.includes(e.SIAPE)});
             }
+            else{
+                if(siape.substr(0,1) === '-'){
+                    siape = siape.substr(1,siape.length)
+                    objAux = objAux.filter((item) => {return item.SIAPE !== siape})
+                }else{
+                    objAux = objAux.filter((e)=>{return e.SIAPE.indexOf(siape) > -1})
+                }
+            }
+
         }
         if (tempo!==undefined) {
             if(Array.isArray(tempo)){
@@ -1207,6 +1225,18 @@ const dados = {
         }
     
         return objAux
+    },
+    totais: function(campoDePesquisa, obj) {
+        const res = obj.reduce((acc, item) => {
+            if (!acc[item[campoDePesquisa]]) {
+                acc[item[campoDePesquisa]] = 1;
+            }
+            else {
+                acc[item[campoDePesquisa]] = acc[item[campoDePesquisa]] + 1;
+            }
+            return acc;
+        }, {})
+        return res;
     }
 }
 
@@ -1220,7 +1250,7 @@ const filtrar = {
             const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
-        if ( botao.id = 'divFiltroFuncaoBtn' ){
+        if ( botao.id == 'divFiltroFuncaoBtn' ){
             const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
@@ -1244,6 +1274,11 @@ const filtrar = {
             const objAux = dados.filtrarEscalasJson(dados.parametros());
             filtrar.prepararDados(objAux);
         }
+        if ( botao.id == 'divFiltroSiapeBtn' ) {
+            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        
     },
     prepararDados:function(objAux){
         filtrar.destacarDuracao(objAux);
@@ -1254,6 +1289,7 @@ const filtrar = {
         filtrar.destacarQuadro(objAux);
         filtrar.destacarFuncao(objAux);
         filtrar.destacarDatas(objAux);
+        filtrar.destacarSiape(objAux);
         conf.totalStatus(objAux);
     },
     destacarDuracao:function(objAux){
@@ -1290,6 +1326,13 @@ const filtrar = {
         const arrFuncao = objAux.map((item)=> `${item.name_cinco}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrFuncao, $('divFiltroFuncao'));
         $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
+    },
+    destacarSiape: function(objAux){
+
+        //trabalhar aqui...
+        const arrSiape = objAux.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>{arr.indexOf(elem) === index}).sort();
+        filtrar.destacar(arrSiape, $('divFiltroSiape'));
+        $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length})`;
     },
     destacarDatas:function(objAux){
         const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});

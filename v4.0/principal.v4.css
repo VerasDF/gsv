@@ -82,7 +82,7 @@ button:hover{
     text-align: right;
     background-color: var(--fundoDestacado);
 }
-#divOpcoes{
+#divOpcoes0{
     display: grid;
     width: var(--larguraTotal);
     grid-template-columns: repeat(24, 30px);
@@ -143,12 +143,15 @@ button:hover{
     display: grid;
     grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
 }
-#fldFuncao{
+#divOpcoes1{
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 9fr 1fr;
     width: var(--larguraTotal);
 }
-#divFiltroFuncao{
+#divFiltroSiape{
+    width: 70px;
+}
+#fldFuncao, #fldSiape{
     height: 350px;
 }
 .clsLedDesligado{border: 1px solid var(--botaoBorda);}
