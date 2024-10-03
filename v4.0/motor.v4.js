@@ -1328,9 +1328,7 @@ const filtrar = {
         $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
     },
     destacarSiape: function(objAux){
-
-        //trabalhar aqui...
-        const arrSiape = objAux.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>{arr.indexOf(elem) === index}).sort();
+        const arrSiape = objAux.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>arr.indexOf(elem) === index);
         filtrar.destacar(arrSiape, $('divFiltroSiape'));
         $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length})`;
     },

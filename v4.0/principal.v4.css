@@ -96,16 +96,16 @@ button:hover{
     grid-template-columns: 1fr 140px 20px;
 }
 #fldOpcao{
-    grid-column: 1 / 6;
+    grid-column: 1 / 5;
 }
 #fldFalta{
-    grid-column: 6 / 11;
+    grid-column: 5 / 10;
 }
 #fldQuinzena{
-    grid-column: 11 / 15;
+    grid-column: 10 / 14;
 }
 #fldGrupo{
-    grid-column: 15 / 21;
+    grid-column: 14 / 21;
 }
 #fldDuracao{
     grid-column: 21 / 25;
