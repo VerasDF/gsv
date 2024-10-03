@@ -889,7 +889,7 @@ const filtrar = {
 }
 
 const html = {
-    processarMenuExibirResultado:function(opcao){
+    processarMenuExibirResultado: function(opcao){
         if(opcao == 100){
             conf.auto = !conf.auto;
             if (conf.auto){
@@ -1005,7 +1005,7 @@ const html = {
         }
         
     },
-    exibirTotais:function(campoDePesquisa, objAux) {
+    exibirTotais: function(campoDePesquisa, objAux) {
         limparTudo();
         const tmp = totais(campoDePesquisa, objAux);
         const tb = document.createElement('table');
@@ -1032,7 +1032,7 @@ const html = {
         //     ordenarTabela(0);
         // }, 200);
     },
-    escalasParaBg:function(info){
+    escalasParaBg: function(info){
 
         limparTudo();
 
@@ -2371,7 +2371,7 @@ function limparTudo(){
     divResultado.innerHTML = ""; divAuxiliar.innerHTML = "";
 }
 
-function _ordenarPorData(a, b){
+function _ordenarPorData(a, b) {
     if(a.DATA == b.DATA){
         return 0;
     }
@@ -2428,7 +2428,7 @@ function ordenarPorGBM(a, b) {
     }
 }
 
-function ordenarPorPostoGrad(indice){
+function ordenarPorPostoGrad(indice) {
 
     const asc = true;   // ordem: ascendente ou descendente
     const index = (indice == undefined? 0: indice);    // coluna pela qual se quer ordenar
@@ -2453,7 +2453,7 @@ function ordenarPorPostoGrad(indice){
     });
 }
 
-function ordenarTabela(indice){
+function ordenarTabela(indice) {
     const index = (indice == undefined? 0: indice);    // coluna pela qual se quer ordenar
     const tabela = document.getElementById('tbResultado');
     const arr = Array.from(tabela.querySelectorAll('tbody tr'));
@@ -2499,7 +2499,7 @@ function _extrairMesExtenso(dataPtBr) {
     return res;
 }
 
-function _parametros(foco){
+function _parametros(foco) {
     const _divFiltroDurcao = $('divFiltroDuracao');
     const _divFaltaOpcao = $('divFaltaOpcao');
     const _divFiltroGrupo = $('divFiltroGrupo');

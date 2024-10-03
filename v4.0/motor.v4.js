@@ -1354,6 +1354,282 @@ const filtrar = {
 const html = {
     atualizacaoAutomatica: function(){
 
+    },
+    processarMenu: function(cod){
+        switch (cod) {
+            case 'menu_D_02_01':
+                this.escalasParaBg(dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_02_02':
+                this.exibirListaDeVoluntariosEscalados(dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_02_03':
+                this.exibirCotaDobrada();
+                break;
+            case 'menu_D_05_01':
+                this.exibirTotais('SIAPE', dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_05_02':
+                this.exibirTotais('GRUPO', dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_05_03':
+                this.exibirTotais('OPERAÇÃO', dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_05_04':
+                this.exibirTotais('GBM_DESTINO', dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_05_05':
+                this.exibirTotais('DATA', dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            case 'menu_D_05_06':
+                this.totalDeCotasOficiasPracas(dados.filtrarEscalasJson(dados.parametros()));
+                break;
+            default:
+                alert('Código de menu não identificado!');
+                break;
+        }
+    },
+    escalasParaBg: function(objAux){
+
+        this.limparResultado();
+
+        const table = document.createElement('table');
+        const cabecalho = `<td class="label_data_th">POSTO/GRAD</td><td class="label_data_th">NOME</td><td class="label_data_th">SIAPE</td><td class="label_data_th">LOTAÇÃO</td><td class="label_data_th">QUADRO</td><td class="label_data_th">ALA</td><td class="label_data_th">ASSINATURA</td>`;
+    
+        let nivel1 = '';
+        let nivel2 = '';
+        let nivel34 = '';
+        let nivel5 = '';
+    
+        for (let i = 0; i < objAux.length; i++) {
+            if(objAux[i].name_um !== nivel1){
+                _nivel1(objAux[i]);
+                nivel1 = objAux[i].name_um;
+                nivel2 = '';
+            }
+            if(objAux[i].name_dois !== nivel2){
+                _nivel2(objAux[i]);
+                nivel2 = objAux[i].name_dois;
+                nivel34 = '';
+            }
+            if(objAux[i].name_tres + objAux[i].name_quatro !== nivel34){
+                _nivel34(objAux[i]);
+                nivel34 = objAux[i].name_tres + objAux[i].name_quatro;
+                nivel5 = '';
+            }
+            if(objAux[i].name_cinco !== nivel5){
+                _nivel5(objAux[i]);
+                nivel5 = objAux[i].name_cinco;
+                _incluirLinha(cabecalho);
+            }
+            _voluntario(objAux[i]);
+        }
+        
+        $('divResultado').append(table);
+        
+        function _nivel1(info){
+            _incluirLinha(`<td colspan="7" class="nivel_um"><span class="name_um">${info.name_um}</span><span class="desc_um">${((info.desc_um === undefined || info.desc_um === '') ? '' : ' - ' + info.desc_um)}</span></td>`);
+        }
+        function _nivel2(info){
+            _incluirLinha(`<td colspan="7" class="nivel_um"><span class="name_um">${info.name_dois}</span></td>`);
+        }
+        function _nivel34(info){
+            _incluirLinha(`<td colspan="7" class="nivel_quatro"><span class="name_tres">${info.name_tres}</span> - <span class="name_quatro">${info.name_quatro}</span></td>`);
+        }
+        function _nivel5(info){
+            _incluirLinha(`<td colspan="7" class="nivel_cinco"><span class="name_cinco">${info.name_cinco}</span></td>`);
+        }
+        function _voluntario(info){
+            _incluirLinha(`<td class="label_data">${info.POSTO_GRAD}</td>
+                        <td class="label_data${((info.ESCALADO.indexOf('próprio') === -1 && info.ESCALADO !== '') ? ' escalaCompulsoria' : '')}" title="${info.ESCALADO}">${info.NOME}</td>
+                        <td id="${info._ID}" class="label_data" ondblclick = editarCota.carregarInterface('div${info._ID}')>${info.SIAPE}</td>
+                        <td class="label_data">${info.LOTAÇÃO}</td>
+                        <td class="label_data">${info.QUADRO}</td>
+                        <td class="label_data">${info.ALA}</td>
+                        <td class="label_data${(info.FALTA===true ? ' faltou' : '')}">${info.ASSINATURA}</td>`);
+        }
+        function _incluirLinha(stringHtml){
+            const tr = document.createElement('tr');
+            tr.innerHTML = stringHtml;
+            table.append(tr);
+        }
+    },
+    exibirListaDeVoluntariosEscalados: function(objAux){
+        this.limparResultado();
+        if(objAux.length == 0){
+            alert('Nenhum dado caregado ainda!');
+            return 0;
+        }
+        const arrObjTmp = objAux.map((e)=>{ return {
+            'DATA':e.DATA, 
+            'HORA':e.HORA, 
+            'GBM de DESTINO':e.GBM_DESTINO, 
+            'POSTO/GRAD':e.POSTO_GRAD, 
+            'QUADRO':e.QUADRO,'NOME':e.NOME, 
+            'SIAPE':e.SIAPE, 
+            'OPERAÇÃO':e.OPERAÇÃO,
+            'FUNÇÃO':e.name_cinco
+        } });
+        const divResultado = $('divResultado');
+        const tb = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+        tb.id = 'tbResultado';
+        divResultado.append(tb);
+        for(i = 0; i < arrObjTmp.length; i++){
+            if(i == 0){
+                thead.append(html._construirTabela(arrObjTmp[i], -1));
+            }
+            tbody.append(html._construirTabela(arrObjTmp[i], i));
+        }
+        tb.append(thead);
+        tb.append(tbody);
+    },
+    exibirCotaDobrada: function() {
+        this.limparResultado();
+        const objAux = dados.filtrarEscalasJson(dados.parametros());
+        const arrDia = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
+        const table = document.createElement('table');
+        table.innerHTML = `<tr><th>DIA</th><th>SIAPE</th><th>ACHADOS</th></tr>`;
+        for(let i = 0; i < arrDia.length; i++) {
+            const objDia = objAux.filter((item)=>{if(item.DATA === arrDia[i]){return item}});
+            const objTotalSiape = dados.totais('SIAPE', objDia);
+            for (const property in objTotalSiape) {
+                const tr = document.createElement('tr');
+                if(objTotalSiape[property]>1){
+                    tr.innerHTML = `<td>${arrDia[i]}</td><td style="text-align:center">${property}</td><td style="text-align:center">${objTotalSiape[property]}</td>`;
+                    table.append(tr);
+                }
+            }
+        }
+        $('divResultado').append(table);
+    },
+    exibirTotais: function(campoDePesquisa, objAux) {
+        this.limparResultado();
+        const tmp = dados.totais(campoDePesquisa, objAux);
+        const tb = document.createElement('table');
+        const tbody = document.createElement('tbody');
+        const tfoot = document.createElement('tfoot');
+        let totalGeral = 0;
+        tb.id = 'tbResultado';
+        tb.innerHTML = '<thead><tr><th><a href="#" onClick="ordenar.tabela(0,false)">DESCRIÇÃO</a></th><th><a href="#" onClick="ordenar.tabela(1,true)">TOTAL</a></th></tr></thead>';
+        for (const key in tmp) {
+            if (Object.hasOwnProperty.call(tmp, key)) {
+                const total = tmp[key];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<tr><td style='text-align:left'>${key}</td><td style='text-align:center'>${total.toLocaleString('pt-BR')}</td></tr>`;
+                totalGeral = totalGeral + total;
+                tbody.append(tr);
+            }
+        }
+        tfoot.innerHTML = `<tr><td>TOTAL GERAL</td><td>${totalGeral.toLocaleString('pt-BR')}</td></tr>`;
+        
+        tb.append(tbody);
+        tb.append(tfoot);
+        $('divResultado').append(tb);
+    },
+    totalDeCotasOficiasPracas: function(objAux){
+        const arrOperacoes = Object.keys(dados.totais('OPERAÇÃO', objAux)).sort();
+        const arrDatasNoMes = Object.keys(dados.totais('DATA', objAux)).sort();
+        let dadoTemp = [];
+        let listaDeOperacoes = '';
+        
+        for(let i = 0; i < arrDatasNoMes.length; i++){
+            const dataTemp = objAux.filter((item, index) => {if(objAux[index].DATA == arrDatasNoMes[i]) {return item}});
+                const obj = {};
+                let totalDePracas = 0;
+                let totalDeOficiais = 0;
+                let totalDeCotas = 0;
+                if(dataTemp.length>0){
+                    obj['DATA'] = arrDatasNoMes[i];
+                    for(let j = 0; j < dataTemp.length; j++){
+                        if (dataTemp[j].CIRCULO == 'Oficial'){
+                            totalDeOficiais = totalDeOficiais + 1;
+                        }
+                        if (dataTemp[j].CIRCULO == 'Praça'){
+                            totalDePracas = totalDePracas + 1;
+                        }
+                        totalDeCotas = totalDeCotas + 1;
+                    }
+                    obj['PRAÇAS'] = totalDePracas;
+                    obj['OFICIAIS'] = totalDeOficiais;
+                    obj['TOTAL'] = totalDeCotas;
+                    dadoTemp.push(obj);
+                }
+        }
+    
+        this.limparResultado();
+        const table = document.createElement('table')
+        table.append(_cabecalho1())
+        table.append(_cabecalho2())
+        table.append(_cabecalho3())
+        for(x = 0; x < dadoTemp.length; x++){
+            table.append(_incluirDado(dadoTemp[x]))
+        }
+        divResultado.append(table)
+    
+        for(z = 0; z < arrOperacoes.length; z++){
+            listaDeOperacoes += `${arrOperacoes[z]}<br>`;
+        }
+        $('thMesReferenciaInscritos').innerHTML = listaDeOperacoes;
+    
+        function _cabecalho1(){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<th class="label_th" colspan="4" id="thMesReferenciaInscritos"></th>`;
+            return tr;
+        }
+        function _cabecalho2(){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<th class="label_th" rowspan="2">DATA</th>` +
+            `<th class="label_th" colspan="3">COTAS</th>`;
+            return tr;
+        }
+        function _cabecalho3(){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `` + 
+            `<th class="label_th">OFICIAIS</th>` + 
+            `<th class="label_th">PRAÇAS</th>` + 
+            `<th class="label_th">TOTAL</th>`;
+            return tr;
+        }
+        function _incluirDado(aux){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `` + 
+            `<td class="label_data">${aux.DATA}</td>` + 
+            `<td class="label_data">${aux.OFICIAIS}</td>` + 
+            `<td class="label_data">${aux.PRAÇAS}</td>` +
+            `<td class="label_data">${aux.TOTAL}</td>`;
+            return tr;
+        }
+    },
+    _construirTabela: function (objAux, index){
+        let col = 0;
+        if(index == -1){
+            const tr = document.createElement('tr');
+            for (const key in objAux) {
+                if (Object.hasOwnProperty.call(objAux, key)) {
+                    const element = key;
+                    const th = document.createElement('th');
+                    th.innerHTML = `<th><a href='#' onclick='ordenar.tabela(${col++})' class='clsClassificarCabecalho'>${element}</a></th>`;
+                    tr.append(th);
+                }
+            }
+            return tr
+        }
+        
+        const tr = document.createElement('tr');
+        for (const key in objAux) {
+            if (Object.hasOwnProperty.call(objAux, key)) {
+                const valor = objAux[key];
+                const td = document.createElement('td');
+                td.innerHTML = `<td>${valor}</td>`;
+                tr.append(td);
+            }
+        }
+        return tr;
+    },
+    limparResultado: function(){
+        $('divResultado').innerHTML = '';
     }
 }
 
@@ -1412,11 +1688,3 @@ window.onload = function(){
     })
     
 }
-
-
-
-
-
-
-
-
