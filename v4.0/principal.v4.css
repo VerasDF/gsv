@@ -42,6 +42,7 @@ button:hover{
 #divMenuLateralEsquerdo{
     grid-column-start: 1;
     grid-column-end: 2;
+    z-index: 10;
 }
 #divMenuSuperior{
     grid-column-start: 2;
@@ -50,6 +51,7 @@ button:hover{
 #divMenuLateralDireito{
     grid-column-start: 3;
     grid-column-end: 4;
+    z-index: 10;
 }
 #divAuxiliar{
     grid-column-start: 2;

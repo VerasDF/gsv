@@ -23,6 +23,25 @@ const aux = {
         } catch (error) {
             console.log(error);
         }
+    },
+    extrairMesExtenso: function(dataPtBr) {
+        const dataDMY = dataPtBr.split('/');
+        const mes = dataDMY[1];
+        let res = '';
+        if (mes === '01') { res = `Janeiro`; }
+        if (mes === '02') { res = `Fevereiro`; }
+        if (mes === '03') { res = `Março`; }
+        if (mes === '04') { res = `Abril`; }
+        if (mes === '05') { res = `Maio`; }
+        if (mes === '06') { res = `Junho`; }
+        if (mes === '07') { res = `Julho`; }
+        if (mes === '08') { res = `Agosto`; }
+        if (mes === '09') { res = `Setembro`; }
+        if (mes === '10') { res = `Outubro`; }
+        if (mes === '11') { res = `Novembro`; }
+        if (mes === '12') { res = `Dezembro`; }
+        conf.mes = mes;
+        return res;
     }
 }
 
@@ -102,9 +121,9 @@ const conf = {
     autoRefresh: null,
     mes: "",
     mesAno: "",
-    totalEscalas: null,
-    totalFaltas: null,
-    totalInscritos: null,
+    totalEscalas: 0,
+    totalFaltas: 0,
+    totalInscritos: 0,
     arrOrdemPostoGrad: ['CEL', 'TC', 'MAJ', 'CAP', '1 TEN', '2 TEN', 'ASP', 'ST', '1 SGT', '2 SGT', '3 SGT', 'CB', 'SD/1', 'SD/2'],
     readFile:function( input ){
         let carregado = false;
@@ -1203,7 +1222,7 @@ const dados = {
     },
     filtrarInscritosJson: function({ cursos, lotacao, nome, quadro, posto_grad, siape }) {
         
-        let objAux = dadoInscritosJson.filter((e)=>{return e})
+        let objAux = dados.inscritos.filter((e)=>{return e})
     
         if (cursos !== undefined) {
             objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
@@ -1357,14 +1376,20 @@ const html = {
     },
     processarMenu: function(cod){
         switch (cod) {
-            case 'menu_D_02_01':
+            case 'menu_D_01_01':
                 this.escalasParaBg(dados.filtrarEscalasJson(dados.parametros()));
                 break;
-            case 'menu_D_02_02':
+            case 'menu_D_01_02':
                 this.exibirListaDeVoluntariosEscalados(dados.filtrarEscalasJson(dados.parametros()));
                 break;
-            case 'menu_D_02_03':
+            case 'menu_D_01_03':
                 this.exibirCotaDobrada();
+                break;
+            case 'menu_D_01_04':
+                this.totalDeMilitaresEnvolvidos(dados.escalas);
+                break;
+            case 'menu_D_01_05':
+                this.construirPlanilha(dados.filtrarEscalasJson(dados.parametros()));
                 break;
             case 'menu_D_05_01':
                 this.exibirTotais('SIAPE', dados.filtrarEscalasJson(dados.parametros()));
@@ -1384,9 +1409,441 @@ const html = {
             case 'menu_D_05_06':
                 this.totalDeCotasOficiasPracas(dados.filtrarEscalasJson(dados.parametros()));
                 break;
+            case 'menu_D_05_07':
+                this.cotasNoCalendario(dados.filtrarEscalasJson(dados.parametros()));
+                break;
             default:
                 alert('Código de menu não identificado!');
                 break;
+        }
+    },
+    construirPlanilha: function (objAux) {
+        this.limparResultado();
+        if(objAux.length == 0){
+            alert(`Não há dados a serem processados.`);
+            return;
+        }
+
+        const objOper = dados.totais('OPERAÇÃO',objAux);
+        const mesAno = (`${aux.extrairMesExtenso(objAux[0].DATA)}/${objAux[0].DATA.split('/')[2]}`).toUpperCase();
+        
+        let totalDeColunasDias = _qtdMaxColunasParaDias(objAux);
+        let cotasTotal = objAux.length;
+        let militaresTotal = 0;
+        let contador = 0;
+        let valorTotal = 0;
+        
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+        const tfoot = document.createElement('tfoot');
+        thead.append(_cabecalhoLinha1(totalDeColunasDias));
+        thead.append(_cabecalhoLinha2(totalDeColunasDias));
+        thead.append(_cabecalhoLinha3(totalDeColunasDias));
+        table.append(thead);
+        for(let i = 0; i < conf.arrOrdemPostoGrad.length; i++){
+            objPosto = objAux.map((item)=>{return {
+                    _ID:item._ID,
+                    SIAPE:item.SIAPE,
+                    NOME:item.NOME,
+                    POSTO_GRAD:item.POSTO_GRAD,
+                    DATA:item.DATA,
+                    TEMPO:item.TEMPO,
+                    VALOR:item.VALOR,
+                    FALTA:item.FALTA,
+                    OPERAÇÃO:item.OPERAÇÃO
+                }})
+            .filter((item)=>{if(item.POSTO_GRAD === conf.arrOrdemPostoGrad[i]){return item}});
+            if(objPosto.length > 0){
+                const arrSiape = objPosto.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
+                for(let j = 0; j < arrSiape.length; j++){
+                    objSiape = objPosto.filter((item)=>{if(item.SIAPE === arrSiape[j]){return item}}).sort(ordenar.porData);
+                    tbody.append(_linhasContendoDados(objSiape));
+                }
+            }
+        }
+        tfoot.append(_rodapeLinha1(totalDeColunasDias));
+        tfoot.append(_rodapeLinha2(totalDeColunasDias));
+        tfoot.append(_rodapeLinha3(totalDeColunasDias));
+        
+        table.append(tbody);
+        table.append(tfoot);
+        divResultado.append(table);
+
+        _opcoesParaFaltas();
+        
+        function _cabecalhoLinha1(col){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_data_th" colspan='${col+6}'>PLANILHA DE PAGAMENTO DO SERVIÇO VOLUNTÁRIO - ${mesAno}` + 
+                           _qtdOperacaoEmHtml(objOper) + 
+                           `</th>`
+            return tr
+            function _qtdOperacaoEmHtml(objOper){
+                let result = '<br>'
+                for (const key in objOper) {
+                    if (Object.hasOwnProperty.call(objOper, key)) {
+                        result = result + `<br>${key}`
+                    }
+                }
+                return result
+            }
+        }
+        function _cabecalhoLinha2(col){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_data_th" rowspan='2'>Seq</th>` + 
+                           `<th class="label_data_th" rowspan='2'>POSTO/GRAD.</th>` + 
+                           `<th class="label_data_th" rowspan='2'>NOME</th>` + 
+                           `<th class="label_data_th" rowspan='2'>SIAPE</th>` + 
+                           `<th class="label_data_th" colspan='${col+1}'>SERVIÇO VOLUNTÁRIO</th>` + 
+                           `<th class="label_data_th" rowspan='2'>VALOR</th>`
+            return tr
+        }
+        function _cabecalhoLinha3(col){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_data_th" colspan='${col}'>Dia${(col>1?'s':'')}</th>` + 
+                           `<th class="label_data_th">Horas<br>Trab.</th>`
+            return tr
+        }
+        function _linhasContendoDados(obj){
+            if(obj[0]==undefined){
+                console.log(obj)
+                return
+            }
+            contador = contador + 1
+            militaresTotal = contador
+            const tr = document.createElement('tr')
+    
+            const tdContador = document.createElement('td')
+            const tdPosto = document.createElement('td')
+            const tdNome = document.createElement('td')
+            const tdSiape = document.createElement('td')
+            const tdTempo = document.createElement('td')
+            const tdValor = document.createElement('td')
+            
+            tdContador.className = "label_data"
+            tdPosto.className = "label_data"
+            tdSiape.className = "label_data"
+            tdTempo.className = "label_data"
+            tdValor.className = "label_data_valor"
+    
+            let auxTempo = 0
+            let auxValor = 0
+            
+            tdContador.innerHTML = contador
+            tdPosto.innerHTML = obj[0].POSTO_GRAD
+            tdNome.innerHTML = obj[0].NOME
+            tdSiape.innerHTML = obj[0].SIAPE
+            
+            tr.append(tdContador)
+            tr.append(tdPosto)
+            tr.append(tdNome)
+            tr.append(tdSiape)
+            for(let l = 0; l < totalDeColunasDias; l++){
+                const tdDia = document.createElement('td')
+                tdDia.style.textAlign = "center"
+                if(obj[l] !== undefined){
+                    // tdDia.innerHTML = `<a href='#' onclick='console.log(${obj[l]._ID})'>${obj[l].DATA.split('/')[0]}</a>`;
+                    tdDia.innerHTML = obj[l].DATA.split('/')[0];
+                    tdDia.id = obj[l]._ID;
+                    auxTempo = auxTempo + parseInt(obj[l].TEMPO)
+                    auxValor = auxValor + parseInt(obj[l].VALOR)
+                    if(obj[l].TEMPO === '24'){tdDia.style.backgroundColor = '#99f'} //cor da cota dupla
+                    if(obj[l].FALTA === true){tdDia.style.backgroundColor = '#faa'}
+                    tdDia.title = obj[l].OPERAÇÃO;
+                    const tdOutroDia = tdDia.cloneNode(true);
+                    if (obj[l].TEMPO === '24'){
+                        tr.append(tdOutroDia);
+                        cotasTotal = cotasTotal + 1;
+                    }
+                    tdDia.addEventListener('dblclick', (e)=>{
+                        editarCota.carregarInterface('div'+obj[l]._ID);
+                    })
+                }
+                if(tr.childElementCount<totalDeColunasDias+4){tr.append(tdDia)}
+            }
+            valorTotal = valorTotal + auxValor
+            tdTempo.innerHTML = auxTempo
+            tdValor.innerHTML = auxValor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    
+            tr.append(tdTempo)
+            tr.append(tdValor)
+    
+            return tr
+        }
+        function _rodapeLinha1(col){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_data_th" colspan='${col+5}'>TOTAL GERAL DA PALILHA</th><th class="label_data_th">${valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</th>`
+            return tr
+        }
+        function _rodapeLinha2(col){
+            const tr = document.createElement('tr')
+            const timeslap = Date.now()
+            const dataDoDia = new Date(timeslap)
+            tr.innerHTML = `<th class="label_data" style="text-align:right" colspan='${col+6}'>Taguatinga-DF em, ${formatDate(dataDoDia, 'dd de mmm de aaaa')}</th>`
+            return tr
+        }
+        function _rodapeLinha3(col){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_data_th" colspan='${col+6}'>TOTAL DE COTAS NESTA PLANILHA: ${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(cotasTotal)}</th>`
+            return tr
+        }
+        function formatDate(date, format) {
+            const map = {
+                m: date.getMonth() + 1,
+                mm: ('00'+(date.getMonth() + 1)).slice(-2),
+                mmm: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"][date.getMonth()],
+                d: date.getDate(),
+                dd: ('00'+date.getDate()).slice(-2),
+                aa: date.getFullYear().toString().slice(-2),
+                aaaa: date.getFullYear()
+            }
+            return format.replace(/dd|d|mmm|mm|m|aaaa|aa/gi, matched => map[matched]);
+        }
+        function _qtdMaxColunasParaDias(objAux){
+            const objQtdCotas = objAux.reduce((acc, item) => {
+                if (!acc[item.SIAPE]) {
+                    acc[item.SIAPE] = (item.TEMPO === '24' ? 2 : 1)
+                } else {
+                    acc[item.SIAPE] = acc[item.SIAPE] + (item.TEMPO === '24' ? 2 : 1)
+                }
+                return acc
+            }, {})
+        
+            let totalDeColunasDias = 0
+            for (const key in objQtdCotas) {
+                if (Object.hasOwnProperty.call(objQtdCotas, key)) {
+                    const elm = objQtdCotas[key]
+                    if (elm > totalDeColunasDias){
+                        if(key.indexOf('SV') === -1)totalDeColunasDias = elm
+                    }
+                }
+            }
+            return totalDeColunasDias
+        }
+        function _opcoesParaFaltas(){
+            if(dados.faltas.length > 0){
+                const divAuxilar = $('divAuxiliar');
+                const btnAtualizar = document.createElement('button');
+                btnAtualizar.id = 'btnAtualizar';
+                btnAtualizar.innerHTML = 'Atualizar';
+                btnAtualizar.style.padding = '10px'
+                btnAtualizar.addEventListener('click', (e)=>{
+                    const objAux = dados.filtrarEscalasJson(dados.parametros());
+                    html.construirPlanilha(objAux);
+                });
+                divAuxilar.append(btnAtualizar);
+            }
+        }
+    },
+    construirTabelaInscritos:function () {
+        this.limparResultado();
+        if(dados.inscritos.length == 0){alert('Não há registro sobre INSCRITOS foi carregado!');return 0;}
+
+        const table = document.createElement('table')
+        table.append(_cabecalho1());
+        table.append(_cabecalho2());
+        let indice = 0;
+        let mesDeReferencia = '';
+        let tCursos = '';
+        let total = 0;
+    
+        for (let i = 0; i < conf.arrOrdemPostoGrad.length; i++) {
+            const objAux =  _ordenarDados(dados.filtrarInscritosJson({ posto_grad: conf.arrOrdemPostoGrad[i], cursos: tCursos }));
+            if(objAux.length > 0){
+                for(j = 0; j < objAux.length; j++){
+                    if(mesDeReferencia === ''){ mesDeReferencia = objAux[j].MES_REFERENCIA }
+                    table.append(_incluirDado(objAux[j], ++indice));
+                }
+            }
+        }
+    
+        divResultado.append(table)
+        $('thMesReferenciaInscritos').innerHTML = mesDeReferencia
+    
+        function _cabecalho1(){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_th" colspan="7" id="thMesReferenciaInscritos"></th>`
+            return tr
+        }
+        function _cabecalho2(){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th class="label_th"></th>` + 
+            `<th class="label_th">SIAPE</th>` + 
+            `<th class="label_th">POSTO/GRAD</th>` + 
+            `<th class="label_th">NOME</th>` + 
+            `<th class="label_th">LOTAÇÃO</th>` + 
+            `<th class="label_th">QUADRO</th>` + 
+            `<th class="label_th">ALA</th>`
+            return tr
+        }
+        function _incluirDado(aux, i){
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<td class="label_data">${i}</td>` + 
+            `<td class="label_data">${aux.SIAPE}</td>` + 
+            `<td class="label_data">${aux.POSTO_GRAD}</td>` + 
+            `<td class="label_data" style="text-align: left" title="${(aux.CURSOS==''? "(Nenhum)" : aux.CURSOS)}">${aux.NOME}</td>` + 
+            `<td class="label_data">${aux.LOTAÇÃO}</td>` + 
+            `<td class="label_data">${aux.QUADRO}</td>` + 
+            `<td class="label_data">${aux.ALA}</td>`
+            return tr
+    
+        }
+        function _ordenarDados(obj){
+            const aux = obj.sort(compararDados);
+            return aux
+            function compararDados(a, b) {
+                return a.NOME - b.NOME;
+            }
+        }
+    },
+    cotasNoCalendario: function(objAux){
+        this.limparResultado();
+        if(objAux.length == 0){ return }
+        
+        const divResultado = $('divResultado');
+        const divAuxiliar = $('divAuxiliar');
+        const divCalendario = document.createElement('div');
+        const totDia = dados.totais("DATA", objAux);
+        const lblTitulo = document.createElement('label');
+        
+        divCalendario.className = "clsCalendarioResultado";
+        divResultado.append(divCalendario);
+        lblTitulo.innerHTML = `CONTAGEM DE COTAS <br>${conf.mesAno.toUpperCase()}`;
+        lblTitulo.style = 'font-size:18px; font-weight:bold';
+        
+        if($('divAuxiliar').innerHTML.toString().indexOf('Calendario') == -1){
+            $('divAuxiliar').innerHTML = '';
+            divAuxiliar.append(_inserirBotoesDeControle());
+            divAuxiliar.append(lblTitulo);
+        }
+
+        let dataInicio = _extrairDataInicio(objAux[0].DATA);
+        let dataAux = new Date(dataInicio);
+        let dataTermino = new Date(dataAux.setMonth(dataAux.getMonth()+1));
+        dataTermino = new Date(dataAux.setDate(dataAux.getDate()-1));
+
+        dataAux = new Date(dataInicio);
+        divCalendario.innerHTML = `
+                                <div style="text-align:center">Domingo</div>
+                                <div style="text-align:center">Segunda</div>
+                                <div style="text-align:center">Terça</div>
+                                <div style="text-align:center">Quarta</div>
+                                <div style="text-align:center">Quinta</div>
+                                <div style="text-align:center">Sexta</div>
+                                <div style="text-align:center">Sábado</div>`;
+        
+        while(dataAux <= dataTermino) {
+            if( dataAux.getDate() == 1){
+                for(let i = 0; i < 7; i++) {
+                    if(i < dataAux.getDay()) {
+                        divCalendario.appendChild(_criarDivDia());
+                    }else{break}
+                }
+            }
+            const divDiaDoMes = _criarDivDia(dataAux);
+            divDiaDoMes.innerHTML += `<div class="clsCalendarioTotalDia">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
+            divDiaDoMes.addEventListener('mousemove',(e)=>{
+                const divTmp = e.target.parentElement;
+                if(divTmp.title=='') {
+                    const dtDiaAux = divTmp.ariaValueText;
+                    const detalheTitle = document.getElementsByName('radTipoClassificacaoDetalhe')[0].checked ? _extrairOperacoes(dtDiaAux) : _extrairGbmDestino(dtDiaAux);
+                    divTmp.title = detalheTitle;
+                }
+            })
+            divCalendario.appendChild(divDiaDoMes);
+            dataAux = new Date(dataAux.setDate(dataAux.getDate()+1));
+        }
+        
+        function _criarDivDia(dtAux) {
+            const divTemp = document.createElement('div');
+            divTemp.id = 'divDiaDoMes'+(dtAux == undefined ? '-' : ("00"+dtAux.getDate()).slice(-2));
+            divTemp.ariaValueText = dtAux == undefined ? '' : dtAux.toLocaleDateString('pt-BR');
+            divTemp.className = 'clsCalendarioDia';
+            divTemp.innerHTML = (dtAux==undefined ? '-' : `${dtAux.toLocaleDateString('pt-BR')}`);
+            return divTemp
+        }
+        function _extrairDataInicio(strData) {
+            const arrData = strData.split('/');
+            const dataInicio = new Date(`${arrData[2]}-${arrData[1]}-01T00:00:00`);
+            return dataInicio;
+        }
+        function _extrairOperacoes(dataAux) {
+            let par = dados.parametros();
+            if(par.data){
+                par.data.push(dataAux);
+            }
+            else{
+                par.data = [dataAux];
+            }
+            const objAux = dados.filtrarEscalasJson(par);
+            const tmp = dados.totais("OPERAÇÃO", objAux);
+            let ret = [];
+            for (const key in tmp) {
+                if (Object.hasOwnProperty.call(tmp, key)) {
+                    const total = tmp[key];
+                    const chave = key;
+                    ret.push(`${chave}: (${total})|`);
+                }
+            }
+            return (ret.sort()).toString().replaceAll('|,', '\n').replace('|','');
+        }
+        function _extrairGbmDestino(dataAux) {
+            let par = dados.parametros();
+            if(par.data){
+                par.data.push(dataAux);
+            }
+            else{
+                par.data = [dataAux];
+            }
+            const objAux = dados.filtrarEscalasJson(par);
+            const tmp = dados.totais("GBM_DESTINO", objAux);
+            let ret = [];
+            for (const key in tmp) {
+                if (Object.hasOwnProperty.call(tmp, key)) {
+                    const total = tmp[key];
+                    const chave = key;
+                    ret.push(`${chave}: (${total})|`);
+                }
+            }
+            return (ret.sort()).toString().replaceAll('|,', '\n').replace('|','');
+        }
+        function _inserirBotoesDeControle() {
+            const fld = document.createElement('fieldset');
+            const btn = document.createElement('button');
+            const rad1 = document.createElement('input');
+            const rad2 = document.createElement('input');
+            const lab1 = document.createElement('label');
+            const lab2 = document.createElement('label');
+            
+            fld.id = 'fldAtualizarCalendario';
+            rad1.type = 'radio';
+            rad1.name = 'radTipoClassificacaoDetalhe';
+            rad2.name = rad1.name;
+            rad1.checked = true;
+            rad2.type = 'radio';
+            lab1.innerHTML = 'Totais por Operação (no detalhe)';
+            lab2.innerHTML = 'Totais por GBM de Destino (no detalhe)';
+            btn.id = 'btnAtualizarCalendario';
+            btn.style = 'display:flex; margin:0 auto;';
+            btn.innerHTML = 'Atualizar';
+            btn.addEventListener('click', (e)=>{
+                const objAux = dados.filtrarEscalasJson(dados.parametros());
+                html.cotasNoCalendario(objAux);
+            })
+            rad1.addEventListener('change', (e)=>{
+                const objAux = dados.filtrarEscalasJson(dados.parametros());
+                html.cotasNoCalendario(objAux);
+            })
+            rad2.addEventListener('change', (e)=>{
+                const objAux = dados.filtrarEscalasJson(dados.parametros());
+                html.cotasNoCalendario(objAux);            
+            })
+            lab1.append(rad1);
+            lab2.append(rad2);
+            fld.append(lab1);
+            fld.append(lab2);
+            fld.append(btn);
+            return fld;
         }
     },
     escalasParaBg: function(objAux){
@@ -1454,12 +1911,29 @@ const html = {
             table.append(tr);
         }
     },
+    exibirCotaDobrada: function() {
+        this.limparResultado();
+        const objAux = dados.filtrarEscalasJson(dados.parametros());
+        const arrDia = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
+        const table = document.createElement('table');
+        table.innerHTML = `<tr><th>DIA</th><th>SIAPE</th><th>ACHADOS</th></tr>`;
+        for(let i = 0; i < arrDia.length; i++) {
+            const objDia = objAux.filter((item)=>{if(item.DATA === arrDia[i]){return item}});
+            const objTotalSiape = dados.totais('SIAPE', objDia);
+            for (const property in objTotalSiape) {
+                const tr = document.createElement('tr');
+                if(objTotalSiape[property]>1){
+                    tr.innerHTML = `<td>${arrDia[i]}</td><td style="text-align:center">${property}</td><td style="text-align:center">${objTotalSiape[property]}</td>`;
+                    table.append(tr);
+                }
+            }
+        }
+        $('divResultado').append(table);
+    },
     exibirListaDeVoluntariosEscalados: function(objAux){
         this.limparResultado();
-        if(objAux.length == 0){
-            alert('Nenhum dado caregado ainda!');
-            return 0;
-        }
+        if(objAux.length == 0){alert('Nenhum dado foi caregado ainda!');return 0;}
+
         const arrObjTmp = objAux.map((e)=>{ return {
             'DATA':e.DATA, 
             'HORA':e.HORA, 
@@ -1484,25 +1958,6 @@ const html = {
         }
         tb.append(thead);
         tb.append(tbody);
-    },
-    exibirCotaDobrada: function() {
-        this.limparResultado();
-        const objAux = dados.filtrarEscalasJson(dados.parametros());
-        const arrDia = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
-        const table = document.createElement('table');
-        table.innerHTML = `<tr><th>DIA</th><th>SIAPE</th><th>ACHADOS</th></tr>`;
-        for(let i = 0; i < arrDia.length; i++) {
-            const objDia = objAux.filter((item)=>{if(item.DATA === arrDia[i]){return item}});
-            const objTotalSiape = dados.totais('SIAPE', objDia);
-            for (const property in objTotalSiape) {
-                const tr = document.createElement('tr');
-                if(objTotalSiape[property]>1){
-                    tr.innerHTML = `<td>${arrDia[i]}</td><td style="text-align:center">${property}</td><td style="text-align:center">${objTotalSiape[property]}</td>`;
-                    table.append(tr);
-                }
-            }
-        }
-        $('divResultado').append(table);
     },
     exibirTotais: function(campoDePesquisa, objAux) {
         this.limparResultado();
@@ -1602,6 +2057,149 @@ const html = {
             return tr;
         }
     },
+    totalDeMilitaresEnvolvidos:function (objAux) {
+        this.limparResultado();
+        if(objAux.length == 0){alert('Nenhum dado foi caregado ainda!');return 0;}
+
+        const arrGrupo = objAux.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        
+        for(let i = 0; i < arrGrupo.length; i++) {
+            _criarTagGrupo(`GRUPO-${i}`, `${arrGrupo[i]}`);
+            const objGbmDestino = objAux.filter((item) => {if(item.GRUPO === arrGrupo[i]){return item}});
+            const arrGbmDestino = objGbmDestino.map((item) => `${item.GBM_DESTINO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort(ordenar.porGBM);
+
+            for(let k = 0; k < arrGbmDestino.length; k++) {
+                _criarTagGbmDestino(`GRUPO-${i}`, `GBM-${k}`, arrGbmDestino[k]);
+                _carregarSiape(i, arrGrupo, k, arrGbmDestino);
+            }
+        }
+        
+        _incluirBotaoOcultar()
+        _incluirCabecalhoParaPdf()
+        
+        function _incluirBotaoOcultar(){
+            const divAuxiliar = document.getElementById('divAuxiliar');
+            const btnCriarPdf = document.createElement('button');
+            const btnOcultarCotas = document.createElement('button');
+
+            btnOcultarCotas.id = 'cmdOcultarCotas';
+            btnOcultarCotas.innerHTML = 'Ocultar/Reexibir Totais de Cotas';
+            btnOcultarCotas.addEventListener('click', (e)=>{
+                e.preventDefault();
+                const ctrs = document.querySelectorAll(".visivel");
+                ctrs.forEach((ctr) => ctr.classList.toggle("invisivel"));
+            })
+            
+            btnCriarPdf.id = 'cmdCriarPDF';
+            btnCriarPdf.innerHTML = 'Criar PDF';
+            btnCriarPdf.addEventListener('click', (e)=>{
+                e.preventDefault();
+                setTimeout(()=>{
+                    if(confirm(`Deseja baixar esses dados convertidos em um arquivo PDF?`)){
+                        gerarPdf(divResultado);
+                        document.getElementById('divAuxiliar').innerHTML='';
+                    }
+                },500)
+            })
+
+            divAuxiliar.style.textAlign = 'center';
+            divAuxiliar.append(btnOcultarCotas)
+            divAuxiliar.append(btnCriarPdf)
+        }
+        function _incluirCabecalhoParaPdf(){
+            const tbResultado = document.getElementById('tbResultado');
+            const cabecalhoH1 = document.createElement('h1');
+            cabecalhoH1.innerHTML = `TOTAL DE MILITARES ENVOLVIDOS<br>GSV de ${objAux[0].MÊS}/${objAux[0].DATA.split("/")[2]}`;
+            cabecalhoH1.style.display = 'flexbox';
+            cabecalhoH1.style.textAlign = 'center';
+            cabecalhoH1.style.width = '100%';
+            cabecalhoH1.style.padding = '10px';
+            cabecalhoH1.style.fontSize = '130%';
+            divResultado.insertBefore(cabecalhoH1, tbResultado);
+        }
+        function _criarTagGrupo(codGrupo, strTexto){
+            if (divResultado.childElementCount === 0) {
+                divResultado.innerHTML = `` +
+                `<table class="tabelaDeResultado" id="tbResultado"></table><br>`
+            }
+            const tbResultado = document.getElementById("tbResultado")
+            tbResultado.innerHTML += `
+                <tbody id=${codGrupo}>
+                <tr>
+                <th rowspan="2"></th>
+                <th class="thTotais" colspan=3></th>
+                <th rowspan="2" class="thTotais"></th>
+                </tr>
+                <tr>
+                <th class="thTotais"></th>
+                <th class="thTotais"></th>
+                <th class="thTotais"></th>
+                </tr>
+                <tr>
+                    <th colspan="5" class="name_tres">${strTexto}</th>
+                </tr>
+                </tbody>`
+            if (codGrupo === 'GRUPO-0') {
+                const tbodyGrupo = document.getElementById(codGrupo)
+                tbodyGrupo.children[0].children[0].innerHTML = `OBM`
+                tbodyGrupo.children[0].children[1].innerHTML = `TOTAIS`
+                tbodyGrupo.children[1].children[0].innerHTML = `Cotas`
+                tbodyGrupo.children[1].children[1].innerHTML = `Oficiais`
+                tbodyGrupo.children[1].children[2].innerHTML = `Praças`
+                tbodyGrupo.children[0].children[2].innerHTML = `SEI`
+                tbodyGrupo.children[0].children[2].style.width = `300px`
+            }else{
+                const tBody = document.getElementById(codGrupo)
+                tBody.removeChild(tBody.children[0])
+                tBody.removeChild(tBody.children[0])
+            }
+        }
+        function _criarTagGbmDestino(codGrupo, codGbmDestino, strTexto){
+            const tbodyGrupo = document.getElementById(codGrupo)
+            tbodyGrupo.innerHTML += `
+                <tr id="${codGrupo}-${codGbmDestino}">
+                    <td onMouseOuver=''>${strTexto}</td>
+                    <td class="label_data"></td>
+                    <td class="label_data"></td>
+                    <td class="label_data"></td>
+                    <td class="label_data" style="height:20px"></td>
+                </tr>`
+        }
+        function _carregarSiape(codGrupo, arrGrupo, codGbmDestino, arrGbmDestino){
+            const strGrupo = arrGrupo[codGrupo]
+            const strGbmDestino = arrGbmDestino[codGbmDestino]
+
+            //Totalizando militares
+            const objTodos = objAux.filter((item) => {
+                if(item.SIAPE !== 'SV' && item.GRUPO === strGrupo && item.GBM_DESTINO === strGbmDestino){return item}
+            })
+            const arrTotalGeral = objTodos.filter((elem, index, arr) => arr.indexOf(elem) === index)
+
+            const arrTips = objTodos.map((item) => `${item.OPERAÇÃO}`).filter((elem, index, arr) => arr.indexOf(elem) === index)
+
+            //Totalizando Praças
+            const objPraca = objAux.filter((item) => {
+                if(item.SIAPE !== 'SV' && item.QUADRO.indexOf('QBMG')>-1 && item.GRUPO === strGrupo && item.GBM_DESTINO === strGbmDestino){return item}
+            })
+            const arrTotalPraca = objPraca.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index)
+            //Totalizando Oficiais
+            const objOficial = objAux.filter((item) => {
+                if(item.SIAPE !== 'SV' && item.QUADRO.indexOf('QOBM')>-1 && item.GRUPO === strGrupo && item.GBM_DESTINO === strGbmDestino){return item}
+            })
+            const arrTotalOficial = objOficial.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index);
+
+            const tdGbmDestino = document.getElementById(`GRUPO-${codGrupo}-GBM-${codGbmDestino}`);
+            tdGbmDestino.children[0].title = `${_tipsOperacoes(arrTips)}`;
+            tdGbmDestino.children[1].innerHTML = `<span class=visivel>${arrTotalGeral.length}</span>`; //'' Total de Cotas
+            tdGbmDestino.children[2].innerHTML = `${arrTotalOficial.length}`; //'' Total de Oficiais
+            tdGbmDestino.children[3].innerHTML = `${arrTotalPraca.length}`; //'' Total de Praças
+        }
+        function _tipsOperacoes(arr){
+            let txt = ''
+            for(i = 0; i < arr.length; i++) {txt += arr[i] + '\n'}
+            return txt
+        }
+    },
     _construirTabela: function (objAux, index){
         let col = 0;
         if(index == -1){
@@ -1629,6 +2227,7 @@ const html = {
         return tr;
     },
     limparResultado: function(){
+        $('divAuxiliar').innerHTML = '';
         $('divResultado').innerHTML = '';
     }
 }

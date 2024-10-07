@@ -6,6 +6,9 @@
     margin: 20px auto;
     align-items: center;
 }
+#divAuxiliar{
+    text-align: center;
+}
 
 table {
     border: 1px solid #000;
@@ -107,5 +110,38 @@ td {
     background-color: white;
 }
 
+/*Calendário Resultado*/
+
+.clsCalendarioResultado{
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
+    width: var(--larguraTotal);
+    margin: 0 auto;
+    z-index: -1;
+}
+.clsCalendarioDia{
+    font-size: 10px;
+    border: 1px solid var(--borda);
+    text-align: center;
+    justify-content: left;
+    padding: 0px;
+    height: 50px;
+    border-radius: 5px;
+    margin: 5px;
+}
+.clsCalendarioTotalDia{
+    font-size:20px; 
+    display:flex-inline; 
+    position:relative; 
+    text-align:center; 
+    margin-top:8px;
+}
+#fldAtualizarCalendario{
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    margin: auto;
+    margin-bottom: 10px;
+    width: var(--larguraTotal);
+}
 
 /* Impressão */
