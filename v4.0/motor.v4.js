@@ -227,6 +227,7 @@ const init = {
                 return ret
             }
             conf.autoRefresh = true;
+            $("idMenuAutoRefresh").innerHTML = 'Auto Refresh (ON) &infin;';
             conf.totalStatus();
         } catch (error) {
             console.log(error)
@@ -1549,9 +1550,20 @@ const html = {
             case 'menu_D_05':
                 this.totalDeMilitaresEnvolvidos(dados.escalas);
                 break;
+            case 'menu_D_06':
+                autoRefresh();
+                break;
             default:
                 alert('Código de menu não identificado!');
                 break;
+        }
+        function autoRefresh(){
+            conf.autoRefresh = !conf.autoRefresh;
+            if (conf.autoRefresh){
+                $("idMenuAutoRefresh").innerHTML = 'Auto Refresh (ON) &infin;';
+            }else{
+                $("idMenuAutoRefresh").innerHTML = 'Auto Refresh (OFF) &empty;';
+            }
         }
     },
     construirPlanilha: function (objAux) {
