@@ -151,7 +151,7 @@ button:hover{
     width: var(--larguraTotal);
 }
 #divFiltroSiape{
-    width: 70px;
+    width: 80px;
 }
 #fldFuncao, #fldSiape{
     height: 350px;
@@ -189,4 +189,62 @@ button:hover{
 .clsFiltros{
     overflow-y: scroll;
     height: 100%;
+}
+
+
+/*Dialogo para edição*/
+.divDialogoEdicao{
+    display: flexbox;
+    position: absolute;
+    width: 450px;
+    margin-left: -200px;
+    margin-top: -255px;
+    z-index: 11;
+}
+.divEditar{
+    display: grid;
+    border: 1px solid lightgray;
+    box-shadow: 5px 5px 15px black;
+}
+.divEditar > #fldEditarInfo{
+    grid-column-start: 1;
+    grid-column-end: 5;
+}
+.divEditar > #fldEditarInfo > label > input,
+.divEditar > #fldEditarInfo > label > textarea{
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+.divEditar > #fldEditarFalta{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+.divEditar > #fldEditarDuracao{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+.divEditar > #fldEditarAcao {
+    grid-column-start: 3;
+    grid-column-end: 5;
+}
+.divEditar input,
+.divEditar select,
+.divEditar textarea{
+    font-weight: bold;
+    width: 100%;
+    border: 1px solid black;
+}
+.fldEditarAcao{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+#txtEditarOperacao{
+  resize: none;  
+}
+#btnEditarUpdate{
+    border: 2px solid red;
+}
+#btnEditarCancel{
+    border: 1px solid black;
 }

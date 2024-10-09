@@ -110,7 +110,7 @@ const menuOpcoes = {
         this._acao();
     },
     _acao:function(){
-        const objAux = dados.filtrarEscalasJson( dados.parametros() );
+        const objAux = dados.filtrarEscalas( dados.parametros() );
         filtrar.prepararDados( objAux );
         html.atualizacaoAutomatica();
     }
@@ -646,7 +646,7 @@ const init = {
         
         let contador = 0;
         dados.escalas.forEach((elm)=>{
-            const filtroTurno = dados.filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            const filtroTurno = dados.filtrarFaltas({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
             if(filtroTurno.length > 0){
                 elm.ASSINATURA = 'FALTOU';
                 elm.FALTA = true;
@@ -678,7 +678,7 @@ const init = {
         init.carregarTurno();
         conf.totalStatus();
         setTimeout(() => {
-            filtrar.prepararDados(dados.filtrarEscalasJson(dados.parametros()));
+            filtrar.prepararDados(dados.filtrarEscalas(dados.parametros()));
         }, 500);
     },
     carregarDataDoMes: function(){
@@ -756,7 +756,7 @@ const init = {
         for(let i = 0; i< arrSiape.length; i++){
             divSiape.append(init._criarItemDaLista(divSiape, arrSiape[i]));
         }
-        $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length})`;
+        $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString('pt-BR')})`;
     },
     tratarFaltas: function() {
         if(dados.escalas.length===0 || dados.faltas.length===0){ return }
@@ -769,7 +769,7 @@ const init = {
         
         let contador = 0;
         dados.escalas.forEach((elm)=>{
-            const filtroTurno = dados.filtrarFaltasJson({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
+            const filtroTurno = dados.filtrarFaltas({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
             if(filtroTurno.length > 0){
                 elm.ASSINATURA = 'FALTOU';
                 elm.FALTA = true;
@@ -783,7 +783,7 @@ const init = {
         $('divStatusFalta').title = `Processametno de faltas: ${dados.faltas.length}/${contador}`;
     
         dados.faltas.forEach((flt)=>{
-            const filtroFalta = dados.filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+            const filtroFalta = dados.filtrarEscalas({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
             if (filtroFalta.length == 0){
                 console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
             }
@@ -1052,7 +1052,7 @@ const dados = {
             return arrAux;
         }
     },
-    filtrarEscalasJson: function({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
+    filtrarEscalas: function({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
     
         let objAux = dados.escalas.filter((e)=>{return e})
     
@@ -1181,7 +1181,7 @@ const dados = {
             
         return objAux
     },
-    filtrarFaltasJson: function({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
+    filtrarFaltas: function({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
         let objAux = dados.faltas.filter((e)=>{return e})
     
         if (data !== undefined) {
@@ -1220,7 +1220,7 @@ const dados = {
         return objAux
         
     },
-    filtrarInscritosJson: function({ cursos, lotacao, nome, quadro, posto_grad, siape }) {
+    filtrarInscritos: function({ cursos, lotacao, nome, quadro, posto_grad, siape }) {
         
         let objAux = dados.inscritos.filter((e)=>{return e})
     
@@ -1259,42 +1259,146 @@ const dados = {
     }
 }
 
+const editarCota = {
+    carregarInterface: function(id){
+        aux.ajax({urlDoArquivo:'editar.html', funcaoDeRetorno:(conteudoHtml)=>{
+            const div = document.createElement('div');
+            const divId = id;
+            id = id.toString().replace('div','');
+            div.id = divId;
+            div.className = "divDialogoEdicao";
+            div.innerHTML = conteudoHtml;
+            $(id).insertBefore(div, $(id).children[0]);
+            $('btnEditarUpdate').addEventListener('click', (e)=>{
+                editarCota.alterarDados($('txtEditarIndex').value);
+                $('div'+id.toString()).style.display = 'none';
+                setTimeout(()=>{
+                    const par = dados.parametros('duracao');
+                    dados.carregarDuracao();
+                    editarCota.destacarSelecionados($('divFiltroDuracao'), par.tempo)
+                    setTimeout(() => {  
+                        const objAux = dados.filtrarEscalas(dados.parametros());
+                        html.construirPlanilha(objAux);
+                    }, 500);
+                },200);
+                html.limparResultado();
+            })
+            $('btnEditarCancel').addEventListener('click', (e)=>{
+                $(id.toString()).removeChild($(id.toString()).children[0]);
+            })
+        }})
+
+        const timerDeAlteracao = setInterval(() => {
+            if($('txtEditarId')){
+                clearInterval(timerDeAlteracao);
+                const id = parseInt(document.querySelector('.divDialogoEdicao').id.replace('div',''));
+                editarCota.carregarDadosParaAlteracao(id);
+            }
+        }, 100)
+    },
+    alterarDados: function(indx, funcRetornno = undefined){
+        if(dados.escalas[parseInt(indx)]._ID === parseInt($('txtEditarId').value)){
+            dados.escalas[parseInt(indx)].FALTA = ($('selEditarFalta').value === 'true' ? true : false);
+            dados.escalas[parseInt(indx)].TEMPO = $('selEditarDuracao').value.toString();
+            dados.escalas[parseInt(indx)].VALOR = parseInt($('selEditarDuracao').value) * 50
+            dados.escalas[parseInt(indx)].ASSINATURA = ($('selEditarFalta').value === 'true' ? `AUDITORIA` : ``);
+        }
+        if(funcRetornno){funcRetornno()}
+    },
+    carregarDadosParaAlteracao: function(id){
+        for(let i = 0; i < dados.escalas.length; i++){
+            if(dados.escalas[i]._ID === id){
+                $('txtEditarId').value = dados.escalas[i]._ID;
+                $('txtEditarIndex').value = i;
+                $('txtEditarOperacao').value = dados.escalas[i].OPERAÇÃO;
+                $('txtEditarDataHora').value = `${dados.escalas[i].name_tres} - ${dados.escalas[i].name_quatro}`;
+                $('txtEditarNome').value = `${dados.escalas[i].POSTO_GRAD} ${dados.escalas[i].QUADRO} ${dados.escalas[i].NOME} - ${dados.escalas[i].SIAPE}`;
+                $('txtEditarLotacao').value = `Lotação: ${dados.escalas[i].LOTAÇÃO}`;
+                $('selEditarFalta').value = dados.escalas[i].FALTA;
+                $('selEditarDuracao').value = dados.escalas[i].TEMPO;
+                break;
+            }
+        }
+    },
+    alterarDuracaoTodasAsCotasFiltradas: function(dadosParaAlteracao) {
+        try {
+            const par = dados.parametros();
+            conf.atualizar = false;
+            if(!confirm(`C U I D A D O!\n\n
+                Esta alteração é de caráter AVANÇADO.\n
+                Serão alterados o VALOR e a DURAÇÃO das cotas para:\n
+                ${JSON.stringify(dadosParaAlteracao)}\n
+                Conforme filtro informado:\n
+                ${JSON.stringify(par)}\n
+                Essa mudança se aplica apenas a essa seção de consulta e apenas nos dados em memória RAM.\n\n
+                Deseja continuar?`)){
+                return false;
+            }
+    
+            const objAux = dados.filtrarEscalas(par);
+            const arrAux = objAux.map((item) => { return item._ID });
+            for (let i = 0; i < dados.escalas.length; i++) {
+                if (arrAux.includes(dados.escalas[i]._ID)) {
+                    dados.escalas[i].VALOR = dadosParaAlteracao.valor.toString();
+                    dados.escalas[i].TEMPO = dadosParaAlteracao.tempo;
+                }
+            }
+            setTimeout(() => {
+                init.carregarControles();
+            }, 100);
+
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    destacarSelecionados: function(controle, parametros){
+        if(parametros==undefined){return}
+        const divAux = controle;
+        for(let i = 0; i < divAux.childElementCount; i++){
+            const ctr = divAux.children[i];
+            if(parametros.includes(ctr.ariaLabel)){
+                ctr.ariaPressed = true;
+            }
+        }
+    }
+}
+
 const filtrar = {
     processarClickDoBotao:function(botao){
         if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroDuracaoBtn' ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroFuncaoBtn' ){
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroGbmDestinoBtn' ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroGrupoBtn' ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroOperacaoBtn' ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroTurnoBtn' ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         if ( botao.id == 'divFiltroSiapeBtn' ) {
-            const objAux = dados.filtrarEscalasJson(dados.parametros());
+            const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
         
@@ -1349,7 +1453,7 @@ const filtrar = {
     destacarSiape: function(objAux){
         const arrSiape = objAux.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>arr.indexOf(elem) === index);
         filtrar.destacar(arrSiape, $('divFiltroSiape'));
-        $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length})`;
+        $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString()})`;
     },
     destacarDatas:function(objAux){
         const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
@@ -1377,40 +1481,73 @@ const html = {
     processarMenu: function(cod){
         switch (cod) {
             case 'menu_D_01_01':
-                this.escalasParaBg(dados.filtrarEscalasJson(dados.parametros()));
+                this.escalasParaBg(dados.filtrarEscalas(dados.parametros()));
                 break;
             case 'menu_D_01_02':
-                this.exibirListaDeVoluntariosEscalados(dados.filtrarEscalasJson(dados.parametros()));
+                this.exibirListaDeVoluntariosEscalados(dados.filtrarEscalas(dados.parametros()));
                 break;
             case 'menu_D_01_03':
                 this.exibirCotaDobrada();
                 break;
             case 'menu_D_01_04':
+                this.construirPlanilha(dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_01':
+                this.exibirTotais('SIAPE', dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_02':
+                this.exibirTotais('GRUPO', dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_03':
+                this.exibirTotais('OPERAÇÃO', dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_04':
+                this.exibirTotais('GBM_DESTINO', dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_05':
+                this.exibirTotais('DATA', dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_06':
+                this.totalDeCotasOficiasPracas(dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_07':
+                this.cotasNoCalendario(dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_02_08':
+                this.totalDeCotasEscaladas(dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_03_01':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'200', tempo:'04'});
+                break;
+            case 'menu_D_03_02':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'250', tempo:'05'});
+                break;
+            case 'menu_D_03_03':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'300', tempo:'06'});
+                break;
+            case 'menu_D_03_04':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'350', tempo:'07'});
+                break;
+            case 'menu_D_03_05':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'400', tempo:'08'});
+                break;
+            case 'menu_D_03_06':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'450', tempo:'09'});
+                break;
+            case 'menu_D_03_07':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'500', tempo:'10'});
+                break;
+            case 'menu_D_03_08':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'550', tempo:'11'});
+                break;
+            case 'menu_D_03_09':
+                editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'600', tempo:'12'});
+                break;
+            case 'menu_D_04':
+                html.construirTabelaInscritos();
+                break;
+            case 'menu_D_05':
                 this.totalDeMilitaresEnvolvidos(dados.escalas);
-                break;
-            case 'menu_D_01_05':
-                this.construirPlanilha(dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_01':
-                this.exibirTotais('SIAPE', dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_02':
-                this.exibirTotais('GRUPO', dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_03':
-                this.exibirTotais('OPERAÇÃO', dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_04':
-                this.exibirTotais('GBM_DESTINO', dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_05':
-                this.exibirTotais('DATA', dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_06':
-                this.totalDeCotasOficiasPracas(dados.filtrarEscalasJson(dados.parametros()));
-                break;
-            case 'menu_D_05_07':
-                this.cotasNoCalendario(dados.filtrarEscalasJson(dados.parametros()));
                 break;
             default:
                 alert('Código de menu não identificado!');
@@ -1628,7 +1765,7 @@ const html = {
                 btnAtualizar.innerHTML = 'Atualizar';
                 btnAtualizar.style.padding = '10px'
                 btnAtualizar.addEventListener('click', (e)=>{
-                    const objAux = dados.filtrarEscalasJson(dados.parametros());
+                    const objAux = dados.filtrarEscalas(dados.parametros());
                     html.construirPlanilha(objAux);
                 });
                 divAuxilar.append(btnAtualizar);
@@ -1648,7 +1785,7 @@ const html = {
         let total = 0;
     
         for (let i = 0; i < conf.arrOrdemPostoGrad.length; i++) {
-            const objAux =  _ordenarDados(dados.filtrarInscritosJson({ posto_grad: conf.arrOrdemPostoGrad[i], cursos: tCursos }));
+            const objAux =  _ordenarDados(dados.filtrarInscritos({ posto_grad: conf.arrOrdemPostoGrad[i], cursos: tCursos }));
             if(objAux.length > 0){
                 for(j = 0; j < objAux.length; j++){
                     if(mesDeReferencia === ''){ mesDeReferencia = objAux[j].MES_REFERENCIA }
@@ -1775,7 +1912,7 @@ const html = {
             else{
                 par.data = [dataAux];
             }
-            const objAux = dados.filtrarEscalasJson(par);
+            const objAux = dados.filtrarEscalas(par);
             const tmp = dados.totais("OPERAÇÃO", objAux);
             let ret = [];
             for (const key in tmp) {
@@ -1795,7 +1932,7 @@ const html = {
             else{
                 par.data = [dataAux];
             }
-            const objAux = dados.filtrarEscalasJson(par);
+            const objAux = dados.filtrarEscalas(par);
             const tmp = dados.totais("GBM_DESTINO", objAux);
             let ret = [];
             for (const key in tmp) {
@@ -1827,15 +1964,15 @@ const html = {
             btn.style = 'display:flex; margin:0 auto;';
             btn.innerHTML = 'Atualizar';
             btn.addEventListener('click', (e)=>{
-                const objAux = dados.filtrarEscalasJson(dados.parametros());
+                const objAux = dados.filtrarEscalas(dados.parametros());
                 html.cotasNoCalendario(objAux);
             })
             rad1.addEventListener('change', (e)=>{
-                const objAux = dados.filtrarEscalasJson(dados.parametros());
+                const objAux = dados.filtrarEscalas(dados.parametros());
                 html.cotasNoCalendario(objAux);
             })
             rad2.addEventListener('change', (e)=>{
-                const objAux = dados.filtrarEscalasJson(dados.parametros());
+                const objAux = dados.filtrarEscalas(dados.parametros());
                 html.cotasNoCalendario(objAux);            
             })
             lab1.append(rad1);
@@ -1913,7 +2050,7 @@ const html = {
     },
     exibirCotaDobrada: function() {
         this.limparResultado();
-        const objAux = dados.filtrarEscalasJson(dados.parametros());
+        const objAux = dados.filtrarEscalas(dados.parametros());
         const arrDia = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
         const table = document.createElement('table');
         table.innerHTML = `<tr><th>DIA</th><th>SIAPE</th><th>ACHADOS</th></tr>`;
@@ -1929,6 +2066,62 @@ const html = {
             }
         }
         $('divResultado').append(table);
+    },
+    exibirPercentualDeFaltas: function(objAux){
+        
+        if(dados.escalas.length == 0 || dados.faltas.length == 0){
+            alert('É necessário informar os dados da ESCALA e dados das FALTAS para processamento!');
+            return false;
+        }
+
+        html.exibirTotais('OPERAÇÃO', objAux);
+
+        const tbAux = $('tbResultado');
+        let intTotalGeralFaltas = 0;
+        let intTotalGeral = 0;
+        
+        tbAux.tFoot.children[0].children[1].style.textAlign = 'center';
+        for(let i = 0; i < tbAux.childElementCount; i++){
+            const secAux = tbAux.children[i];
+            for(let j = 0; j < secAux.childElementCount; j++){
+                const trAux = secAux.children[j];
+                const objTmp = objAux.filter((e)=>{return e.FALTA == true && e.OPERAÇÃO == trAux.children[0].innerHTML});
+                const thAuxFalta = document.createElement('th');
+                const thAuxPerc = document.createElement('th');
+                const tdAuxFalta = document.createElement('td');
+                const tdAuxPerc = document.createElement('td');
+                tdAuxFalta.style.textAlign = 'center';
+                tdAuxPerc.style.textAlign = 'center';
+
+                thAuxFalta.innerHTML = 'FALTAS';
+                thAuxPerc.innerHTML = 'PERCENTUAL';
+                                
+                let intTotal = parseInt('0'+trAux.children[1].innerHTML.replace('.',''));
+                let intFaltas = objTmp.length;
+                let intPercent = ((intFaltas * 100) / intTotal).toFixed(2);
+                intTotalGeral = intTotalGeral + intTotal;
+                intTotalGeralFaltas = intTotalGeralFaltas + intFaltas;
+
+                
+                if (secAux.tagName == 'THEAD'){
+                    trAux.append(thAuxFalta);
+                    trAux.append(thAuxPerc);
+                }else if(secAux.tagName == 'TFOOT'){
+                    thAuxFalta.innerHTML = intTotalGeralFaltas;
+                    intTotalGeral = parseInt('0'+trAux.children[1].innerHTML.replace('.',''))
+                    thAuxPerc.innerHTML = `${((intTotalGeralFaltas * 100) / intTotalGeral).toFixed(2)} %`;
+                    trAux.append(thAuxFalta);
+                    trAux.append(thAuxPerc);
+                }
+                else{
+                    tdAuxFalta.innerHTML = intFaltas;
+                    tdAuxPerc.innerHTML = `${intPercent} %`;
+                    trAux.append(tdAuxFalta);
+                    trAux.append(tdAuxPerc);
+                }
+            }
+        }
+
     },
     exibirListaDeVoluntariosEscalados: function(objAux){
         this.limparResultado();
@@ -1982,6 +2175,80 @@ const html = {
         tb.append(tbody);
         tb.append(tfoot);
         $('divResultado').append(tb);
+    },
+    totalDeCotasEscaladas: function(objAux){
+        this.limparResultado();
+        let par = dados.parametros();
+        
+        let contabilizar_total = 0;
+        const arrOperacao = objAux.map((item) => `${item.OPERAÇÃO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
+        const table = document.createElement('table');
+        table.append(_cabecalho1());
+        table.append(_cabecalho2());
+        for(let i = 0; i < arrOperacao.length; i++){
+            par.operacao = arrOperacao[i];
+            const objOperacao = dados.filtrarEscalas(par);
+            if (objOperacao.length > 0){
+                table.append(_carregarTotais(objOperacao));
+                contabilizar_total = contabilizar_total + ((objOperacao[0].TEMPO.indexOf(`24`) > -1) ? objOperacao.length * 2 : objOperacao.length);
+            }
+        }
+        table.append(_rodape(contabilizar_total));
+        divResultado.append(table);
+
+        function _exibirParametrosUsados(){
+            const tr = document.createElement('tr');
+            const par = JSON.stringify(dados.parametros());
+            tr.innerHTML = `<th colspan="3" style="color:gray">PARÂMETROS: ${(par == '{}'  ? '{"Nenhum filtro aplicado"}': par)}</th>`;
+            return tr;
+        }
+        function _cabecalho1() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<th colspan="3">RESUMO DE COTAS - ${conf.mesAno.toUpperCase()}</th>`;
+            return tr;
+        }
+        function _cabecalho2() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <th>OPERAÇÃO / GBM DE DESTINO</th>` +
+                `<th>CARGA<br>HOR.</th>` +
+                `<th>COTAS</th>`;
+            return tr;
+        }
+        function _carregarTotais(obj) {
+            let objCargaHoraria = {};
+            for(let i = 0; i < obj.length; i++){
+                objCargaHoraria[obj[i].TEMPO] = (isNaN(objCargaHoraria[obj[i].TEMPO]) ? 1 : parseInt(objCargaHoraria[obj[i].TEMPO] + 1));
+            }
+            let cargaHoraria = '';
+            for(const key in objCargaHoraria){
+                const elm = objCargaHoraria[key];
+                cargaHoraria = (key===""?`(?h)`:`${(key)}h`);
+            }
+            const tr = document.createElement('tr')
+            const totalDeCotas = ((obj[0].TEMPO.indexOf(`24`) > -1) ? 
+                `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length) * 2} (${obj.length}x2)` : 
+                `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length)}`
+            );
+            
+            let totaisGbm = JSON.stringify(dados.totais('GBM_DESTINO', obj)).
+                replaceAll('"','').
+                replaceAll(':',': ').
+                replaceAll(',',') (').
+                replaceAll('{','(').
+                replaceAll('}',')');
+
+            tr.innerHTML = `<td style="text-align:left">${obj[0].OPERAÇÃO}<br><span style="color:gray">${totaisGbm}</span></td>` + 
+                `<td style="text-align:center">${cargaHoraria}</td>` + 
+                `<td style="text-align:center">${totalDeCotas}</td>`;
+            return tr;
+        }
+        function _rodape(totalGeral) {
+            const tr = document.createElement('tr')
+            tr.innerHTML = `<th colspan="2">TOTAL GERAL DE COTAS</th>` +
+                `<th>${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(totalGeral)}</th>`
+            return tr
+        }
     },
     totalDeCotasOficiasPracas: function(objAux){
         const arrOperacoes = Object.keys(dados.totais('OPERAÇÃO', objAux)).sort();

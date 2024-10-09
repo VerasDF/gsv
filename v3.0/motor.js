@@ -163,7 +163,7 @@ function avaliarDadoBruto({htmlRetornado}) {
             dadoBruto = dadoBruto.querySelector(".tbResumo");
             dadoInscritosJson = prepararInscritosJSon(dadoBruto);
             funcaoAuxiliar = inicializarInterfaceDeInscritos;
-            $('divStatusInscricao').title = `Banco de dados: ${dadoInscritosJson.length.toLocaleString('pt-BR')}`;
+            $('divStatusInscricao').title = `Banco de dados: ${dadoInscritosJson.length.toLocaleString()}`;
         }
         if(funcaoAuxiliar){funcaoAuxiliar()}
 

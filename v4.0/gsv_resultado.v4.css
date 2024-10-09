@@ -19,6 +19,7 @@ table {
 
 table,
 th,
+th > *,
 td,
 span {
     border-radius: 2px;
