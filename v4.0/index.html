@@ -25,17 +25,12 @@
                                         <legend>Origem dos Dados:</legend>
                                         <input type="file" id="fileArquivo" multiple>
                                         <div id="divTotais">&nbsp;<br>&nbsp;</div>
-                                        <div id="divResumo">
-                                            <div class="clsLedDesligado" id="divStatusEscala" title="Escala"></div>
-                                            <div class="clsLedDesligado" id="divStatusFalta" title="Faltas"></div>
-                                            <div class="clsLedDesligado" id="divStatusInscricao" title="Inscrições"></div>
-                                        </div>
                                     </fieldset>
                                 </div>
                             </li>
                         </ul>
                         </li>
-                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Opções.p1</a>
+                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Opções de Escalas pg1</a>
                             <ul class="clsMenuLateral_ul_e">
                                 <li class="clsMenuLateral_li_e">
                                     <div id="divOpcoes0">
@@ -104,7 +99,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Opções.p2</a>
+                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Opções de Escalas pg2</a>
                             <ul class="clsMenuLateral_ul_e">
                                 <li class="clsMenuLateral_li_e">
                                     <div id="divOpcoes1">
@@ -120,6 +115,18 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="clsMenuLateral_li_e"><a class="clsMenuLateral_a" href="#">Opções de Inscrição</a>
+                            <ul class="clsMenuLateral_ul_e">
+                                <li class="clsMenuLateral_li_e">
+                                    <div id="divOpcoes2">
+                                        <fieldset id="fldCursos">
+                                            <legend class="legDescricao">Cursos:</legend>
+                                            <div class="clsFiltros" id="divFiltroCursos"></div>
+                                        </fieldset>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -127,6 +134,11 @@
     </div>
     <div id="divMenuSuperior">
         <div style="display: flex; flex-direction: row; margin: auto; color: cornflowerblue; font-size: 0.7em; cursor: context-menu; justify-content:center;">Builded by Wagner Veras&reg;</div>
+        <div id="divResumo">
+            <div class="clsLedDesligado" id="divStatusEscala" title="Escala"></div>
+            <div class="clsLedDesligado" id="divStatusFalta" title="Faltas"></div>
+            <div class="clsLedDesligado" id="divStatusInscricao" title="Inscrições"></div>
+        </div>
     </div>
     <div id="divMenuLateralDireito">
         <nav>
@@ -138,8 +150,9 @@
                             <ul class="clsMenuLateral_ul_d">
                                 <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_01')">Escalas para BG</a></li>
                                 <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_02')">Lista de Escalados</a></li>
-                                <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_03')">Exibir Cotas Dobradas</a></li>
-                                <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_04')">Planilha de Pagamento</a></li>
+                                <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_03')">Cotas Dobradas</a></li>
+                                <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_04')">Percentual de Faltas</a></li>
+                                <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_01_05')">Planilha de Pagamento</a></li>
                             </ul>
                         </li>
                         <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#"menu_D_02>&crarr; Totais de Cotas</a>
@@ -167,7 +180,16 @@
                                 <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_03_09')">para 12 horas</a></li>
                             </ul>
                         </li>
-                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_04')">Banco de Dados de GSV</a></li>
+                        <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_04')">Banco de Dados</a>
+                            <ul class="clsMenuLateral_ul_d">
+                                <li class="clsMenuLateral_li_d">
+                                    <a class="clsMenuLateral_a" href="#" onclick="$('txtCursos').value='';$('txtCursos').focus()">Filtrar Cursos</a>
+                                </li>
+                                <li class="clsMenuLateral_li_d">
+                                    <input class="clsMenuLateral_a" type="text" id="txtCursos">
+                                </li>
+                            </ul>
+                        </li>
                         <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_05')">Militares Envolvidos</a></li>
                         <li class="clsMenuLateral_li_d"><a class="clsMenuLateral_a" href="#" onclick="html.processarMenu('menu_D_06')" id="idMenuAutoRefresh">Auto Refresh</a></li>
                     </ul>

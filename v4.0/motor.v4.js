@@ -119,12 +119,30 @@ const menuOpcoes = {
 const conf = {
     arquivoPdf: null,
     autoRefresh: null,
+    atualizarAgora: null,
     mes: "",
     mesAno: "",
     totalEscalas: 0,
     totalFaltas: 0,
     totalInscritos: 0,
+    ultimoComandoDoMenu: null,
+    ultimoParametro:null,
     arrOrdemPostoGrad: ['CEL', 'TC', 'MAJ', 'CAP', '1 TEN', '2 TEN', 'ASP', 'ST', '1 SGT', '2 SGT', '3 SGT', 'CB', 'SD/1', 'SD/2'],
+    arrAutoRefreshMenu:[
+        'menu_D_01_01',
+        'menu_D_01_02',
+        'menu_D_01_04',
+        'menu_D_01_05',
+        'menu_D_02_01',
+        'menu_D_02_02',
+        'menu_D_02_03',
+        'menu_D_02_04',
+        'menu_D_02_05',
+        'menu_D_02_06',
+        'menu_D_02_07',
+        'menu_D_02_08',
+        'menu_D_05'
+    ],
     readFile:function( input ){
         let carregado = false;
         for (let i = 0; i < input.files.length; i++) {
@@ -201,7 +219,11 @@ const init = {
                 conf.totalInscritos = dados.inscritos.length;
             }
             if(funcaoAuxiliar){ funcaoAuxiliar() }
-    
+            
+            $('divStatusEscala').title = `Escala (${dados.filtrarEscalas(dados.parametros()).length.toLocaleString('pr-BR')}/${dados.escalas.length.toLocaleString('pr-BR')})`;
+            $('divStatusFalta').title = `Faltas (${dados.faltas.length.toLocaleString('pr-BR')})`;
+            $('divStatusInscricao').title = `Inscritos (${dados.inscritos.length.toLocaleString('pr-BR')})`;
+
             function _testarArquivoDeOrigem( dadoBruto ){
                 let ret = false
                 if (dadoBruto.getElementsByTagName('fieldset')) {
@@ -667,6 +689,19 @@ const init = {
             }
         })
     },
+    tratarInscricoes: function(){
+        let cursos = [];
+        if(!dados.inscritos.length>0){ return [] }
+        dados.inscritos.forEach(a => {
+            const a1 = a.CURSOS.split(',');
+            for(let i = 0; i < a1.length; i++){
+                if(!cursos.includes(a1[i].trim())){
+                    if(!a1[i].trim() == ''){ cursos.push(a1[i].trim()); }
+                }
+            }
+        });
+        return cursos.sort();
+    },
     carregarControles: function(){
         init.carregarDataDoMes();
         init.carregarDuracao();
@@ -681,6 +716,15 @@ const init = {
         setTimeout(() => {
             filtrar.prepararDados(dados.filtrarEscalas(dados.parametros()));
         }, 500);
+    },
+    carregarCursos: function(){
+        const arrCursos = this.tratarInscricoes();
+        const divCursos = $('divFiltroCursos');
+        init._limparLista(divCursos);
+        for(let i = 0; i < arrCursos.length; i++){
+            divCursos.append(init._criarItemDaLista(divCursos, arrCursos[i]));
+        }
+        $('fldCursos').children[0].innerHTML = `Cursos: (${arrCursos.length})`;
     },
     carregarDataDoMes: function(){
         init._criarCalendarioDoMes();
@@ -1226,7 +1270,12 @@ const dados = {
         let objAux = dados.inscritos.filter((e)=>{return e})
     
         if (cursos !== undefined) {
-            objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
+            if(cursos.length > 0){
+                objAux = objAux.filter((e)=>{return cursos.includes(e.cursos)});
+            }
+            else{
+                objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
+            }
         }
         if (lotacao !== undefined) {
             objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
@@ -1276,7 +1325,7 @@ const editarCota = {
                 setTimeout(()=>{
                     const par = dados.parametros('duracao');
                     dados.carregarDuracao();
-                    editarCota.destacarSelecionados($('divFiltroDuracao'), par.tempo)
+                    editarCota.destacarSelecionados($('divFiltroDuracao'), par.tempo);
                     setTimeout(() => {  
                         const objAux = dados.filtrarEscalas(dados.parametros());
                         html.construirPlanilha(objAux);
@@ -1402,7 +1451,7 @@ const filtrar = {
             const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
         }
-        
+        $('divStatusEscala').title = `Escala (${dados.filtrarEscalas(dados.parametros()).length.toLocaleString('pr-BR')}/${dados.escalas.length.toLocaleString('pr-BR')})`;
     },
     prepararDados:function(objAux){
         filtrar.destacarDuracao(objAux);
@@ -1477,7 +1526,16 @@ const filtrar = {
 
 const html = {
     atualizacaoAutomatica: function(){
-
+        if(!conf.autoRefresh){return false}
+        if(!conf.ultimoComandoDoMenu){return false}
+        if(conf.atualizarAgora != true){return false}
+        if(conf.ultimoParametro != JSON.stringify(dados.parametros())){
+            conf.trmAutomatico = setTimeout(()=>{
+                clearTimeout(conf.trmAutomatico);
+                html.processarMenu(conf.ultimoComandoDoMenu);
+                conf.ultimoParametro = JSON.stringify(dados.parametros());
+            }, 200);
+        }
     },
     processarMenu: function(cod){
         switch (cod) {
@@ -1491,6 +1549,9 @@ const html = {
                 this.exibirCotaDobrada();
                 break;
             case 'menu_D_01_04':
+                this.exibirPercentualDeFaltas(dados.filtrarEscalas(dados.parametros()));
+                break;
+            case 'menu_D_01_05':
                 this.construirPlanilha(dados.filtrarEscalas(dados.parametros()));
                 break;
             case 'menu_D_02_01':
@@ -1548,7 +1609,7 @@ const html = {
                 html.construirTabelaInscritos();
                 break;
             case 'menu_D_05':
-                this.totalDeMilitaresEnvolvidos(dados.escalas);
+                this.totalDeMilitaresEnvolvidos(dados.filtrarEscalas(dados.parametros()));
                 break;
             case 'menu_D_06':
                 autoRefresh();
@@ -1556,6 +1617,12 @@ const html = {
             default:
                 alert('Código de menu não identificado!');
                 break;
+        }
+        conf.ultimoComandoDoMenu = cod;
+        if(conf.arrAutoRefreshMenu.includes(cod)){
+            conf.atualizarAgora = true;
+        }else{
+            conf.atualizarAgora = false;
         }
         function autoRefresh(){
             conf.autoRefresh = !conf.autoRefresh;
@@ -1786,14 +1853,14 @@ const html = {
     },
     construirTabelaInscritos:function () {
         this.limparResultado();
-        if(dados.inscritos.length == 0){alert('Não há registro sobre INSCRITOS foi carregado!');return 0;}
+        if(dados.inscritos.length == 0){alert('Não foi carregado nenhum dado sobre INSCRITOS!');return 0;}
 
         const table = document.createElement('table')
         table.append(_cabecalho1());
         table.append(_cabecalho2());
         let indice = 0;
         let mesDeReferencia = '';
-        let tCursos = '';
+        let tCursos = $('txtCursos').value == '' ? undefined : $('txtCursos').value;
         let total = 0;
     
         for (let i = 0; i < conf.arrOrdemPostoGrad.length; i++) {
@@ -1807,7 +1874,7 @@ const html = {
         }
     
         divResultado.append(table)
-        $('thMesReferenciaInscritos').innerHTML = mesDeReferencia
+        $('thMesReferenciaInscritos').innerHTML = mesDeReferencia;
     
         function _cabecalho1(){
             const tr = document.createElement('tr')
