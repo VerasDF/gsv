@@ -1107,10 +1107,10 @@ const dados = {
         if (data !== undefined) {
             if(Array.isArray(data)){
                 if(data.length > 0){
-                    objAux = objAux.filter((e)=>{return data.includes(e.DATA)})
+                    objAux = objAux.filter((e)=>{return data.includes(e.DATA)});
                 }
             }else{
-                objAux = objAux.filter((e)=>{return data.includes(e.DATA)})
+                objAux = objAux.filter((e)=>{return data.includes(e.DATA)});
             }
         }
         if (escaladoPor !== undefined) {
@@ -1270,8 +1270,10 @@ const dados = {
         let objAux = dados.inscritos.filter((e)=>{return e})
     
         if (cursos !== undefined) {
-            if(cursos.length > 0){
-                objAux = objAux.filter((e)=>{return cursos.includes(e.cursos)});
+            if(Array.isArray(cursos)){
+                if(cursos.length > 0){
+                    objAux = objAux.filter((e)=>{return cursos.includes(e.cursos)});
+                }
             }
             else{
                 objAux = objAux.filter((e) => {return e.CURSOS.toLowerCase().indexOf(cursos.toLowerCase()) > -1})
@@ -1414,7 +1416,7 @@ const editarCota = {
 }
 
 const filtrar = {
-    processarClickDoBotao:function(botao){
+    processarClickDoBotao: function(botao){
         if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
             const objAux = dados.filtrarEscalas(dados.parametros());
             filtrar.prepararDados(objAux);
@@ -1453,7 +1455,7 @@ const filtrar = {
         }
         $('divStatusEscala').title = `Escala (${dados.filtrarEscalas(dados.parametros()).length.toLocaleString('pr-BR')}/${dados.escalas.length.toLocaleString('pr-BR')})`;
     },
-    prepararDados:function(objAux){
+    prepararDados: function(objAux){
         filtrar.destacarDuracao(objAux);
         filtrar.destacarGrupo(objAux);
         filtrar.destacarOperacao(objAux);
@@ -1465,37 +1467,37 @@ const filtrar = {
         filtrar.destacarSiape(objAux);
         conf.totalStatus(objAux);
     },
-    destacarDuracao:function(objAux){
+    destacarDuracao: function(objAux){
         const arrDuracao = objAux.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrDuracao, $('divFiltroDuracao'));
         $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
     },
-    destacarGrupo:function(objAux){
+    destacarGrupo: function(objAux){
         const arrGrupo = objAux.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrGrupo, $('divFiltroGrupo'));
         $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
     },
-    destacarOperacao:function(objAux){
+    destacarOperacao: function(objAux){
         const arrOperacao = objAux.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrOperacao, $('divFiltroOperacao'));
         $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
     },
-    destacarGbmDestino:function(objAux){
+    destacarGbmDestino: function(objAux){
         const arrGbmDestino = objAux.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrGbmDestino, $('divFiltroGbmDestino'));
         $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
     },
-    destacarTurno:function(objAux){
+    destacarTurno: function(objAux){
         const arrTurno = objAux.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrTurno, $('divFiltroTurno'));
         $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
     },
-    destacarQuadro:function(objAux){
+    destacarQuadro: function(objAux){
         const arrQuadro = objAux.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrQuadro, $('divFiltroQuadro'));
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
-    destacarFuncao:function(objAux){
+    destacarFuncao: function(objAux){
         const arrFuncao = objAux.map((item)=> `${item.name_cinco}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrFuncao, $('divFiltroFuncao'));
         $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
@@ -1505,11 +1507,11 @@ const filtrar = {
         filtrar.destacar(arrSiape, $('divFiltroSiape'));
         $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString()})`;
     },
-    destacarDatas:function(objAux){
+    destacarDatas: function(objAux){
         const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
         filtrar.destacar(arrDatas, $('divCalendario'));
     },
-    destacar:function(arrAux, ctrAux){
+    destacar: function(arrAux, ctrAux){
         const divAux = ctrAux;
         for(let i = 0; i < divAux.childElementCount; i++){
             const ctr = divAux.children[i];
