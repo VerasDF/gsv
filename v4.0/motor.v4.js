@@ -217,6 +217,7 @@ const init = {
                 dadoBruto = dadoBruto.querySelector(".tbResumo");
                 dados.inscritos = init.prepararInscritosJSon( dadoBruto );
                 conf.totalInscritos = dados.inscritos.length;
+                this.carregarCursos();
             }
             if(funcaoAuxiliar){ funcaoAuxiliar() }
             
@@ -304,10 +305,10 @@ const init = {
                     if (tr.children[0].nodeName === "TD") {
                         const objTmp = {};idx++;
                         objTmp['_ID'] = idx; 
+                        objTmp['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`; 
                         objTmp['POSTO_GRAD'] = `${_sanitizar(tr.children[0].innerHTML)}`; 
                         objTmp['NOME'] = `${_sanitizar(tr.children[1].innerHTML)}`; 
                         objTmp['ESCALADO'] = `${_sanitizar(tr.children[1].title)}`; 
-                        objTmp['SIAPE'] = `${_sanitizar(tr.children[2].innerHTML)}`; 
                         objTmp['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`; 
                         objTmp['QUADRO'] = `${_sanitizar(tr.children[4].innerHTML)}`; 
                         objTmp['CIRCULO'] = `${_extrairCirculo(tr.children[4].innerHTML)}`; 
@@ -488,14 +489,14 @@ const init = {
             const objTmp = {}
             const tr = dadosHtml.children[i]
             if (tr.children[0].nodeName === "TD") {
+                objTmp['SIAPE'] = `${_sanitizar(tr.children[7].innerHTML)}`
+                objTmp['POSTO'] = `${_sanitizar(tr.children[5].innerHTML)}`
+                objTmp['NOME'] = `${_sanitizar(tr.children[6].innerHTML)}`
                 objTmp['OPERAÇÃO'] = `${_sanitizar(tr.children[0].innerHTML)}`
                 objTmp['LOCAL'] = `${_sanitizar(tr.children[1].innerHTML)}`
                 objTmp['DATA'] = `${_sanitizar(tr.children[2].innerHTML)}`
                 objTmp['TURNO'] = `${_sanitizar(tr.children[3].innerHTML).toLowerCase()}`
                 objTmp['GRUPO'] = `${_sanitizar(tr.children[4].innerHTML)}`
-                objTmp['POSTO'] = `${_sanitizar(tr.children[5].innerHTML)}`
-                objTmp['NOME'] = `${_sanitizar(tr.children[6].innerHTML)}`
-                objTmp['SIAPE'] = `${_sanitizar(tr.children[7].innerHTML)}`
                 objTmp['LOTAÇÃO'] = `${_sanitizar(tr.children[8].innerHTML)}`
                 objTmp['QUADRO'] = `${_sanitizar(tr.children[9].innerHTML)}`
                 objTmp['ALA'] = `${_sanitizar(tr.children[10].innerHTML)}`
@@ -576,8 +577,8 @@ const init = {
                     if(separar.length > 1) {
                         obj['SIAPE'] = separar[0];
                         obj['POSTO_GRAD'] = separar[1];
-                        obj['QUADRO'] = separar[2];
                         obj['NOME'] = `${_sanitizar(tr.children[2].innerHTML)}`;
+                        obj['QUADRO'] = separar[2];
                         obj['LOTAÇÃO'] = `${_sanitizar(tr.children[3].innerHTML)}`;
                         obj['ALA'] = `${_sanitizar(tr.children[4].innerHTML)}`;
                         obj['MES_REFERENCIA'] = mes_referencia;
@@ -585,8 +586,8 @@ const init = {
                     } else {
                         obj['SIAPE'] = `${_sanitizar(tr.children[1].innerHTML)}`;
                         obj['POSTO_GRAD'] = `${_sanitizar(tr.children[2].innerHTML)}`;
-                        obj['QUADRO'] = `${_sanitizar(tr.children[3].innerHTML)}`;
                         obj['NOME'] = `${_sanitizar(tr.children[4].innerHTML)}`;
+                        obj['QUADRO'] = `${_sanitizar(tr.children[3].innerHTML)}`;
                         obj['LOTAÇÃO'] = `${_sanitizar(tr.children[5].innerHTML)}`;
                         obj['ALA'] = `${_sanitizar(tr.children[6].innerHTML)}`;
                         obj['MES_REFERENCIA'] = mes_referencia;
@@ -689,17 +690,19 @@ const init = {
             }
         })
     },
-    tratarInscricoes: function(){
+    tratarInscricoes: function() {
         let cursos = [];
-        if(!dados.inscritos.length>0){ return [] }
-        dados.inscritos.forEach(a => {
-            const a1 = a.CURSOS.split(',');
-            for(let i = 0; i < a1.length; i++){
-                if(!cursos.includes(a1[i].trim())){
-                    if(!a1[i].trim() == ''){ cursos.push(a1[i].trim()); }
+        if(!dados.inscritos.length > 0) { return [] }
+        for (let a = 0; a < dados.inscritos.length; a++) {
+            let a1 = dados.inscritos[a].CURSOS.split(',');
+            for(let i = 0; i < a1.length; i++) {
+                a1[i] = a1[i].trim();
+                if(!cursos.includes(a1[i].trim())) {
+                    if(!a1[i].trim() == '') { cursos.push(a1[i].trim()); }
                 }
             }
-        });
+            dados.inscritos[a].arrCursos = a1;
+        };
         return cursos.sort();
     },
     carregarControles: function(){
@@ -834,7 +837,7 @@ const init = {
             }
         })
     },
-    _criarItemDaLista: function(objTag, strTexto){
+    _criarItemDaLista: function( objTag, strTexto ){
         const btnTemp = document.createElement('button');
         btnTemp.id = objTag.id+'Btn';
         btnTemp.ariaLabel = `${strTexto}`;
@@ -895,7 +898,7 @@ const init = {
             }
         }
     },
-    _limparLista: function(ctrAux){
+    _limparLista: function( ctrAux ){
         for(let i = ctrAux.childElementCount-1; i >= 0; i--){
             if(ctrAux.children[i].nodeName.toLowerCase() == 'button'){
                 ctrAux.removeChild(ctrAux.children[i]);
