@@ -45,7 +45,7 @@ const aux = {
     }
 }
 
-const menuOpcoes = {
+const menu = {
     cota:function(ctrAux){
         if(ctrAux.id == 'btnOpcaoTodas'){
             $('btnOpcaoTodas').ariaPressed = 'true';
@@ -109,10 +109,62 @@ const menuOpcoes = {
         }
         this._acao();
     },
+    processarClickDoBotao: function(botao){
+        if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroDuracaoBtn' ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroFuncaoBtn' ){
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroGbmDestinoBtn' ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroGrupoBtn' ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroOperacaoBtn' ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroTurnoBtn' ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroSiapeBtn' ) {
+            const objAux = dados.filtrarEscalas(dados.parametros());
+            filtrar.prepararDados(objAux);
+        }
+        $('divStatusEscala').title = `Escala (${dados.filtrarEscalas(dados.parametros()).length.toLocaleString('pr-BR')}/${dados.escalas.length.toLocaleString('pr-BR')})`;
+        this._acao();
+    },
+    atualizacaoAutomatica: function(){
+        if(!conf.autoRefresh){return false}
+        if(!conf.ultimoComandoDoMenu){return false}
+        if(conf.atualizarAgora != true){return false}
+        if(conf.ultimoParametro != JSON.stringify(dados.parametros())){
+            conf.trmAutomatico = setTimeout(()=>{
+                clearTimeout(conf.trmAutomatico);
+                html.processarMenu(conf.ultimoComandoDoMenu);
+                conf.ultimoParametro = JSON.stringify(dados.parametros());
+            }, 100);
+        }
+    },
     _acao:function(){
         const objAux = dados.filtrarEscalas( dados.parametros() );
         filtrar.prepararDados( objAux );
-        html.atualizacaoAutomatica();
+        this.atualizacaoAutomatica();
     }
 }
 
@@ -806,37 +858,6 @@ const init = {
         }
         $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString('pt-BR')})`;
     },
-    tratarFaltas: function() {
-        if(dados.escalas.length===0 || dados.faltas.length===0){ return }
-        
-        if(dados.escalas[0].DATA.split("/")[1] !== dados.faltas[0].DATA.split("/")[1])
-        {
-            alert(`Períodos incompatívies para tratar faltas`);
-            return;
-        }
-        
-        let contador = 0;
-        dados.escalas.forEach((elm)=>{
-            const filtroTurno = dados.filtrarFaltas({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
-            if(filtroTurno.length > 0){
-                elm.ASSINATURA = 'FALTOU';
-                elm.FALTA = true;
-                contador = contador + 1;
-            }
-        })
-        
-        if(dados.faltas.length != contador){
-            $led(21);
-        }
-        $('divStatusFalta').title = `Processametno de faltas: ${dados.faltas.length}/${contador}`;
-    
-        dados.faltas.forEach((flt)=>{
-            const filtroFalta = dados.filtrarEscalas({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
-            if (filtroFalta.length == 0){
-                console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
-            }
-        })
-    },
     _criarItemDaLista: function( objTag, strTexto ){
         const btnTemp = document.createElement('button');
         btnTemp.id = objTag.id+'Btn';
@@ -846,8 +867,7 @@ const init = {
         btnTemp.innerHTML = `${strTexto}`;
         btnTemp.addEventListener('click', (e)=>{
             if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
-            filtrar.processarClickDoBotao(btnTemp);
-            html.atualizacaoAutomatica();
+            menu.processarClickDoBotao(btnTemp);
         })
         return btnTemp
     },
@@ -884,8 +904,7 @@ const init = {
             btnTemp.innerHTML = (diaAux==undefined ? '-':("00"+diaAux.getDate()).slice(-2));
             btnTemp.addEventListener('click', (e)=>{
                 if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
-                filtrar.processarClickDoBotao(btnTemp);
-                html.atualizacaoAutomatica();
+                menu.processarClickDoBotao(btnTemp);
             })
             return btnTemp
         }
@@ -1419,45 +1438,6 @@ const editarCota = {
 }
 
 const filtrar = {
-    processarClickDoBotao: function(botao){
-        if ( botao.id.indexOf('btnDiaDoMes') > -1 ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroDuracaoBtn' ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroFuncaoBtn' ){
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroGbmDestinoBtn' ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroGrupoBtn' ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroOperacaoBtn' ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroTurnoBtn' ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        if ( botao.id == 'divFiltroSiapeBtn' ) {
-            const objAux = dados.filtrarEscalas(dados.parametros());
-            filtrar.prepararDados(objAux);
-        }
-        $('divStatusEscala').title = `Escala (${dados.filtrarEscalas(dados.parametros()).length.toLocaleString('pr-BR')}/${dados.escalas.length.toLocaleString('pr-BR')})`;
-    },
     prepararDados: function(objAux){
         filtrar.destacarDuracao(objAux);
         filtrar.destacarGrupo(objAux);
@@ -1530,18 +1510,6 @@ const filtrar = {
 }
 
 const html = {
-    atualizacaoAutomatica: function(){
-        if(!conf.autoRefresh){return false}
-        if(!conf.ultimoComandoDoMenu){return false}
-        if(conf.atualizarAgora != true){return false}
-        if(conf.ultimoParametro != JSON.stringify(dados.parametros())){
-            conf.trmAutomatico = setTimeout(()=>{
-                clearTimeout(conf.trmAutomatico);
-                html.processarMenu(conf.ultimoComandoDoMenu);
-                conf.ultimoParametro = JSON.stringify(dados.parametros());
-            }, 100);
-        }
-    },
     processarMenu: function(cod){
         switch (cod) {
             case 'menu_D_01_01':
@@ -2594,47 +2562,47 @@ window.onload = function(){
     //opções
     $('btnOpcaoTodas').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.cota(e.target);
+        menu.cota(e.target);
     })
     $('btnOpcaoComVoluntario').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.cota(e.target);
+        menu.cota(e.target);
     })
     $('btnOpcaoSemVoluntario').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.cota(e.target);
+        menu.cota(e.target);
     })
     $('btnOpcaoCompulsorio').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.cota(e.target);
+        menu.cota(e.target);
     })
     
     //falta
     $('btnFaltaTodas').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.falta(e.target);
+        menu.falta(e.target);
     })
     $('btnFaltaFalse').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.falta(e.target);
+        menu.falta(e.target);
     })
     $('btnFaltaTrue').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.falta(e.target);
+        menu.falta(e.target);
     })
     
     //quinzena
     $('btnQuinzenaMesInteiro').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.quinzena(e.target);
+        menu.quinzena(e.target);
     })
     $('btnQuinzena1').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.quinzena(e.target);
+        menu.quinzena(e.target);
     })
     $('btnQuinzena2').addEventListener('click', (e)=>{
         e.preventDefault();
-        menuOpcoes.quinzena(e.target);
+        menu.quinzena(e.target);
     })
     
 }
