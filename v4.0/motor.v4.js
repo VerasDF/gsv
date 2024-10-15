@@ -1539,7 +1539,7 @@ const html = {
                 clearTimeout(conf.trmAutomatico);
                 html.processarMenu(conf.ultimoComandoDoMenu);
                 conf.ultimoParametro = JSON.stringify(dados.parametros());
-            }, 200);
+            }, 100);
         }
     },
     processarMenu: function(cod){
