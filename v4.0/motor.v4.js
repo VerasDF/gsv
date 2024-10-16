@@ -269,7 +269,7 @@ const init = {
                 dadoBruto = dadoBruto.querySelector(".tbResumo");
                 dados.inscritos = init.prepararInscritosJSon( dadoBruto );
                 conf.totalInscritos = dados.inscritos.length;
-                this.carregarCursos();
+                // this.carregarCursos();
             }
             if(funcaoAuxiliar){ funcaoAuxiliar() }
             
@@ -736,8 +736,8 @@ const init = {
         conf.faltaStatus = `faltas: ${dados.faltas.length}/${contador}`;
     
         dados.faltas.forEach((flt) => {
-            const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
-            if (filtroFalta.length == 0){
+            const objEscala = dados.filtrarEscalas({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
+            if (objEscala.length == 0){
                 console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
             }
         })
@@ -2603,5 +2603,10 @@ window.onload = function() {
         e.preventDefault();
         menu.quinzena(e.target);
     })
-    
+}
+
+window.onkeyup = (e) => {
+    if($('btnEditarCancel')){
+        $('btnEditarCancel').click();
+    }
 }

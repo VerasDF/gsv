@@ -18,7 +18,7 @@
 }
 body{
     display: grid;
-    grid-template-columns: 25px 1fr 25px;
+    grid-template-columns: 45px 1fr 65px;
 }
 button{
     background-color: var(--botaoFundo);
