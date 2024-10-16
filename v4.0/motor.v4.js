@@ -154,7 +154,7 @@ const menu = {
         if(!conf.ultimoComandoDoMenu){return false}
         if(conf.atualizarAgora != true){return false}
         if(conf.ultimoParametro != JSON.stringify(dados.parametros())){
-            conf.trmAutomatico = setTimeout(()=>{
+            conf.trmAutomatico = setTimeout(() => {
                 clearTimeout(conf.trmAutomatico);
                 html.processarMenu(conf.ultimoComandoDoMenu);
                 conf.ultimoParametro = JSON.stringify(dados.parametros());
@@ -721,7 +721,7 @@ const init = {
         }
         
         let contador = 0;
-        dados.escalas.forEach((elm)=>{
+        dados.escalas.forEach((elm) => {
             const filtroTurno = dados.filtrarFaltas({siape:elm.SIAPE, data:elm.DATA, turno:elm.HORA});
             if(filtroTurno.length > 0){
                 elm.ASSINATURA = 'FALTOU';
@@ -735,7 +735,7 @@ const init = {
         }
         conf.faltaStatus = `faltas: ${dados.faltas.length}/${contador}`;
     
-        dados.faltas.forEach((flt)=>{
+        dados.faltas.forEach((flt) => {
             const filtroFalta = filtrarEscalasJson({siape:flt.SIAPE, data:flt.DATA, horario:flt.TURNO});
             if (filtroFalta.length == 0){
                 console.log("(Falta não aplicada)", flt.SIAPE, flt.DATA, flt.TURNO,flt.LOCAL, flt.OPERAÇÃO);
@@ -785,7 +785,7 @@ const init = {
         init._criarCalendarioDoMes();
     },
     carregarGrupo: function(){
-        const arrGrupo = dados.escalas.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrGrupo = dados.escalas.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         const divGrupo = $('divFiltroGrupo');
         init._limparLista(divGrupo);
         for(let i = 0; i < arrGrupo.length; i++){
@@ -794,7 +794,7 @@ const init = {
         $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
     },
     carregarDuracao: function(){
-        const arrDuracao = dados.escalas.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrDuracao = dados.escalas.map((item) => `${item.TEMPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         const divDuracao = $('divFiltroDuracao');
         $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
         init._limparLista(divDuracao);
@@ -803,7 +803,7 @@ const init = {
         }
     },
     carregarOperacao: function(){
-        const arrOperacao = dados.escalas.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrOperacao = dados.escalas.map((item) => `${item.OPERAÇÃO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         const divOperacao = $('divFiltroOperacao');
         init._limparLista(divOperacao);
         for(let i = 0; i < arrOperacao.length; i++){
@@ -812,7 +812,7 @@ const init = {
         $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
     },
     carregarGbmDestino: function(){
-        const arrGbmDestino = dados.escalas.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrGbmDestino = dados.escalas.map((item) => `${item.GBM_DESTINO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         let arrAux = arrGbmDestino;
         const divGbmDestino = $('divFiltroGbmDestino');
         init._limparLista(divGbmDestino);
@@ -823,7 +823,7 @@ const init = {
         $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
     },
     carregarTurno: function(){
-        const arrTurno = dados.escalas.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrTurno = dados.escalas.map((item) => `${item.HORA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         const divTurno = $('divFiltroTurno');
         init._limparLista(divTurno);
         for(let i = 0; i < arrTurno.length; i++){
@@ -832,7 +832,7 @@ const init = {
         $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
     },
     carregarQuadro: function(){
-        const arrQuadro = dados.escalas.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrQuadro = dados.escalas.map((item) => `${item.QUADRO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         const divQuadro = $('divFiltroQuadro');
         init._limparLista(divQuadro);
         for(let i = 0; i < arrQuadro.length; i++){
@@ -841,7 +841,7 @@ const init = {
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
     carregarFuncao: function(){
-        const arrFuncao = dados.escalas.map((item)=>`${item.name_cinco}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrFuncao = dados.escalas.map((item) => `${item.name_cinco}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         const divFuncao = $('divFiltroFuncao');
         init._limparLista(divFuncao);
         for(let i = 0; i< arrFuncao.length; i++){
@@ -850,7 +850,7 @@ const init = {
         $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
     },
     carregarSiape: function(){
-        const arrSiape = dados.escalas.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort();
+        const arrSiape = dados.escalas.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
         const divSiape = $('divFiltroSiape');
         init._limparLista(divSiape);
         for(let i = 0; i< arrSiape.length; i++){
@@ -865,7 +865,7 @@ const init = {
         btnTemp.ariaPressed = 'false';
         btnTemp.className = 'campoCriterio';
         btnTemp.innerHTML = `${strTexto}`;
-        btnTemp.addEventListener('click', (e)=>{
+        btnTemp.addEventListener('click', (e) => {
             if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
             menu.processarClickDoBotao(btnTemp);
         })
@@ -902,7 +902,7 @@ const init = {
             btnTemp.ariaDisabled = 'false'
             btnTemp.className = (diaAux==undefined ? `diaMes` : ((([0,6]).includes(new Date(diaAux).getDay())) ? `diaMes diaMesFinalDeSemana` : `diaMes`));
             btnTemp.innerHTML = (diaAux==undefined ? '-':("00"+diaAux.getDate()).slice(-2));
-            btnTemp.addEventListener('click', (e)=>{
+            btnTemp.addEventListener('click', (e) => {
                 if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
                 menu.processarClickDoBotao(btnTemp);
             })
@@ -1121,141 +1121,141 @@ const dados = {
     },
     filtrarEscalas: function({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
     
-        let objAux = dados.escalas.filter((e)=>{return e})
+        let objAux = dados.escalas.filter((e) => {return e})
     
         if (assinatura !== undefined) {
-            objAux = objAux.filter((e)=>{return e.ASSINATURA.indexOf(assinatura) > -1})
+            objAux = objAux.filter((e) => {return e.ASSINATURA.indexOf(assinatura) > -1})
         }
         if (data !== undefined) {
             if(Array.isArray(data)){
                 if(data.length > 0){
-                    objAux = objAux.filter((e)=>{return data.includes(e.DATA)});
+                    objAux = objAux.filter((e) => {return data.includes(e.DATA)});
                 }
             }else{
-                objAux = objAux.filter((e)=>{return data.includes(e.DATA)});
+                objAux = objAux.filter((e) => {return data.includes(e.DATA)});
             }
         }
         if (escaladoPor !== undefined) {
             if(escaladoPor === 'compulsória'){
-                objAux = objAux.filter((e)=>{return e.ESCALADO.split('-').length === 3});
+                objAux = objAux.filter((e) => {return e.ESCALADO.split('-').length === 3});
             }else if(escaladoPor === 'próprio'){
-                objAux = objAux.filter((e)=>{return e.ESCALADO.split('-').length === 2});
+                objAux = objAux.filter((e) => {return e.ESCALADO.split('-').length === 2});
             }else{
-                objAux = objAux.filter((e)=>{return e.ESCALADO.indexOf(escaladoPor) > -1});
+                objAux = objAux.filter((e) => {return e.ESCALADO.indexOf(escaladoPor) > -1});
             }
         }
         if (falta !== undefined) {
-            objAux = objAux.filter((e)=>{return e.FALTA === falta});
+            objAux = objAux.filter((e) => {return e.FALTA === falta});
         }
         if (grupo !== undefined) {
             if(Array.isArray(grupo)){
                 if(grupo.length > 0){
-                    objAux = objAux.filter((e)=>{return grupo.includes(e.GRUPO)});
+                    objAux = objAux.filter((e) => {return grupo.includes(e.GRUPO)});
                 }
             }
             else{
-                objAux = objAux.filter((e)=>{return e.GRUPO.indexOf(grupo) > -1})
+                objAux = objAux.filter((e) => {return e.GRUPO.indexOf(grupo) > -1})
             }
         }
         if (gbm_destino !== undefined) {
             if(Array.isArray(gbm_destino)){
                 if(gbm_destino.length > 0){
-                    objAux = objAux.filter((e)=>{return gbm_destino.includes(e.GBM_DESTINO)});
+                    objAux = objAux.filter((e) => {return gbm_destino.includes(e.GBM_DESTINO)});
                 }
             }
             else{
-                objAux = objAux.filter((e)=>{return e.GBM_DESTINO.indexOf(gbm_destino) > -1})
+                objAux = objAux.filter((e) => {return e.GBM_DESTINO.indexOf(gbm_destino) > -1})
             }
         }
         if (horario !== undefined) {
             if(Array.isArray(horario)){
                 if(horario.length > 0){
-                    objAux = objAux.filter((e)=>{return horario.includes(e.HORA)})
+                    objAux = objAux.filter((e) => {return horario.includes(e.HORA)})
                 }
             }
             else{
-                objAux = objAux.filter((e)=>{return e.HORA.indexOf(horario) > -1})
+                objAux = objAux.filter((e) => {return e.HORA.indexOf(horario) > -1})
             }
         }
         if (lotacao !== undefined) {
-            objAux = objAux.filter((e)=>{return e.LOTAÇÃO.indexOf(lotacao) > -1})
+            objAux = objAux.filter((e) => {return e.LOTAÇÃO.indexOf(lotacao) > -1})
         }
         if (nome !== undefined) {
-            objAux = objAux.filter((e)=>{return e.NOME.indexOf(nome) > -1})
+            objAux = objAux.filter((e) => {return e.NOME.indexOf(nome) > -1})
         }
         if (operacao !== undefined) {
             if(Array.isArray(operacao)){
                 if(operacao.length > 0){
-                    objAux = objAux.filter((e)=>{return operacao.includes(e.OPERAÇÃO)})
+                    objAux = objAux.filter((e) => {return operacao.includes(e.OPERAÇÃO)})
                 }
             }
             else{
-                objAux = objAux.filter((e)=>{return e.OPERAÇÃO.indexOf(operacao) > -1})
+                objAux = objAux.filter((e) => {return e.OPERAÇÃO.indexOf(operacao) > -1})
             }
         }
         if (operacao_tipo !== undefined) {
-            objAux = objAux.filter((e)=>{return e.name_um.indexOf(operacao_tipo) > -1})
+            objAux = objAux.filter((e) => {return e.name_um.indexOf(operacao_tipo) > -1})
         }
         if (quadro !== undefined) {
-            objAux = objAux.filter((e)=>{return e.QUADRO.indexOf(quadro) > -1})
+            objAux = objAux.filter((e) => {return e.QUADRO.indexOf(quadro) > -1})
         }
         if (quinzena!==undefined) {
-            objAux = objAux.filter((e)=>{return e.QUINZENA.indexOf(quinzena) > -1})
+            objAux = objAux.filter((e) => {return e.QUINZENA.indexOf(quinzena) > -1})
         }
         if (posto_grad!==undefined) {
-            objAux = objAux.filter((e)=>{return e.POSTO_GRAD.indexOf(posto_grad) > -1})
+            objAux = objAux.filter((e) => {return e.POSTO_GRAD.indexOf(posto_grad) > -1})
         }
         if (sub_lotacao_local!==undefined) {
-            objAux = objAux.filter((e)=>{return e.desc_um.indexOf(sub_lotacao_local) > -1})
+            objAux = objAux.filter((e) => {return e.desc_um.indexOf(sub_lotacao_local) > -1})
         }
         if (siape!==undefined) {
             if(Array.isArray(siape)){
-                objAux = objAux.filter((e)=>{return siape.includes(e.SIAPE)});
+                objAux = objAux.filter((e) => {return siape.includes(e.SIAPE)});
             }
             else{
                 if(siape.substr(0,1) === '-'){
                     siape = siape.substr(1,siape.length)
                     objAux = objAux.filter((item) => {return item.SIAPE !== siape})
                 }else{
-                    objAux = objAux.filter((e)=>{return e.SIAPE.indexOf(siape) > -1})
+                    objAux = objAux.filter((e) => {return e.SIAPE.indexOf(siape) > -1})
                 }
             }
 
         }
         if (tempo!==undefined) {
             if(Array.isArray(tempo)){
-                objAux = objAux.filter((e)=>{return tempo.includes(e.TEMPO)})
+                objAux = objAux.filter((e) => {return tempo.includes(e.TEMPO)})
             }
             else{
                 tempo = tempo.toString()
                 if (tempo.indexOf('12/24') > -1){
-                    objAux = objAux.filter((e)=>{return e.TEMPO=='12' || e.TEMPO == '24'})
+                    objAux = objAux.filter((e) => {return e.TEMPO=='12' || e.TEMPO == '24'})
                 }else{
-                    objAux = objAux.filter((e)=>{return e.TEMPO.indexOf(tempo) > -1})
+                    objAux = objAux.filter((e) => {return e.TEMPO.indexOf(tempo) > -1})
                 }
             }
         }
         if (cinco!==undefined) {
             if(Array.isArray(cinco)){
                 if(cinco.length > 0){
-                    objAux = objAux.filter((e)=>{return cinco.includes(e.name_cinco)});
+                    objAux = objAux.filter((e) => {return cinco.includes(e.name_cinco)});
                 }
             }
             else{
-                objAux = objAux.filter((e)=>{return e.name_cinco.indexOf(cinco) > -1});
+                objAux = objAux.filter((e) => {return e.name_cinco.indexOf(cinco) > -1});
             }
         }
             
         return objAux
     },
     filtrarFaltas: function({ data, local, lotacao, nome, operacao, quadro, posto, siape, turno }) {
-        let objAux = dados.faltas.filter((e)=>{return e})
+        let objAux = dados.faltas.filter((e) => {return e})
     
         if (data !== undefined) {
             objAux = objAux.filter((e) => { if ( e.DATA.indexOf(data) > -1 ) { return e }})
         }
         if (local!==undefined) {
-            objAux = objAux.filter((e)=>{return local.includes(e.LOCAL)})
+            objAux = objAux.filter((e) => {return local.includes(e.LOCAL)})
         }
         if (lotacao !== undefined) {
             objAux = objAux.filter((e) => { if ( e.LOTAÇÃO.indexOf(lotacao) > -1 ) { return e }})
@@ -1265,10 +1265,10 @@ const dados = {
         }
         if (operacao!==undefined) {
             if(operacao.length > 0){
-                objAux = objAux.filter((e)=>{return operacao.includes(e.OPERAÇÃO)})
+                objAux = objAux.filter((e) => {return operacao.includes(e.OPERAÇÃO)})
             }
             else{
-                objAux = objAux.filter((e)=>{return e.OPERAÇÃO.indexOf(operacao) > -1})
+                objAux = objAux.filter((e) => {return e.OPERAÇÃO.indexOf(operacao) > -1})
             }
         }
         if (quadro !== undefined) {
@@ -1289,12 +1289,12 @@ const dados = {
     },
     filtrarInscritos: function({ cursos, lotacao, nome, quadro, posto_grad, siape }) {
         
-        let objAux = dados.inscritos.filter((e)=>{return e})
+        let objAux = dados.inscritos.filter((e) => {return e})
     
         if (cursos !== undefined) {
             if(Array.isArray(cursos)){
                 if(cursos.length > 0){
-                    objAux = objAux.filter((e)=>{return cursos.includes(e.cursos)});
+                    objAux = objAux.filter((e) => {return cursos.includes(e.cursos)});
                 }
             }
             else{
@@ -1335,7 +1335,7 @@ const dados = {
 
 const editarCota = {
     carregarInterface: function(id){
-        aux.ajax({urlDoArquivo:'editar.html', funcaoDeRetorno:(conteudoHtml)=>{
+        aux.ajax({urlDoArquivo:'editar.html', funcaoDeRetorno:(conteudoHtml) => {
             const div = document.createElement('div');
             const divId = id;
             id = id.toString().replace('div','');
@@ -1343,10 +1343,10 @@ const editarCota = {
             div.className = "divDialogoEdicao";
             div.innerHTML = conteudoHtml;
             $(id).insertBefore(div, $(id).children[0]);
-            $('btnEditarUpdate').addEventListener('click', (e)=>{
+            $('btnEditarUpdate').addEventListener('click', (e) => {
                 editarCota.alterarDados($('txtEditarIndex').value);
                 $('div'+id.toString()).style.display = 'none';
-                setTimeout(()=>{
+                setTimeout(() => {
                     const par = dados.parametros('duracao');
                     dados.carregarDuracao();
                     editarCota.destacarSelecionados($('divFiltroDuracao'), par.tempo);
@@ -1357,7 +1357,7 @@ const editarCota = {
                 },200);
                 html.limparResultado();
             })
-            $('btnEditarCancel').addEventListener('click', (e)=>{
+            $('btnEditarCancel').addEventListener('click', (e) => {
                 $(id.toString()).removeChild($(id.toString()).children[0]);
             })
         }})
@@ -1451,47 +1451,47 @@ const filtrar = {
         conf.totalStatus(objAux);
     },
     destacarDuracao: function(objAux){
-        const arrDuracao = objAux.map((item)=>`${item.TEMPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrDuracao = objAux.map((item) => `${item.TEMPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrDuracao, $('divFiltroDuracao'));
         $('fldDuracao').children[0].innerHTML = `Duração: (${arrDuracao.length})`;
     },
     destacarGrupo: function(objAux){
-        const arrGrupo = objAux.map((item)=>`${item.GRUPO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrGrupo = objAux.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrGrupo, $('divFiltroGrupo'));
         $('fldGrupo').children[0].innerHTML = `Grupos: (${arrGrupo.length})`;
     },
     destacarOperacao: function(objAux){
-        const arrOperacao = objAux.map((item)=>`${item.OPERAÇÃO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrOperacao = objAux.map((item) => `${item.OPERAÇÃO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrOperacao, $('divFiltroOperacao'));
         $('fldOperacao').children[0].innerHTML = `Operações: (${arrOperacao.length})`;
     },
     destacarGbmDestino: function(objAux){
-        const arrGbmDestino = objAux.map((item)=>`${item.GBM_DESTINO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrGbmDestino = objAux.map((item) => `${item.GBM_DESTINO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrGbmDestino, $('divFiltroGbmDestino'));
         $('fldGbmDestino').children[0].innerHTML = `Destino: (${arrGbmDestino.length})`;
     },
     destacarTurno: function(objAux){
-        const arrTurno = objAux.map((item)=>`${item.HORA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrTurno = objAux.map((item) => `${item.HORA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrTurno, $('divFiltroTurno'));
         $('fldTurno').children[0].innerHTML = `Turnos: (${arrTurno.length})`;
     },
     destacarQuadro: function(objAux){
-        const arrQuadro = objAux.map((item)=>`${item.QUADRO}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrQuadro = objAux.map((item) => `${item.QUADRO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrQuadro, $('divFiltroQuadro'));
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
     },
     destacarFuncao: function(objAux){
-        const arrFuncao = objAux.map((item)=> `${item.name_cinco}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrFuncao = objAux.map((item) =>  `${item.name_cinco}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrFuncao, $('divFiltroFuncao'));
         $('fldFuncao').children[0].innerHTML = `Funções: (${arrFuncao.length})`;
     },
     destacarSiape: function(objAux){
-        const arrSiape = objAux.map((item)=>`${item.SIAPE}`).filter((elem, index, arr)=>arr.indexOf(elem) === index);
+        const arrSiape = objAux.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index);
         filtrar.destacar(arrSiape, $('divFiltroSiape'));
         $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString()})`;
     },
     destacarDatas: function(objAux){
-        const arrDatas = objAux.map((item)=>`${item.DATA}`).filter((elem, index, arr)=>arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrDatas = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         filtrar.destacar(arrDatas, $('divCalendario'));
     },
     destacar: function(arrAux, ctrAux){
@@ -1499,7 +1499,7 @@ const filtrar = {
         for(let i = 0; i < divAux.childElementCount; i++){
             const ctr = divAux.children[i];
             if(ctr.ariaLabel){
-                const contagem = arrAux.filter((e)=>{return e == ctr.ariaLabel});
+                const contagem = arrAux.filter((e) => {return e == ctr.ariaLabel});
                 ctr.ariaDisabled = 'true';
                 if(contagem.length > 0){
                     ctr.ariaDisabled = 'false';
@@ -1510,7 +1510,7 @@ const filtrar = {
 }
 
 const html = {
-    processarMenu: function(cod){
+    processarMenu: function(cod) {
         switch (cod) {
             case 'menu_D_01_01':
                 this.escalasParaBg(dados.filtrarEscalas(dados.parametros()));
@@ -1579,7 +1579,7 @@ const html = {
                 editarCota.alterarDuracaoTodasAsCotasFiltradas({valor:'600', tempo:'12'});
                 break;
             case 'menu_D_04':
-                html.construirTabelaInscritos();
+                html.construirTabelaInscritos('txtCursos');
                 break;
             case 'menu_D_05':
                 this.totalDeMilitaresEnvolvidos(dados.filtrarEscalas(dados.parametros()));
@@ -1631,7 +1631,7 @@ const html = {
         thead.append(_cabecalhoLinha3(totalDeColunasDias));
         table.append(thead);
         for(let i = 0; i < conf.arrOrdemPostoGrad.length; i++){
-            objPosto = objAux.map((item)=>{return {
+            objPosto = objAux.map((item) => {return {
                     _ID:item._ID,
                     SIAPE:item.SIAPE,
                     NOME:item.NOME,
@@ -1642,11 +1642,11 @@ const html = {
                     FALTA:item.FALTA,
                     OPERAÇÃO:item.OPERAÇÃO
                 }})
-            .filter((item)=>{if(item.POSTO_GRAD === conf.arrOrdemPostoGrad[i]){return item}});
+            .filter((item) => {if(item.POSTO_GRAD === conf.arrOrdemPostoGrad[i]){return item}});
             if(objPosto.length > 0){
                 const arrSiape = objPosto.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort()
                 for(let j = 0; j < arrSiape.length; j++){
-                    objSiape = objPosto.filter((item)=>{if(item.SIAPE === arrSiape[j]){return item}}).sort(ordenar.porData);
+                    objSiape = objPosto.filter((item) => {if(item.SIAPE === arrSiape[j]){return item}}).sort(ordenar.porData);
                     tbody.append(_linhasContendoDados(objSiape));
                 }
             }
@@ -1744,7 +1744,7 @@ const html = {
                         tr.append(tdOutroDia);
                         cotasTotal = cotasTotal + 1;
                     }
-                    tdDia.addEventListener('dblclick', (e)=>{
+                    tdDia.addEventListener('dblclick', (e) => {
                         editarCota.carregarInterface('div'+obj[l]._ID);
                     })
                 }
@@ -1816,7 +1816,7 @@ const html = {
                 btnAtualizar.id = 'btnAtualizar';
                 btnAtualizar.innerHTML = 'Atualizar';
                 btnAtualizar.style.padding = '10px'
-                btnAtualizar.addEventListener('click', (e)=>{
+                btnAtualizar.addEventListener('click', (e) => {
                     const objAux = dados.filtrarEscalas(dados.parametros());
                     html.construirPlanilha(objAux);
                 });
@@ -1824,17 +1824,16 @@ const html = {
             }
         }
     },
-    construirTabelaInscritos:function () {
+    construirTabelaInscritos:function (ctrOrigem) {
         this.limparResultado();
-        if(dados.inscritos.length == 0){alert('Não foi carregado nenhum dado sobre INSCRITOS!');return 0;}
+        if(dados.inscritos.length == 0) { alert('Não foi carregado nenhum dado sobre INSCRITOS!'); return 0; }
 
-        const table = document.createElement('table')
+        const table = document.createElement('table');
         table.append(_cabecalho1());
         table.append(_cabecalho2());
         let indice = 0;
         let mesDeReferencia = '';
-        let tCursos = $('txtCursos').value == '' ? undefined : $('txtCursos').value;
-        let total = 0;
+        let tCursos = $(ctrOrigem).value == '' ? undefined : $(ctrOrigem).value;
     
         for (let i = 0; i < conf.arrOrdemPostoGrad.length; i++) {
             const objAux =  _ordenarDados(dados.filtrarInscritos({ posto_grad: conf.arrOrdemPostoGrad[i], cursos: tCursos }));
@@ -1846,7 +1845,7 @@ const html = {
             }
         }
     
-        divResultado.append(table)
+        divResultado.append(table);
         $('thMesReferenciaInscritos').innerHTML = mesDeReferencia;
     
         function _cabecalho1(){
@@ -1885,7 +1884,7 @@ const html = {
             }
         }
     },
-    cotasNoCalendario: function(objAux){
+    cotasNoCalendario: function(objAux) {
         this.limparResultado();
         if(objAux.length == 0){ return }
         
@@ -1931,7 +1930,7 @@ const html = {
             }
             const divDiaDoMes = _criarDivDia(dataAux);
             divDiaDoMes.innerHTML += `<div class="clsCalendarioTotalDia">${(totDia[dataAux.toLocaleDateString('pt-BR')] == undefined ? `` : totDia[dataAux.toLocaleDateString('pt-BR')])}</div>`;
-            divDiaDoMes.addEventListener('mousemove',(e)=>{
+            divDiaDoMes.addEventListener('mousemove',(e) => {
                 const divTmp = e.target.parentElement;
                 if(divTmp.title=='') {
                     const dtDiaAux = divTmp.ariaValueText;
@@ -2015,15 +2014,15 @@ const html = {
             btn.id = 'btnAtualizarCalendario';
             btn.style = 'display:flex; margin:0 auto;';
             btn.innerHTML = 'Atualizar';
-            btn.addEventListener('click', (e)=>{
+            btn.addEventListener('click', (e) => {
                 const objAux = dados.filtrarEscalas(dados.parametros());
                 html.cotasNoCalendario(objAux);
             })
-            rad1.addEventListener('change', (e)=>{
+            rad1.addEventListener('change', (e) => {
                 const objAux = dados.filtrarEscalas(dados.parametros());
                 html.cotasNoCalendario(objAux);
             })
-            rad2.addEventListener('change', (e)=>{
+            rad2.addEventListener('change', (e) => {
                 const objAux = dados.filtrarEscalas(dados.parametros());
                 html.cotasNoCalendario(objAux);            
             })
@@ -2035,7 +2034,7 @@ const html = {
             return fld;
         }
     },
-    escalasParaBg: function(objAux){
+    escalasParaBg: function(objAux) {
 
         this.limparResultado();
 
@@ -2107,7 +2106,7 @@ const html = {
         const table = document.createElement('table');
         table.innerHTML = `<tr><th>DIA</th><th>SIAPE</th><th>ACHADOS</th></tr>`;
         for(let i = 0; i < arrDia.length; i++) {
-            const objDia = objAux.filter((item)=>{if(item.DATA === arrDia[i]){return item}});
+            const objDia = objAux.filter((item) => {if(item.DATA === arrDia[i]){return item}});
             const objTotalSiape = dados.totais('SIAPE', objDia);
             for (const property in objTotalSiape) {
                 const tr = document.createElement('tr');
@@ -2119,7 +2118,7 @@ const html = {
         }
         $('divResultado').append(table);
     },
-    exibirPercentualDeFaltas: function(objAux){
+    exibirPercentualDeFaltas: function(objAux) {
         
         if(dados.escalas.length == 0 || dados.faltas.length == 0){
             alert('É necessário informar os dados da ESCALA e dados das FALTAS para processamento!');
@@ -2137,7 +2136,7 @@ const html = {
             const secAux = tbAux.children[i];
             for(let j = 0; j < secAux.childElementCount; j++){
                 const trAux = secAux.children[j];
-                const objTmp = objAux.filter((e)=>{return e.FALTA == true && e.OPERAÇÃO == trAux.children[0].innerHTML});
+                const objTmp = objAux.filter((e) => {return e.FALTA == true && e.OPERAÇÃO == trAux.children[0].innerHTML});
                 const thAuxFalta = document.createElement('th');
                 const thAuxPerc = document.createElement('th');
                 const tdAuxFalta = document.createElement('td');
@@ -2175,11 +2174,11 @@ const html = {
         }
 
     },
-    exibirListaDeVoluntariosEscalados: function(objAux){
+    exibirListaDeVoluntariosEscalados: function(objAux) {
         this.limparResultado();
         if(objAux.length == 0){alert('Nenhum dado foi caregado ainda!');return 0;}
 
-        const arrObjTmp = objAux.map((e)=>{ return {
+        const arrObjTmp = objAux.map((e) => { return {
             'DATA':e.DATA, 
             'HORA':e.HORA, 
             'GBM de DESTINO':e.GBM_DESTINO, 
@@ -2228,7 +2227,7 @@ const html = {
         tb.append(tfoot);
         $('divResultado').append(tb);
     },
-    totalDeCotasEscaladas: function(objAux){
+    totalDeCotasEscaladas: function(objAux) {
         this.limparResultado();
         let par = dados.parametros();
         
@@ -2302,7 +2301,7 @@ const html = {
             return tr
         }
     },
-    totalDeCotasOficiasPracas: function(objAux){
+    totalDeCotasOficiasPracas: function(objAux) {
         const arrOperacoes = Object.keys(dados.totais('OPERAÇÃO', objAux)).sort();
         const arrDatasNoMes = Object.keys(dados.totais('DATA', objAux)).sort();
         let dadoTemp = [];
@@ -2380,7 +2379,7 @@ const html = {
         this.limparResultado();
         if(objAux.length == 0){alert('Nenhum dado foi caregado ainda!');return 0;}
 
-        const arrGrupo = objAux.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b)=>{return a.localeCompare(b)});
+        const arrGrupo = objAux.map((item) => `${item.GRUPO}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
         
         for(let i = 0; i < arrGrupo.length; i++) {
             _criarTagGrupo(`GRUPO-${i}`, `${arrGrupo[i]}`);
@@ -2403,7 +2402,7 @@ const html = {
 
             btnOcultarCotas.id = 'cmdOcultarCotas';
             btnOcultarCotas.innerHTML = 'Ocultar/Reexibir Totais de Cotas';
-            btnOcultarCotas.addEventListener('click', (e)=>{
+            btnOcultarCotas.addEventListener('click', (e) => {
                 e.preventDefault();
                 const ctrs = document.querySelectorAll(".visivel");
                 ctrs.forEach((ctr) => ctr.classList.toggle("invisivel"));
@@ -2411,9 +2410,9 @@ const html = {
             
             btnCriarPdf.id = 'cmdCriarPDF';
             btnCriarPdf.innerHTML = 'Criar PDF';
-            btnCriarPdf.addEventListener('click', (e)=>{
+            btnCriarPdf.addEventListener('click', (e) => {
                 e.preventDefault();
-                setTimeout(()=>{
+                setTimeout(() => {
                     if(confirm(`Deseja baixar esses dados convertidos em um arquivo PDF?`)){
                         gerarPdf(divResultado);
                         document.getElementById('divAuxiliar').innerHTML='';
@@ -2519,7 +2518,7 @@ const html = {
             return txt
         }
     },
-    _construirTabela: function (objAux, index){
+    _construirTabela: function (objAux, index) {
         let col = 0;
         if(index == -1){
             const tr = document.createElement('tr');
@@ -2545,14 +2544,14 @@ const html = {
         }
         return tr;
     },
-    limparResultado: function(){
+    limparResultado: function() {
         $('divAuxiliar').innerHTML = '';
         $('divResultado').innerHTML = '';
     }
 }
 
-window.onload = function(){
-    $('fileArquivo').addEventListener('change', (e)=>{
+window.onload = function() {
+    $('fileArquivo').addEventListener('change', (e) => {
         e.preventDefault();
         if($('fileArquivo').files.length > 0){
             conf.readFile($('fileArquivo'));
@@ -2560,47 +2559,47 @@ window.onload = function(){
     })
     
     //opções
-    $('btnOpcaoTodas').addEventListener('click', (e)=>{
+    $('btnOpcaoTodas').addEventListener('click', (e) => {
         e.preventDefault();
         menu.cota(e.target);
     })
-    $('btnOpcaoComVoluntario').addEventListener('click', (e)=>{
+    $('btnOpcaoComVoluntario').addEventListener('click', (e) => {
         e.preventDefault();
         menu.cota(e.target);
     })
-    $('btnOpcaoSemVoluntario').addEventListener('click', (e)=>{
+    $('btnOpcaoSemVoluntario').addEventListener('click', (e) => {
         e.preventDefault();
         menu.cota(e.target);
     })
-    $('btnOpcaoCompulsorio').addEventListener('click', (e)=>{
+    $('btnOpcaoCompulsorio').addEventListener('click', (e) => {
         e.preventDefault();
         menu.cota(e.target);
     })
     
     //falta
-    $('btnFaltaTodas').addEventListener('click', (e)=>{
+    $('btnFaltaTodas').addEventListener('click', (e) => {
         e.preventDefault();
         menu.falta(e.target);
     })
-    $('btnFaltaFalse').addEventListener('click', (e)=>{
+    $('btnFaltaFalse').addEventListener('click', (e) => {
         e.preventDefault();
         menu.falta(e.target);
     })
-    $('btnFaltaTrue').addEventListener('click', (e)=>{
+    $('btnFaltaTrue').addEventListener('click', (e) => {
         e.preventDefault();
         menu.falta(e.target);
     })
     
     //quinzena
-    $('btnQuinzenaMesInteiro').addEventListener('click', (e)=>{
+    $('btnQuinzenaMesInteiro').addEventListener('click', (e) => {
         e.preventDefault();
         menu.quinzena(e.target);
     })
-    $('btnQuinzena1').addEventListener('click', (e)=>{
+    $('btnQuinzena1').addEventListener('click', (e) => {
         e.preventDefault();
         menu.quinzena(e.target);
     })
-    $('btnQuinzena2').addEventListener('click', (e)=>{
+    $('btnQuinzena2').addEventListener('click', (e) => {
         e.preventDefault();
         menu.quinzena(e.target);
     })
