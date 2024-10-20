@@ -271,6 +271,7 @@ const init = {
                 conf.totalInscritos = dados.inscritos.length;
                 // this.carregarCursos();
             }
+            html.limparResultado();
             if(funcaoAuxiliar){ funcaoAuxiliar() }
             
             $('divStatusEscala').title = `Escala (${dados.filtrarEscalas(dados.parametros()).length.toLocaleString('pr-BR')}/${dados.escalas.length.toLocaleString('pr-BR')})`;
