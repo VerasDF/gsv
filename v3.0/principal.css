@@ -131,14 +131,18 @@ button:hover{
 }
 #fldGbmDestino{
     grid-column-start: 1;
-    grid-column-end: 6;
+    grid-column-end: 5;
 }
 #fldTurno{
-    grid-column-start: 6;
-    grid-column-end: 11;
+    grid-column-start: 5;
+    grid-column-end: 9;
 }
 #fldQuadro{
-    grid-column-start: 11;
+    grid-column-start: 9;
+    grid-column-end: 12;
+}
+#fldAla{
+    grid-column-start: 12;
     grid-column-end: 15;
 }
 #fldCalendario{
@@ -147,7 +151,8 @@ button:hover{
 }
 #divFiltroGbmDestino,
 #divFiltroTurno,
-#divFiltroQuadro{
+#divFiltroQuadro,
+#divFiltroAla{
     height: 180px;
 }
 .clsOpcoes,

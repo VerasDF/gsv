@@ -631,6 +631,7 @@ const dados = {
         dados.carregarGbmDestino();
         dados.carregarTurno();
         dados.carregarQuadro();
+        dados.carregarAla();
         dados.carregarDataDoMes();
         $('divTotais').innerHTML = `Cotas Mês: ${dadoEscalasJson.length.toLocaleString('pt-BR')}<br>Filtradas: ${filtrarEscalasJson(_parametros()).length.toLocaleString('pt-BR')}`
         
@@ -696,6 +697,15 @@ const dados = {
             divQuadro.append(dados._criarItemDaLista(divQuadro, arrQuadro[i]));
         }
         $('fldQuadro').children[0].innerHTML = `Quadros: (${arrQuadro.length})`;
+    },
+    carregarAla: function(){
+        const arrAla = dadoEscalasJson.map((item)=>`${item.ALA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
+        const divAla = $('divFiltroAla');
+        this._limparLista(divAla);
+        for(let i = 0; i < arrAla.length; i++){
+            divAla.append(this._criarItemDaLista(divAla, arrAla[i]));
+        }
+        $('fldAla').children[0].innerHTML = `Alas: (${arrAla.length.toLocaleString('pt-BR')})`;
     },
     tratarFaltas: function() {
         if(dadoEscalasJson.length===0 || dadoFaltasJson.length===0){ return }
@@ -821,6 +831,10 @@ const filtrar = {
             filtrar.prepararDados(objAux);
         }
         if ( botao.id.indexOf('divFiltroQuadroBtn') > -1 ) {
+            const objAux = filtrarEscalasJson(_parametros());
+            filtrar.prepararDados(objAux);
+        }
+        if ( botao.id == 'divFiltroAlaBtn' ){
             const objAux = filtrarEscalasJson(_parametros());
             filtrar.prepararDados(objAux);
         }
@@ -1110,6 +1124,7 @@ const html = {
             'POSTO/GRAD':e.POSTO_GRAD, 
             'QUADRO':e.QUADRO,'NOME':e.NOME, 
             'SIAPE':e.SIAPE, 
+            'ALA': e.ALA,
             'OPERAÇÃO':e.OPERAÇÃO,
             'FUNÇÃO':e.name_cinco
         } });
@@ -2086,6 +2101,7 @@ const html = {
             $('fldGbmDestino').style.display = "none";
             $('fldTurno').style.display = "none";
             $('fldQuadro').style.display = "none";
+            $('fldAla').style.display = "none";
             $('fldCalendario').style.display = "none";
             $('divExibirResultado').style.display = "none";
             $('imgRecolher').src = "setaParaBaixo.png";
@@ -2101,6 +2117,7 @@ const html = {
             $('fldGbmDestino').removeAttribute('style');
             $('fldTurno').removeAttribute('style');
             $('fldQuadro').removeAttribute('style');
+            $('fldAla').removeAttribute('style');
             $('fldCalendario').removeAttribute('style');
             $('divExibirResultado').removeAttribute('style');
             $('imgRecolher').src = "setaParaCima.png";
@@ -2507,6 +2524,7 @@ function _parametros(foco) {
     const _divFiltroGbmDestino = $('divFiltroGbmDestino');
     const _divFiltroTurno = $('divFiltroTurno');
     const _divFiltroQuadro = $('divFiltroQuadro');
+    const _divFiltroAla = $('divFiltroAla');
     const _divCalendario = $('divCalendario');
     const _filtroOpcao = $('divFiltroOpcao')
     const _quinzenaOpcao = $('divQuinzenaOpcao')
@@ -2519,6 +2537,7 @@ function _parametros(foco) {
     let arrGbmDestino = [];
     let arrTurno = [];
     let arrQuadro = [];
+    let arrAla = [];
     let arrData = [];
     let arrSiape = [];
     let arrQuinzena = [];
@@ -2530,17 +2549,19 @@ function _parametros(foco) {
     if(foco == undefined || foco == `gbm_destino`){ arrGbmDestino = _buscarSelecionados(_divFiltroGbmDestino) }
     if(foco == undefined || foco == `turno`){ arrTurno = _buscarSelecionados(_divFiltroTurno) }
     if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados(_divFiltroQuadro) }
+    if(foco == undefined || foco == `ala`){ arrAla = _buscarSelecionados(_divFiltroAla) }
     if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados(_divCalendario) }
     if(foco == undefined || foco == `opcao`){ arrSiape = _buscarSelecionados(_filtroOpcao) }
     if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados(_quinzenaOpcao) }
     
-    if(arrDuracao.length > 0) { par.tempo = arrDuracao}
+    if(arrDuracao.length > 0) { par.tempo = arrDuracao }
     if(arrFalta.length > 0) { par.falta = arrFalta}
     if(arrGrupo.length > 0) { par.grupo = arrGrupo}
     if(arrOper.length > 0) { par.operacao = arrOper }
     if(arrGbmDestino.length > 0) { par.gbm_destino = arrGbmDestino }
     if(arrTurno.length > 0){ par.horario = arrTurno }
     if(arrQuadro.length > 0){ par.quadro = arrQuadro }
+    if(arrAla.length > 0){ par.ala = arrAla }
     if(arrData.length > 0){ par.data = arrData }
     if(arrSiape.length > 0){
         if(arrSiape[0] != 'compulsória'){
@@ -2578,10 +2599,20 @@ function _parametros(foco) {
     }
 }
 
-function filtrarEscalasJson({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
+function filtrarEscalasJson({ ala, assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
     
     let objAux = dadoEscalasJson.filter((e)=>{return e})
 
+    if(ala !== undefined){
+        if(Array.isArray(ala)){
+            if(ala.length > 0){
+                objAux = objAux.filter((e) => {return ala.includes(e.ALA)});
+            }
+        }
+        else{
+            objAux = objAux.filter((e)=>{return e.ALA.indexOf(ala) > -1});
+        }
+    }
     if (assinatura !== undefined) {
         objAux = objAux.filter((e)=>{return e.ASSINATURA.indexOf(assinatura) > -1})
     }
