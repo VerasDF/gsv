@@ -1117,6 +1117,7 @@ const dados = {
         } 
     
         conf.paramJson = JSON.stringify(par);
+        $('divFiltroAplicado').innerHTML = conf.paramJson;
         return par;
     
         function _buscarSelecionados(auxTag){
