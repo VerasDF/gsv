@@ -768,6 +768,7 @@ const init = {
         init.carregarQuadro();
         init.carregarSiape();
         init.carregarTurno();
+        init.carregarAla();
         conf.totalStatus();
         setTimeout(() => {
             filtrar.prepararDados(dados.filtrarEscalas(dados.parametros()));
@@ -854,10 +855,19 @@ const init = {
         const arrSiape = dados.escalas.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
         const divSiape = $('divFiltroSiape');
         init._limparLista(divSiape);
-        for(let i = 0; i< arrSiape.length; i++){
+        for(let i = 0; i < arrSiape.length; i++){
             divSiape.append(init._criarItemDaLista(divSiape, arrSiape[i]));
         }
         $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString('pt-BR')})`;
+    },
+    carregarAla: function(){
+        const arrAla = dados.escalas.map((item)=>`${item.ALA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort();
+        const divAla = $('divFiltroAla');
+        init._limparLista(divAla);
+        for(let i = 0; i < arrAla.length; i++){
+            divAla.append(init._criarItemDaLista(divAla, arrAla[i]));
+        }
+        $('fldAla').children[0].innerHTML = `ALA: (${arrAla.length.toLocaleString('pt-BR')})`;
     },
     _criarItemDaLista: function( objTag, strTexto ){
         const btnTemp = document.createElement('button');
@@ -1048,9 +1058,10 @@ const dados = {
         const _divFiltroOperacao = $('divFiltroOperacao');
         const _divFiltroTurno = $('divFiltroTurno');
         const _divFiltroSiape = $('divFiltroSiape');
+        const _divFiltroAla = $('divFiltroAla');
         const _divCalendario = $('divCalendario');
         const _filtroOpcao = $('divFiltroOpcao')
-        const _quinzenaOpcao = $('divQuinzenaOpcao')
+        const _quinzenaOpcao = $('divQuinzenaOpcao');
         
         let par = {};
         let arrData = [];
@@ -1065,6 +1076,7 @@ const dados = {
         let arrQuinzena = [];
         let arrTurno = [];
         let arrSiape = [];
+        let arrAla = [];
         
         if(foco == undefined || foco == `duracao`){ arrDuracao = _buscarSelecionados( _divFiltroDurcao) }
         if(foco == undefined || foco == `falta`){ arrFalta = _buscarSelecionados( _divFaltaOpcao) }
@@ -1075,6 +1087,7 @@ const dados = {
         if(foco == undefined || foco == `quadro`){ arrQuadro = _buscarSelecionados( _divFiltroQuadro) }
         if(foco == undefined || foco == `funcao`){ arrFuncao = _buscarSelecionados( _divFiltroFuncao) }
         if(foco == undefined || foco == `siape`){ arrSiape = _buscarSelecionados( _divFiltroSiape) }
+        if(foco == undefined || foco == `ala`){ arrAla = _buscarSelecionados( _divFiltroAla) }
         if(foco == undefined || foco == `data`){ arrData = _buscarSelecionados( _divCalendario) }
         if(foco == undefined || foco == `opcao`){ arrOpcao = _buscarSelecionados( _filtroOpcao) }
         if(foco == undefined || foco == `quinzena`){ arrQuinzena = _buscarSelecionados( _quinzenaOpcao) }
@@ -1088,6 +1101,7 @@ const dados = {
         if(arrQuadro.length > 0) { par.quadro = arrQuadro }
         if(arrFuncao.length > 0) { par.cinco = arrFuncao}
         if(arrData.length > 0) { par.data = arrData }
+        if(arrAla.length > 0) { par.ala = arrAla }
         if(arrSiape.length > 0) { par.siape = arrSiape } 
         else {
             if(arrOpcao[0] == 'compulsória'){
@@ -1120,10 +1134,17 @@ const dados = {
             return arrAux;
         }
     },
-    filtrarEscalas: function({ assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
+    filtrarEscalas: function({ ala, assinatura, data, escaladoPor, falta, grupo, gbm_destino, horario, lotacao, nome, operacao, operacao_tipo, quadro, quinzena, posto_grad, siape, sub_lotacao_local, tempo, cinco }) {
     
         let objAux = dados.escalas.filter((e) => {return e})
     
+        if (ala !== undefined) {
+            if(Array.isArray(ala)){
+                objAux = objAux.filter((e) => {return ala.includes(e.ALA)});
+            }else{
+                objAux = objAux.filter((e) => {return e.ALA.indexOf(ala) > -1});
+            }
+        }
         if (assinatura !== undefined) {
             objAux = objAux.filter((e) => {return e.ASSINATURA.indexOf(assinatura) > -1})
         }
@@ -1449,6 +1470,7 @@ const filtrar = {
         filtrar.destacarFuncao(objAux);
         filtrar.destacarDatas(objAux);
         filtrar.destacarSiape(objAux);
+        filtrar.destacarAla(objAux);
         conf.totalStatus(objAux);
     },
     destacarDuracao: function(objAux){
@@ -1490,6 +1512,11 @@ const filtrar = {
         const arrSiape = objAux.map((item) => `${item.SIAPE}`).filter((elem, index, arr) => arr.indexOf(elem) === index);
         filtrar.destacar(arrSiape, $('divFiltroSiape'));
         $('fldSiape').children[0].innerHTML = `SIAPE: (${arrSiape.length.toLocaleString()})`;
+    },
+    destacarAla: function(objAux){
+        const arrAla = objAux.map((item) => `${item.ALA}`).filter((elem, index, arr) => arr.indexOf(elem) === index);
+        filtrar.destacar(arrAla, $('divFiltroAla'));
+        $('fldAla').children[0].innerHTML = `ALA: (${arrAla.length.toLocaleString()})`;
     },
     destacarDatas: function(objAux){
         const arrDatas = objAux.map((item) => `${item.DATA}`).filter((elem, index, arr) => arr.indexOf(elem) === index).sort((a, b) => {return a.localeCompare(b)});
@@ -2186,6 +2213,7 @@ const html = {
             'POSTO/GRAD':e.POSTO_GRAD, 
             'QUADRO':e.QUADRO,'NOME':e.NOME, 
             'SIAPE':e.SIAPE, 
+            'ALA':e.ALA,
             'OPERAÇÃO':e.OPERAÇÃO,
             'FUNÇÃO':e.name_cinco
         } });

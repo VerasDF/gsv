@@ -144,10 +144,10 @@ button:hover{
 }
 #divOpcoes1{
     display: grid;
-    grid-template-columns: 9fr 1fr;
+    grid-template-columns: 9fr 1fr 1fr;
     width: var(--larguraTotal);
 }
-#divFiltroSiape{
+#divFiltroSiape, #divFiltroAla{
     width: 80px;
 }
 #fldFuncao, #fldSiape, #fldCursos{
