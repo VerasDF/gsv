@@ -2277,12 +2277,6 @@ const html = {
         table.append(_rodape(contabilizar_total));
         divResultado.append(table);
 
-        function _exibirParametrosUsados(){
-            const tr = document.createElement('tr');
-            const par = JSON.stringify(dados.parametros());
-            tr.innerHTML = `<th colspan="3" style="color:gray">PARÂMETROS: ${(par == '{}'  ? '{"Nenhum filtro aplicado"}': par)}</th>`;
-            return tr;
-        }
         function _cabecalho1() {
             const tr = document.createElement('tr');
             tr.innerHTML = `<th colspan="3">RESUMO DE COTAS - ${conf.mesAno.toUpperCase()}</th>`;
@@ -2304,21 +2298,19 @@ const html = {
             let cargaHoraria = '';
             for(const key in objCargaHoraria){
                 const elm = objCargaHoraria[key];
-                cargaHoraria = (key===""?`(?h)`:`${(key)}h`);
+                cargaHoraria = (!parseInt(key) ? `(?h)` : `${(key)}h`);
             }
             const tr = document.createElement('tr')
             const totalDeCotas = ((obj[0].TEMPO.indexOf(`24`) > -1) ? 
                 `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length) * 2} (${obj.length}x2)` : 
                 `${Intl.NumberFormat('pr-BR', { maximumSignificantDigits: 5 }).format(obj.length)}`
             );
-            
             let totaisGbm = JSON.stringify(dados.totais('GBM_DESTINO', obj)).
                 replaceAll('"','').
                 replaceAll(':',': ').
                 replaceAll(',',') (').
                 replaceAll('{','(').
                 replaceAll('}',')');
-
             tr.innerHTML = `<td style="text-align:left">${obj[0].OPERAÇÃO}<br><span style="color:gray">${totaisGbm}</span></td>` + 
                 `<td style="text-align:center">${cargaHoraria}</td>` + 
                 `<td style="text-align:center">${totalDeCotas}</td>`;

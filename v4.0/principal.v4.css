@@ -39,6 +39,9 @@ button:hover{
     /* display: none; */
     color: var(--fonteDesabilitada);
 }
+fieldset{
+    margin-bottom: 2px;
+}
 #divMenuLateralEsquerdo{
     grid-column-start: 1;
     grid-column-end: 2;
