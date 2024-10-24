@@ -6,7 +6,7 @@ const aux = {
         try {
             const url = urlDoArquivo;
             const XmlReq = new XMLHttpRequest();
-            XmlReq.open('GET', url, true);
+            XmlReq.open('POST', url, true);
             XmlReq.onreadystatechange = () => {
                 if (XmlReq.readyState === 4) {
                     if (XmlReq.status === 200) {
@@ -219,7 +219,7 @@ const conf = {
         }
     
         if(carregado == false){
-            alert('O nome do arquivo não informa a forma como os dados devem ser processados!');
+            alert('O nome do arquivo não tem informação sobre o conjunto de dados!\nO arquivo precisa ser renomeado e conter uma das palavras abaixo:\nEscala\nFaltas\nInscritos');
         }
     
         function carregarArquivo( file ){
