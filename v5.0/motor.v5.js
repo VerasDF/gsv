@@ -8,19 +8,22 @@ const $ = {
 
 conf = {
     readFile: function(input){
-
         carregarArquivo(input.files[0]);
-
         function carregarArquivo(file){
             try {
+
                 const reader = new FileReader();
                 reader.readAsText(file);
                 reader.onload = function(){
+                    const t1 = Date.now();
                     conf.avaliarDadoBruto({htmlRetornado:reader.result});
+                    const t2 = Date.now();
+                    console.log (t2 - t1);
                 }
                 reader.onerror = function(){
                     console.log(reader.error);
                 }
+                
            } catch (error) {
                 console.log(error);
            }
@@ -115,7 +118,7 @@ conf = {
                     }
                 }
                 if (filhos !== 1 && filhos !== 7) {
-                    alert('Alteração no padrão de gerenciamento.');
+                    alert('Houve um problema, os dados brutos não estão no padrão esperado.');
                     break;
                 }
             }
@@ -239,19 +242,21 @@ conf = {
             return quinzena;
         }
         function _extrairTempo(parametro) {
-            const auxData = `${parametro.data.substr(6, 4)}-${parametro.data.substr(3, 2)}-${parametro.data.substr(0, 2)}`
-            const auxHora = parametro.hora.toLowerCase()
-            let vtr1 = undefined
-            let retorno = ""
-            if (auxHora.indexOf(' às ') > -1) {vtr1 = auxHora.split(' às ')}
-            if (auxHora.indexOf(' à ') > -1) {vtr1 = auxHora.split(' à ')}
+            const auxData = `${parametro.data.substr(6, 4)}-${parametro.data.substr(3, 2)}-${parametro.data.substr(0, 2)}`;
+            const auxHora = parametro.hora.toLowerCase();
+            let retorno = undefined;
+            // let vtr1 = undefined;
+            // if (auxHora.indexOf(' às ') > -1) {vtr1 = auxHora.split(' às ')}
+            // if (auxHora.indexOf(' à ') > -1) {vtr1 = auxHora.split(' à ')}
+            const vtr1 = (auxHora.indexOf(' às ') > -1) ? auxHora.split(' às ') : ((auxHora.indexOf(' à ') > -1) ? auxHora.split(' à ') : undefined);
+
             if(Array.isArray(vtr1)){
-                let ini = new Date(`${auxData}T${vtr1[0].replace('h', ':')}:00`)
-                let fim = new Date(`${auxData}T${vtr1[1].replace('h', ':')}:00`)
+                let ini = new Date(`${auxData}T${vtr1[0].replace('h', ':')}:00`);
+                let fim = new Date(`${auxData}T${vtr1[1].replace('h', ':')}:00`);
                 if (fim <= ini) {
-                    fim = new Date(fim.setDate(fim.getDate() + 1))
+                    fim = new Date(fim.setDate(fim.getDate() + 1));
                 }
-                const auxTempo = (((fim - ini) / 1000) / 60) / 60
+                const auxTempo = (((fim - ini) / 1000) / 60) / 60;
                 retorno = `${('00'+parseInt(auxTempo)).slice(-2)}`;
                 //`${('00'+parseInt('0'+item.TEMPO)).slice(-2)} horas`
             }
