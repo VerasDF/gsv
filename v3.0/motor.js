@@ -1149,9 +1149,9 @@ const html = {
             const cores = ['orange', 'rgb(100, 255, 100)', 'rgb(100,100, 255)', 'yellow', 'rgb(255, 100, 100)'] ; 
             const texto  = [
                 'Marcação para a 2º quinzena do mês atual.',
-                'Período de Inscrição para o próximo mês (concorre a todas as cotas do mês).',
+                'Período de Inscrição para o Banco de Dados do próximo mês.',
                 'Marcação para a 1º quinzena do próximo mês.',
-                'Ajuste na inscrição para o próximo mês (concorre apenas as cotas da 2º quinzena).',
+                'Período para ajustes nas inscrição do Banco de Dados do próximo mês.',
                 'Auditoria interna.'
             ]          
             
