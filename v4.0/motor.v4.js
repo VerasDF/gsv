@@ -28,18 +28,21 @@ const aux = {
         const dataDMY = dataPtBr.split('/');
         const mes = dataDMY[1];
         let res = '';
-        if (mes === '01') { res = `Janeiro`; }
-        if (mes === '02') { res = `Fevereiro`; }
-        if (mes === '03') { res = `Março`; }
-        if (mes === '04') { res = `Abril`; }
-        if (mes === '05') { res = `Maio`; }
-        if (mes === '06') { res = `Junho`; }
-        if (mes === '07') { res = `Julho`; }
-        if (mes === '08') { res = `Agosto`; }
-        if (mes === '09') { res = `Setembro`; }
-        if (mes === '10') { res = `Outubro`; }
-        if (mes === '11') { res = `Novembro`; }
-        if (mes === '12') { res = `Dezembro`; }
+        switch (mes) {
+            case '01': res = `Janeiro`; break;
+            case '02': res = `Fevereiro`; break;
+            case '03': res = `Março`; break;
+            case '04': res = `Abril`; break;
+            case '05': res = `Maio`; break;
+            case '06': res = `Junho`; break;
+            case '07': res = `Julho`; break;
+            case '08': res = `Agosto`; break;
+            case '09': res = `Setembro`; break;
+            case '10': res = `Outubro`; break;
+            case '11': res = `Novembro`; break;
+            case '12': res = `Dezembro`; break;
+            default: break;
+        }
         conf.mes = mes;
         return res;
     }
@@ -2128,6 +2131,143 @@ const html = {
             table.append(tr);
         }
     },
+    exibirCalendarioDaGsv: function(ano){
+        this.limparResultado();
+        const divCalGsv = document.createElement('div');
+        divCalGsv.id = 'divCalGsv';
+        $('divResultado').append(divCalGsv);
+        
+        let diaD = new Date(`${ano}-01-01T00:00:00`);
+        let periodoMes = [];
+        const vla1 = new Date(`${parseInt(ano)+1}-01-01T00:00:00`);
+        
+        while(diaD < vla1){
+            const mesCal = _criarMes(diaD);
+            if (!mesCal.jaTem){
+                divCalGsv.append(mesCal.mes);
+                periodoMes = _marcacaoPeriodosDoMes(diaD);
+            }
+            const diaCal = _criarDia(diaD);
+            if (!diaCal.jaTem){
+                mesCal.mes.append(diaCal.dia);
+            }
+
+            _colorir(diaD, diaCal.dia, periodoMes);
+
+            diaD = new Date(diaD.setDate(diaD.getDate()+1));
+        }
+        _inserirLegenda();
+        
+        function _criarMes(d0){
+            if (!$('divCalGsvMes_' + d0.getMonth())){
+                const divMesCalGsv = document.createElement('div');
+                divMesCalGsv.id =  `divCalGsvMes_${d0.getMonth()}`;
+                divMesCalGsv.className = 'clsCalGsvMes';
+                divMesCalGsv.innerHTML = `<label class='clsdivCalGsvMesLabel'>${aux.extrairMesExtenso(d0.toLocaleDateString()).toUpperCase()} - ${d0.getFullYear()}</label>`+ 
+                `<div class='diaSemana'>Dom</div>` + 
+                `<div class='diaSemana'>Seg</div>` + 
+                `<div class='diaSemana'>Ter</div>` + 
+                `<div class='diaSemana'>Qua</div>` + 
+                `<div class='diaSemana'>Qui</div>` + 
+                `<div class='diaSemana'>Sex</div>` + 
+                `<div class='diaSemana'>Sab</div>`;
+                return {mes:divMesCalGsv, jaTem:false};
+            }
+            else{
+                return {mes:$('divCalGsvMes_' + d0.getMonth()),jaTem:true};
+            }
+        }
+        function _criarDia(d0){
+            if (!$('divCalGsvDia_' + d0.toISOString())) {
+                const divDiaCalGsv = document.createElement('div');
+                divDiaCalGsv.id =  'divCalGsvDia_' + d0.toISOString();
+                divDiaCalGsv.className = 'clsCalGsDia';
+                divDiaCalGsv.innerHTML = d0.getDate();
+                if(d0.getDate() == 1){divDiaCalGsv.style.gridColumn = `${d0.getDay()+1}`}
+                return {dia:divDiaCalGsv, jaTem:false};
+            } else {
+                return {dia:$('divCalGsvDia_' + d0.toISOString()), jaTem:true}
+            }
+        }
+        function _marcacaoPeriodosDoMes(d0){
+             const dia15 = new Date(`${d0.getFullYear()}-${("00"+(d0.getMonth()+1)).slice(-2)}-15T00:00:00`);
+             let aux = new Date(dia15);
+             const dataParaInscricao = new Date(aux.setDate(aux.getDate()-(aux.getDay()-1)));
+             aux = new Date(dataParaInscricao);
+             const marcacaoSegundaQuinzena = new Date(aux.setDate(aux.getDate()-7));
+             aux = new Date(dataParaInscricao);
+             const marcacaoPrimeiraQuinzena = new Date(aux.setDate(aux.getDate()+7));
+             aux = new Date(marcacaoPrimeiraQuinzena);
+             const periodoDeRevisao = new Date(aux.setDate(aux.getDate()+4));
+             aux = null
+             return [marcacaoSegundaQuinzena.toISOString(), dataParaInscricao.toISOString(), marcacaoPrimeiraQuinzena.toISOString(), periodoDeRevisao.toISOString()];
+        }
+        function _colorir(d0, obj, per){
+            if(d0.getDay() > 0 && d0.getDay() < 6){obj.style.backgroundColor = 'rgb(255, 100, 100)'};
+            
+            const segQuiIni = new Date(per[0]);
+            let aux  = new Date(per[0]);
+            const segQuiFim = new Date(aux.setDate(aux.getDate()+4));
+            if(d0 >= segQuiIni && d0 < segQuiFim){
+                if(d0.getMonth()!= 11) obj.style.backgroundColor = "orange";
+            }
+            
+            aux = null
+            const inscIni = new Date(per[1]);
+            aux  = new Date(per[1]);
+            const inscFim = new Date(aux.setDate(aux.getDate()+5));
+            if(d0 >= inscIni && d0 < inscFim){
+                obj.style.backgroundColor = "rgb(100, 255, 100)";
+            }
+            
+            aux = null
+            const priQuiIni = new Date(per[2]);
+            aux  = new Date(per[2]);
+            const priQuiFim = new Date(aux.setDate(aux.getDate()+4));
+            if(d0 >= priQuiIni && d0 < priQuiFim){
+                obj.style.backgroundColor = "rgb(100,100, 255)";
+            }
+            
+            aux = null
+            const revIni = new Date(per[3]);
+            aux  = new Date(per[3]);
+            const revFim = new Date(aux.setDate(aux.getDate()+8));
+            if(d0 >= revIni && d0 < revFim){
+                if (d0.getMonth()!= 10)  obj.style.backgroundColor = "yellow";
+            }
+
+            if(d0.toLocaleDateString() == (new Date()).toLocaleDateString()){
+                // obj.style.border = 'solid 3px black';
+            }
+        }
+        function _inserirLegenda(){
+            const divLegContainer = document.createElement('div');
+            divLegContainer.id = 'divCalGsvLegenda';
+            $('divCalGsv').append(divLegContainer);
+
+            const cores = ['orange', 'rgb(100, 255, 100)', 'rgb(100,100, 255)', 'yellow', 'rgb(255, 100, 100)'] ; 
+            const texto  = [
+                'Marcação para a 2º quinzena do mês atual.',
+                'Período de Inscrição para o próximo mês (concorre a todas as cotas do mês).',
+                'Marcação para a 1º quinzena do próximo mês.',
+                'Ajuste na inscrição para o próximo mês (concorre apenas as cotas da 2º quinzena).',
+                'Auditoria interna.'
+            ]          
+            
+            for(let i = 0; i < cores.length; i++){
+                const divLegGsv = document.createElement('div');
+                divLegGsv.id = 'divLegGsv'+i;
+                divLegGsv.className = 'clsLegGsv'
+                divLegGsv.style.backgroundColor = cores[i];
+                $('divCalGsvLegenda').append(divLegGsv);
+                
+                const labTexto = document.createElement('label');
+                labTexto.innerHTML = texto[i];
+                labTexto.className = 'clsLabelLegenda';
+                $('divCalGsvLegenda').append(labTexto);
+            }
+        }
+    },
     exibirCotaDobrada: function() {
         this.limparResultado();
         const objAux = dados.filtrarEscalas(dados.parametros());
@@ -2624,6 +2764,12 @@ window.onload = function() {
     $('btnQuinzena2').addEventListener('click', (e) => {
         e.preventDefault();
         menu.quinzena(e.target);
+    })
+    //PesquisaPorAnoNoCalendarioDaGsv
+    $('txtAnoCalendarioGsv').addEventListener('keyup',(e)=>{
+        if(e.key == 'Enter'){
+            html.exibirCalendarioDaGsv($('txtAnoCalendarioGsv').value);
+        }
     })
 }
 

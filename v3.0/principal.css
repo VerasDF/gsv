@@ -325,6 +325,7 @@ button:hover{
     display: block;
 }
 #txtCotasPorSiape,
+#txtAnoCalendarioGsv,
 #txtCursos,
 #txtCotasPorNome {
     color: var(--corDaFonte);
@@ -333,6 +334,7 @@ button:hover{
     text-align: center;
 }
 #txtCotasPorSiape:hover,
+#txtAnoCalendarioGsv:hover,
 #txtCursos:hover,
 #txtCotasPorNome:hover {
     color: var(--corDaFonte);
@@ -403,4 +405,40 @@ button:hover{
 }
 #btnEditarCancel{
     border: 1px solid black;
+}
+
+/* Calendário da GSV */
+#divCalGsv{ /* criado em tempo de execução*/
+    display: grid;
+    margin: 0 auto;
+    width: var(--larguraTotal);
+    grid-template-columns: 2fr 2fr 2fr;
+}
+.clsCalGsvMes{ /* criado em tempo de execução*/
+    border: 2px solid black;
+    display: grid;
+    grid-template-columns: repeat(7, 2fr);
+    text-align: center;
+    margin: 2px;
+    padding-bottom: 5px;
+}
+.clsCalGsDia{ /* criado em tempo de execução*/
+    display: grid;
+    margin: 1px;
+    padding: 2px;
+}
+.clsdivCalGsvMesLabel{ /* criado em tempo de execução*/
+    grid-column: 1/8;
+    font-weight: bold;
+    margin-top: 5px;
+    font-size: 1.2em;
+}
+.clsLegGsv{ /* criado em tempo de execução*/
+    display: grid;
+    margin: 1px;
+    width: 30px;
+    height: 20px;
+}
+.clsLabelLegenda{ /* criado em tempo de execução*/
+    padding-top: 4px;
 }

@@ -110,13 +110,18 @@
                                                 <a class="exibirAClass" href="#" onclick="$('txtCursos').focus()">Filtrar Cursos</a>
                                             </li>
                                             <li class="exibirLiClass">
-                                                <input class="exibirAClass" type="text" id="txtCursos">
+                                                <input class="exibirAClass" type="text" id="txtCursos" placeholder="texto ou fragmento">
                                             </li>
                                         </ul>
                                     </li>
                                     <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(22)">Planilha Financeira</a></li>
                                     <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(23)">Cota Dobrada</a></li>
                                     <!-- <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(24)">Exportar para Excel</a></li> -->
+                                    <li class="exibirLiClass"><a class="exibirAClass" href="#">&crarr; Calendario da GSV</a>
+                                        <ul class="exibirUlClass">
+                                            <li class="exibirLiClass"><input type="text" id="txtAnoCalendarioGsv" class="exibirAClass" maxlength="4" placeholder="ano"> </li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="exibirLiClass"><a class="exibirAClass" href="#">&crarr; Totais de Cotas</a>
@@ -150,12 +155,12 @@
                             <li class="exibirLiClass"><a class="exibirAClass" href="#" onclick="html.processarMenuExibirResultado(4)">Pencentual de Faltas</a></li>
                             <li class="exibirLiClass"><a class="exibirAClass" href="#">&crarr; Cotas por SIAPE</a>
                                 <ul class="exibirUlClass">
-                                    <li class="exibirLiClass"><input type="text" maxlength="7" id="txtCotasPorSiape" class="exibirAClass"></li>
+                                    <li class="exibirLiClass"><input type="text" maxlength="7" id="txtCotasPorSiape" class="exibirAClass" placeholder="siape"></li>
                                 </ul>
                             </li>
                             <li class="exibirLiClass"><a class="exibirAClass" href="#">&crarr; Cotas por NOME</a>
                                 <ul class="exibirUlClass">
-                                    <li class="exibirLiClass"><input type="text" maxlength="30" id="txtCotasPorNome" class="exibirAClass"></li>
+                                    <li class="exibirLiClass"><input type="text" maxlength="30" id="txtCotasPorNome" class="exibirAClass" placeholder="nome ou fragmento"></li>
                                 </ul>
                             </li>
                         </ul>
