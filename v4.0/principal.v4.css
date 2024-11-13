@@ -200,8 +200,8 @@ fieldset{
     display: flexbox;
     position: absolute;
     width: 450px;
-    margin-left: -200px;
-    margin-top: -255px;
+    margin-left: 60px;
+    margin-top: -180px;
     z-index: 11;
 }
 .divEditar{

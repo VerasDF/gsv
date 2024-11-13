@@ -6,7 +6,7 @@ const aux = {
         try {
             const url = urlDoArquivo;
             const XmlReq = new XMLHttpRequest();
-            XmlReq.open('POST', url, true);
+            XmlReq.open('GET', url, true);
             XmlReq.onreadystatechange = () => {
                 if (XmlReq.readyState === 4) {
                     if (XmlReq.status === 200) {
@@ -2036,6 +2036,7 @@ const html = {
             const lab2 = document.createElement('label');
             
             fld.id = 'fldAtualizarCalendario';
+            fld.style.marginTop = '15px';
             rad1.type = 'radio';
             rad1.name = 'radTipoClassificacaoDetalhe';
             rad2.name = rad1.name;
