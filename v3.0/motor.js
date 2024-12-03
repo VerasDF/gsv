@@ -313,6 +313,8 @@ function prepararEscalasJSon(dadosHtml) {
             retorno = "PERÍODO CHUVOSO";
         } else if (parametro.toUpperCase().indexOf("AEDES") > -1) {
             retorno = "DENGUE";
+        } else if (parametro.toUpperCase().indexOf("CENTRO POP") > -1) {
+            retorno = "CENTRO POP";
         } else {
             retorno = "EXTRAORDINÁRIO";
         }
