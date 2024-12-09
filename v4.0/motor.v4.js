@@ -2230,9 +2230,11 @@ const html = {
             aux = null
             const revIni = new Date(per[3]);
             aux = new Date(per[3]);
-            const revFim = new Date(aux.setDate(aux.getDate() + 8));
+            const revFim = new Date(aux.setDate(aux.getDate() + 12));
             if (d0 >= revIni && d0 < revFim) {
-                if (d0.getMonth() != 10) obj.style.backgroundColor = "yellow";
+                if(d0.getDay() > 0 && d0.getDay() < 6){
+                    if (d0.getMonth() != 10) obj.style.backgroundColor = "yellow";
+                }
             }
 
             if (d0.toLocaleDateString() == (new Date()).toLocaleDateString()) {
