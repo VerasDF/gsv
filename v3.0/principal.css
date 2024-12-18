@@ -135,18 +135,18 @@ button:hover{
 }
 #fldTurno{
     grid-column-start: 5;
-    grid-column-end: 9;
+    grid-column-end: 10;
 }
 #fldQuadro{
-    grid-column-start: 9;
-    grid-column-end: 12;
+    grid-column-start: 10;
+    grid-column-end: 13;
 }
 #fldAla{
-    grid-column-start: 12;
-    grid-column-end: 15;
+    grid-column-start: 13;
+    grid-column-end: 16;
 }
 #fldCalendario{
-    grid-column-start: 15;
+    grid-column-start: 16;
     grid-column-end: 25;  
 }
 #divFiltroGbmDestino,
