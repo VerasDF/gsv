@@ -92,6 +92,9 @@ fieldset{
     align-items: stretch;
     margin: auto;
 }
+#fldAcoesNosDados{
+    border: 2px solid red;
+}
 #fldArquivoDeOrigem{
     width: 450px;
     display: grid;

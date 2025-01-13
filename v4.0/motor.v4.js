@@ -1358,9 +1358,9 @@ const dados = {
         } else {
             if(confirmacao.toLowerCase() == 'confirmar'){
                 const objAux = dados.filtrarEscalas(dados.parametros());
-                console.log (objAux);
+                //console.log (objAux);
                 const arrAux = objAux.map((item) => {return item._ID});
-                console.log(arrAux);
+                //console.log(arrAux);
                 for (let i = 0; i < dados.escalas.length; i++) {
                     if(arrAux.includes(dados.escalas[i]._ID)) {
                         dados.escalas[i].NOME = `CANCELADA`;
@@ -2800,11 +2800,18 @@ window.onload = function () {
         e.preventDefault();
         menu.quinzena(e.target);
     })
+
     //PesquisaPorAnoNoCalendarioDaGsv
     $('txtAnoCalendarioGsv').addEventListener('keyup', (e) => {
         if (e.key == 'Enter') {
             html.exibirCalendarioDaGsv($('txtAnoCalendarioGsv').value);
         }
+    })
+
+    //Alterar dados
+    $('btnRemoverCotas').addEventListener('click', (e) => {
+        e.preventDefault();
+        dados.removerCota();
     })
 }
 
