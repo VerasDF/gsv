@@ -1352,7 +1352,9 @@ const dados = {
         return res;
     },
     removerCota: function(){
-        let confirmacao = prompt(`Confirma a exclusão dos dados desta seção em memória?\n\n ${conf.paramJson} \n\n Digite 'CONFIRMAR' no campo abaixo para prosseguir.`,``);
+        let confirmacao = prompt(`Confirma a exclusão dos dados desta seção em memória?\n\n
+                ${conf.paramJson}\n\n 
+                Digite 'CONFIRMAR' no campo abaixo para prosseguir.`,``);
         if(confirmacao == null || confirmacao == '') {
             alert('Cancelado pelo usuário');
         } else {
@@ -1368,7 +1370,10 @@ const dados = {
                 }
                 const aux2 = dados.escalas.filter((e) => {return e.NOME != 'CANCELADA'});
                 dados.escalas = aux2;
-                alert(`${arrAux.length} registros foram afetados.`)
+                conf.totalEscalas = dados.escalas.length;
+                init.carregarControles();
+                conf.totalStatus(dados.escalas);
+                alert(`${arrAux.length} registros foram afetados.`);
             }else{
                 alert(`Palavra de confirmação INCORRETA. Nenhuma exclusão foi realizada.`);
             }
