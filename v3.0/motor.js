@@ -364,7 +364,7 @@ function prepararEscalasJSon(dadosHtml) {
             if(ano == "2023"){
                 retorno = parametro.um;
             }
-            if(ano == "2024" || ano == "2025"){
+            if(parseInt(ano) > 2023) {
                 retorno = parametro.quatro.split("-");
                 retorno = retorno[2].trim();
             }
