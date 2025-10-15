@@ -2227,6 +2227,11 @@ const html = {
             aux = new Date(marcacaoPrimeiraQuinzena);
             const periodoDeRevisao = new Date(aux.setDate(aux.getDate() + 4));
             aux = null
+            
+            if(d0.getMonth()+1 == 2){
+                dataParaInscricao = new Date(dataParaInscricao.setDate(dataParaInscricao.getDate() - 7));
+            }
+
             return [marcacaoSegundaQuinzena.toISOString(), dataParaInscricao.toISOString(), marcacaoPrimeiraQuinzena.toISOString(), periodoDeRevisao.toISOString()];
         }
         function _colorir(d0, obj, per) {
