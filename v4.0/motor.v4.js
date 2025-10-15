@@ -2220,7 +2220,7 @@ const html = {
             const dia15 = new Date(`${d0.getFullYear()}-${("00" + (d0.getMonth() + 1)).slice(-2)}-15T00:00:00`);
             let aux = new Date(dia15);
             
-            if(d0.getMonth()+1 == 2){
+            if(d0.getMonth()+1 == 2 && d0.getFullYear() == 2026){
                 aux = new Date(aux.setDate(aux.getDate() - 7));
             }
             
