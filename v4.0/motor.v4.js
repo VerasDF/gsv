@@ -2217,15 +2217,15 @@ const html = {
             }
         }
         function _marcacaoPeriodosDoMes(d0) {
-            const dia15 = new Date(`${d0.getFullYear()}-${("00" + (d0.getMonth() + 1)).slice(-2)}-15T00:00:00`);
+            let dia15 = new Date(`${d0.getFullYear()}-${("00" + (d0.getMonth() + 1)).slice(-2)}-15T00:00:00`);
             let aux = new Date(dia15);
-            const dataParaInscricao = new Date(aux.setDate(aux.getDate() - (aux.getDay() - 1)));
+            let dataParaInscricao = new Date(aux.setDate(aux.getDate() - (aux.getDay() - 1)));
             aux = new Date(dataParaInscricao);
-            const marcacaoSegundaQuinzena = new Date(aux.setDate(aux.getDate() - 7));
+            let marcacaoSegundaQuinzena = new Date(aux.setDate(aux.getDate() - 7));
             aux = new Date(dataParaInscricao);
-            const marcacaoPrimeiraQuinzena = new Date(aux.setDate(aux.getDate() + 7));
+            let marcacaoPrimeiraQuinzena = new Date(aux.setDate(aux.getDate() + 7));
             aux = new Date(marcacaoPrimeiraQuinzena);
-            const periodoDeRevisao = new Date(aux.setDate(aux.getDate() + 4));
+            let periodoDeRevisao = new Date(aux.setDate(aux.getDate() + 4));
             aux = null
             
             if(d0.getMonth()+1 == 2){
