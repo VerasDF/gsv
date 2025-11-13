@@ -2265,7 +2265,7 @@ const html = {
             $('fldAla').style.display = "none";
             $('fldCalendario').style.display = "none";
             $('divExibirResultado').style.display = "none";
-            $('imgRecolher').src = "setaParaBaixo.png";
+            // $('imgRecolher').src = "setaParaBaixo.png";
             conf.exibirFiltrosDeInterface = false
         }
         else{
@@ -2281,7 +2281,7 @@ const html = {
             $('fldAla').removeAttribute('style');
             $('fldCalendario').removeAttribute('style');
             $('divExibirResultado').removeAttribute('style');
-            $('imgRecolher').src = "setaParaCima.png";
+            // $('imgRecolher').src = "setaParaCima.png";
             conf.exibirFiltrosDeInterface = true
         }
         
