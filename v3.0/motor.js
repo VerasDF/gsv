@@ -1089,6 +1089,13 @@ const html = {
         function _marcacaoPeriodosDoMes(d0){
              const dia15 = new Date(`${d0.getFullYear()}-${("00"+(d0.getMonth()+1)).slice(-2)}-15T00:00:00`);
              let aux = new Date(dia15);
+
+             if(d0.getFullYear() == 2026){
+                if(d0.getMonth()+1 == 2 || d0.getMonth()+1 == 11){
+                    aux = new Date(aux.setDate(aux.getDate() - 7));
+                }
+            }
+
              const dataParaInscricao = new Date(aux.setDate(aux.getDate()-(aux.getDay()-1)));
              aux = new Date(dataParaInscricao);
              const marcacaoSegundaQuinzena = new Date(aux.setDate(aux.getDate()-7));
@@ -1154,7 +1161,7 @@ const html = {
             const texto  = [
                 'Marcação para a 2º quinzena do mês atual.',
                 'Período de Inscrição para o Banco de Dados do próximo mês.',
-                'Marcação para a 1º quinzena do próximo mês.',
+                'Marcação para a 1º quinzena do próximo mês.(dezembro marca o mês inteiro)',
                 'Período para ajustes nas inscrição do Banco de Dados do próximo mês.',
                 'Auditoria interna.'
             ]          
