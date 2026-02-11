@@ -142,7 +142,7 @@ const $readFile = (input) => {
         }
     }
 }
-function avaliarDadoBruto({htmlRetornado}) {
+function avaliarDadoBruto( {htmlRetornado} ) {
     try {
         if(htmlRetornado === null){return}
         
@@ -1071,7 +1071,7 @@ const html = {
                 return {mes:divMesCalGsv, jaTem:false};
             }
             else{
-                return {mes:$('divCalGsvMes_' + d0.getMonth()),jaTem:true};
+                return {mes:$('divCalGsvMes_' + d0.getMonth()), jaTem:true};
             }
         }
         function _criarDia(d0){
@@ -1087,11 +1087,11 @@ const html = {
             }
         }
         function _marcacaoPeriodosDoMes(d0){
-             const dia15 = new Date(`${d0.getFullYear()}-${("00"+(d0.getMonth()+1)).slice(-2)}-15T00:00:00`);
-             let aux = new Date(dia15);
+            const dia15 = new Date(`${d0.getFullYear()}-${("00"+(d0.getMonth()+1)).slice(-2)}-15T00:00:00`);
+            let aux = new Date(dia15);
 
-             if(d0.getFullYear() == 2026){
-                if(d0.getMonth()+1 == 2 || d0.getMonth()+1 == 11){
+            if(d0.getFullYear() == 2026){ //*** à pedido do Ten A.Bonfim
+                if(d0.getMonth() == 1 || d0.getMonth() == 10){ // ***Fevereiro e Novembro de 2026
                     aux = new Date(aux.setDate(aux.getDate() - 7));
                 }
             }
