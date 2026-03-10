@@ -757,7 +757,7 @@ const dados = {
         btnTemp.ariaLabel = `${strTexto}`;
         btnTemp.ariaPressed = 'false';
         btnTemp.className = 'campoCriterio';
-        btnTemp.innerHTML = `${strTexto}`;
+        btnTemp.innerHTML = `<nobr>${strTexto}</nobr>`;
         btnTemp.addEventListener('click', (e)=>{
             if(btnTemp.ariaPressed=="true"){btnTemp.ariaPressed="false"}else{btnTemp.ariaPressed="true"}
             filtrar.processarClickDoBotao(btnTemp);
