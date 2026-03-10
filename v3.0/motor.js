@@ -315,6 +315,10 @@ function prepararEscalasJSon(dadosHtml) {
             retorno = "DENGUE";
         } else if (parametro.toUpperCase().indexOf("CENTRO POP") > -1) {
             retorno = "CENTRO POP";
+        } else if (parametro.toUpperCase().indexOf("PRONTA RESPOSTA") > -1) {
+            retorno = "PRONTA RESPOSTA";
+        } else if (parametro.toUpperCase().indexOf("PREVENÇÃO AQUÁTICA NO LAGO") > -1) {
+            retorno = "PREVENÇÃO AQUÁTICA NO LAGO";
         } else {
             retorno = "EXTRAORDINÁRIO";
         }
